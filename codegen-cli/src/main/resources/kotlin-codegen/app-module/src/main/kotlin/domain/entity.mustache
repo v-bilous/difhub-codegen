@@ -1,0 +1,16 @@
+package {{package}}
+
+{{#imports}}import {{import}}
+{{/imports}}
+import javax.persistence.*
+
+{{#models}}
+{{#model}}
+{{#isEnum}}
+{{>enumOuterClass}}
+{{/isEnum}}
+{{^isEnum}}
+{{>app-module/src/main/kotlin/domain/pojoentity.kt}}
+{{/isEnum}}
+{{/model}}
+{{/models}}

@@ -1,0 +1,27 @@
+plugins {
+    id("org.springframework.boot")
+
+    kotlin("jvm")
+    kotlin("plugin.spring")
+    kotlin("plugin.jpa")
+}
+
+dependencies {
+    implementation(kotlin("stdlib-jdk8"))
+
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+
+    implementation("io.jsonwebtoken:jjwt:0.9.1")
+    //implementation("org.springframework.boot:spring-boot-starter-security")
+
+    implementation(project(":common"))
+}
+
+tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+    enabled = false
+}
+
+tasks.getByName<Jar>("jar") {
+    enabled = true
+}

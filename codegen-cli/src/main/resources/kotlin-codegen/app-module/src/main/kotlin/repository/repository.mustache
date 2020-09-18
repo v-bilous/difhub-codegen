@@ -1,0 +1,10 @@
+package {{repositoryPackage}}
+
+{{#imports}}import {{import}}
+{{/imports}}
+import {{basePackage}}.repository.CommonRepository
+import org.springframework.stereotype.Repository
+
+{{>generatedAnnotation}}
+@Repository
+interface {{repositoryClassname}} : CommonRepository<{{returnEntityType}}>

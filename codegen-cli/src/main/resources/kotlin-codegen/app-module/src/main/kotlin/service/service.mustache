@@ -1,0 +1,13 @@
+package {{appPackage}}.service
+
+{{#imports}}import {{import}}
+{{/imports}}
+import {{appPackage}}.repository.{{repositoryClassname}}
+import {{basePackage}}.service.AbstractService
+import org.springframework.stereotype.Service
+
+{{>generatedAnnotation}}
+@Service
+class {{serviceClassname}}(
+    repository: {{repositoryClassname}}
+) : AbstractService<{{returnEntityType}}, {{repositoryClassname}}>(repository)

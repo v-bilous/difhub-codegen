@@ -1,0 +1,16 @@
+package {{basePackage}}.domain
+
+import java.util.*
+import javax.persistence.*
+
+@Embeddable
+data class Identity(
+        @Column(name = "id", insertable = false, updatable = false)
+        var id: String? = null,
+
+        @Column(name = "name")
+        var name: String? = null,
+
+        @Column(name = "description")
+        var description: String? = null
+)

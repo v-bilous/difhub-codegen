@@ -1,0 +1,22 @@
+package {{basePackage}}.domain
+
+import java.util.*
+import javax.persistence.*
+
+@Embeddable
+data class History(
+        @Column(name = "created_date")
+        var createdDate: Date? = null,
+
+        @Column(name = "updated_date")
+        var updatedDate: Date? = null,
+
+        @Column(name = "created_by")
+        var createdBy: String? = null,
+
+        @Column(name = "updated_by")
+        var updatedBy: String? = null,
+
+        @Column(name = "reason")
+        var reason: String? = null
+)

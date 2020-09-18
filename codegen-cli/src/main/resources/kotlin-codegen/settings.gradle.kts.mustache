@@ -1,0 +1,5 @@
+rootProject.name = "{{systemLower}}-system"
+include("common")
+{{#appsLower}}
+include("app-{{.}}")
+{{/appsLower}}

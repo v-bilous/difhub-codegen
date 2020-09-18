@@ -1,0 +1,35 @@
+package {{basePackage}}.domain
+
+import com.fasterxml.jackson.annotation.JsonIgnore
+import java.util.*
+import javax.persistence.*
+
+@Entity
+@Table(name = "entity")
+data class ResourceEntity(
+
+		@JsonIgnore
+		@Id
+		@Column(name = "entity_id")
+		var entityId: String? = null,
+
+		@Column(name = "state")
+		var state: String? = null,
+
+		@Column(name = "source")
+		var source: String? = null,
+
+		@Column(name = "type")
+		var type: String? = null,
+
+		@AttributeOverrides(
+				AttributeOverride(name = "id", column = Column(name = "parent_id")),
+				AttributeOverride(name = "name", column = Column(name = "parent_name")),
+				AttributeOverride(name = "description", column = Column(name = "parent_description"))
+		)
+		@Embedded
+		var parent: Identity? = null,
+
+		@Embedded
+		var history: History = History()
+)

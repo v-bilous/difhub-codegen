@@ -1,0 +1,4062 @@
+openapi: 3.0.1
+info:
+  title: User API
+  description: User application provides support for most basic functionalities. Most
+    important to keep private user information to allow identify the user and maintain
+    contact information.
+  version: 1.0.0
+servers:
+- url: http://localhost:8442
+  description: Development server endpoint
+- url: https://domain.app/user/v1
+  description: Stage Server endpoint
+tags:
+- name: Contacts
+  description: Interface to access contact information for organizations or users.
+- name: Entities
+  description: Management of user entities restricted by properties. Interface can
+    provide access to specific entity.
+- name: Persons
+  description: Interface to access person information.
+- name: Users
+  description: Interface to access user information.
+paths:
+  /contacts/{contactId}:
+    get:
+      tags:
+      - Contacts
+      summary: GetContact
+      description: Get contact or list of contacts from service.
+      operationId: contactsGetContact
+      parameters:
+      - $ref: '#/components/parameters/bearer'
+      - $ref: '#/components/parameters/options'
+      - $ref: '#/components/parameters/startTime'
+      - $ref: '#/components/parameters/endTime'
+      responses:
+        200:
+          description: Contact is found and returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        400:
+          description: Execution of user request failed.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+        409:
+          description: User don't have permissions to execute operation on the object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Contact is not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+      - Contacts
+      summary: UpdateContact
+      description: Change contact specification. Contact will be created if not exist.
+      operationId: contactsUpdateContact
+      parameters:
+      - $ref: '#/components/parameters/bearer'
+      requestBody:
+        $ref: '#/components/requestBodies/contact'
+      responses:
+        204:
+          description: Operation completed successfully.
+        400:
+          description: Execution of user request failed.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+        409:
+          description: User don't have permissions to execute operation on the object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+      - Contacts
+      summary: ModifyContact
+      description: 'Change Contact properties to values specified in request. Property
+        not specified will remain same. No element of any collection will be deleted. '
+      operationId: contactsModifyContact
+      parameters:
+      - $ref: '#/components/parameters/bearer'
+      requestBody:
+        $ref: '#/components/requestBodies/contact'
+      responses:
+        204:
+          description: Operation completed successfully.
+        400:
+          description: Execution of user request failed.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+        409:
+          description: User don't have permissions to execute operation on the object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Contact is not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    parameters:
+    - $ref: '#/components/parameters/contactId'
+  /contacts:
+    get:
+      tags:
+      - Contacts
+      summary: GetContactList
+      description: Get contact or list of contacts from service.
+      operationId: contactsGetContactList
+      parameters:
+      - $ref: '#/components/parameters/bearer'
+      - $ref: '#/components/parameters/options'
+      - $ref: '#/components/parameters/startTime'
+      - $ref: '#/components/parameters/endTime'
+      - $ref: '#/components/parameters/search'
+      responses:
+        200:
+          description: Contact is found and returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contact'
+        400:
+          description: Execution of user request failed.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+        409:
+          description: User don't have permissions to execute operation on the object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Contact is not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+      - Contacts
+      summary: CreateContact
+      description: Create new Contact. Validate Contact not yet exist.
+      operationId: contactsCreateContact
+      parameters:
+      - $ref: '#/components/parameters/bearer'
+      requestBody:
+        $ref: '#/components/requestBodies/contact'
+      responses:
+        201:
+          description: Object created successfully.
+        400:
+          description: Execution of user request failed.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+        409:
+          description: User don't have permissions to execute operation on the object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          description: Contact is already exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    parameters: []
+  /entities/{entityId}:
+    get:
+      tags:
+      - Entities
+      summary: GetEntity
+      description: Get entity or list of entities from service.
+      operationId: entitiesGetEntity
+      parameters:
+      - $ref: '#/components/parameters/bearer'
+      - $ref: '#/components/parameters/options'
+      - $ref: '#/components/parameters/source'
+      - $ref: '#/components/parameters/type'
+      - $ref: '#/components/parameters/startTime'
+      - $ref: '#/components/parameters/endTime'
+      responses:
+        200:
+          description: Entity is found and returned.
+        400:
+          description: Execution of user request failed.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+        409:
+          description: User don't have permissions to execute operation on the object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Entity is not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    parameters:
+    - $ref: '#/components/parameters/entityId'
+  /entities:
+    get:
+      tags:
+      - Entities
+      summary: GetEntityList
+      description: Get entity or list of entities from service.
+      operationId: entitiesGetEntityList
+      parameters:
+      - $ref: '#/components/parameters/bearer'
+      - $ref: '#/components/parameters/options'
+      - $ref: '#/components/parameters/source'
+      - $ref: '#/components/parameters/type'
+      - $ref: '#/components/parameters/startTime'
+      - $ref: '#/components/parameters/endTime'
+      - $ref: '#/components/parameters/search'
+      responses:
+        200:
+          description: Entity is found and returned.
+        400:
+          description: Execution of user request failed.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+        409:
+          description: User don't have permissions to execute operation on the object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Entity is not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    parameters: []
+  /persons/{personId}:
+    get:
+      tags:
+      - Persons
+      summary: GetPerson
+      description: Get person or list of persons from service.
+      operationId: personsGetPerson
+      parameters:
+      - $ref: '#/components/parameters/bearer'
+      - $ref: '#/components/parameters/options'
+      - $ref: '#/components/parameters/startTime'
+      - $ref: '#/components/parameters/endTime'
+      responses:
+        200:
+          description: Person is found and returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        400:
+          description: Execution of user request failed.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+        409:
+          description: User don't have permissions to execute operation on the object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Object is not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+      - Persons
+      summary: UpdatePerson
+      description: Change person specification. Person will be created if not exist.
+      operationId: personsUpdatePerson
+      parameters:
+      - $ref: '#/components/parameters/bearer'
+      requestBody:
+        $ref: '#/components/requestBodies/person'
+      responses:
+        204:
+          description: Operation completed successfully.
+        400:
+          description: Execution of user request failed.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+        409:
+          description: User don't have permissions to execute operation on the object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+      - Persons
+      summary: ModifyPerson
+      description: 'Change Person properties to values specified in request. Property
+        not specified will remain same. No element of any collection will be deleted. '
+      operationId: personsModifyPerson
+      parameters:
+      - $ref: '#/components/parameters/bearer'
+      requestBody:
+        $ref: '#/components/requestBodies/person'
+      responses:
+        204:
+          description: Operation completed successfully.
+        400:
+          description: Execution of user request failed.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+        409:
+          description: User don't have permissions to execute operation on the object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Object is not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    parameters:
+    - $ref: '#/components/parameters/personId'
+  /persons:
+    get:
+      tags:
+      - Persons
+      summary: GetPersonList
+      description: Get person or list of persons from service.
+      operationId: personsGetPersonList
+      parameters:
+      - $ref: '#/components/parameters/bearer'
+      - $ref: '#/components/parameters/options'
+      - $ref: '#/components/parameters/startTime'
+      - $ref: '#/components/parameters/endTime'
+      - $ref: '#/components/parameters/search'
+      responses:
+        200:
+          description: Person is found and returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Person'
+        400:
+          description: Execution of user request failed.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+        409:
+          description: User don't have permissions to execute operation on the object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Object is not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+      - Persons
+      summary: CreatePerson
+      description: Create new Person. Validate Person not yet exist.
+      operationId: personsCreatePerson
+      parameters:
+      - $ref: '#/components/parameters/bearer'
+      requestBody:
+        $ref: '#/components/requestBodies/person'
+      responses:
+        201:
+          description: Object created successfully.
+        400:
+          description: Execution of user request failed.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+        409:
+          description: User don't have permissions to execute operation on the object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          description: Object is already exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    parameters: []
+  /users/{userId}:
+    get:
+      tags:
+      - Users
+      summary: GetUser
+      description: Get user or list of users from service.
+      operationId: usersGetUser
+      parameters:
+      - $ref: '#/components/parameters/bearer'
+      - $ref: '#/components/parameters/options'
+      - $ref: '#/components/parameters/startTime'
+      - $ref: '#/components/parameters/endTime'
+      responses:
+        200:
+          description: User is found and returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Execution of user request failed.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+        409:
+          description: User don't have permissions to execute operation on the object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: User is not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+      - Users
+      summary: UpdateUser
+      description: Change user specification. User will be created if not exist.
+      operationId: usersUpdateUser
+      parameters:
+      - $ref: '#/components/parameters/bearer'
+      requestBody:
+        $ref: '#/components/requestBodies/user'
+      responses:
+        204:
+          description: Operation completed successfully.
+        400:
+          description: Execution of user request failed.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+        409:
+          description: User don't have permissions to execute operation on the object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+      - Users
+      summary: ModifyUser
+      description: 'Change User properties to values specified in request. Property
+        not specified will remain same. No element of any collection will be deleted. '
+      operationId: usersModifyUser
+      parameters:
+      - $ref: '#/components/parameters/bearer'
+      requestBody:
+        $ref: '#/components/requestBodies/user'
+      responses:
+        204:
+          description: Operation completed successfully.
+        400:
+          description: Execution of user request failed.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+        409:
+          description: User don't have permissions to execute operation on the object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: User is not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    parameters:
+    - $ref: '#/components/parameters/userId'
+  /users:
+    get:
+      tags:
+      - Users
+      summary: GetUserList
+      description: Get user or list of users from service.
+      operationId: usersGetUserList
+      parameters:
+      - $ref: '#/components/parameters/bearer'
+      - $ref: '#/components/parameters/options'
+      - $ref: '#/components/parameters/startTime'
+      - $ref: '#/components/parameters/endTime'
+      - $ref: '#/components/parameters/search'
+      responses:
+        200:
+          description: User is found and returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        400:
+          description: Execution of user request failed.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+        409:
+          description: User don't have permissions to execute operation on the object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: User is not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+      - Users
+      summary: CreateUser
+      description: Create new User. Validate User not yet exist.
+      operationId: usersCreateUser
+      parameters:
+      - $ref: '#/components/parameters/bearer'
+      requestBody:
+        $ref: '#/components/requestBodies/user'
+      responses:
+        201:
+          description: Object created successfully.
+        400:
+          description: Execution of user request failed.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+        409:
+          description: User don't have permissions to execute operation on the object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          description: User is already exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    parameters: []
+components:
+  schemas:
+    Extension:
+      required:
+      - url
+      type: object
+      properties:
+        id:
+          type: string
+          description: xml:id (or equivalent in JSON)
+          x-data-type: String
+        url:
+          type: string
+          description: identifies the meaning of the extension.
+          x-data-type: String
+        value:
+          type: string
+          description: Value of extension.
+          x-data-type: String
+      description: |-
+        This exchange specification is based on generally agreed common requirements across healthcare - covering many jurisdictions, domains, and different functional approaches. It is common for specific implementations to have valid requirements that are not part of these agreed common requirements. Incorporating all valid requirements would make this specification very cumbersome and difficult to implement. Instead, this specification expects that additional valid requirements will be implemented as extensions.
+
+        As such, extensibility is a fundamental part of the design of this specification. Every element in a resource can have extension child elements to represent additional information that is not part of the basic definition of the resource. Applications should not reject resources merely because they contain extensions, though they may need to reject resources because of the specific contents of the extensions.
+
+        Note that, unlike in many other specifications, there can be no stigma associated with the use of extensions by any application, project, or standard - regardless of the institution or jurisdiction that uses or defines the extensions. The use of extensions is what allows the FHIR specification to retain a core simplicity for everyone.
+
+        To make the use of extensions safe and manageable, there is strict governance applied to the definition and use of extensions. Although any implementer can define and use extensions, there is a set of requirements that must be met as part of their use and definition.
+
+        http://build.fhir.org//extensibility.html#Extension
+      x-data-type: Structure
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/infrastructure/applications/Core/datasets/Extension
+    Element:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: xml:id (or equivalent in JSON)
+          format: guid
+          x-data-type: Guid
+        ' extension':
+          type: array
+          description: Additional Content defined by implementations.
+          items:
+            description: Additional Content defined by implementations.
+            allOf:
+            - $ref: '#/components/schemas/Extension'
+      description: |-
+        The base definition for all elements contained inside a resource. All elements, whether defined as a Data Type (including primitives) or as part of a resource structure, have this base content:
+
+        Extensions
+        An internal id
+        There are 3 kinds of descendent types that specialize Element:
+
+        Primitive data types, that add a primitive value property of the specified type
+        Complex data types, that add their own children (all of which are also elements)
+        BackboneElement, A specialization that adds modifierExtension, which is the super-type of all the element types defined in resource definitions (e.g. Patient.contact)
+        Note that resources themselves all specialize the base type Resource.
+
+        http://build.fhir.org//element.html
+      x-data-type: Structure
+      x-version: 1.2.0
+      x-path: /organizations/Infort Technologies/systems/infrastructure/applications/Core/datasets/Element
+    AddressUse:
+      type: string
+      description: Contact point use enumerator. All codes from system http://hl7.org/fhir/contact-point-use
+      enum:
+      - home
+      - work
+      - temp
+      - old
+      - billing
+      x-enum-metadata:
+      - name: Home
+        value: home
+        description: A communication address at a home.
+      - name: Work
+        value: work
+        description: A communication address at a home.
+      - name: Temp
+        value: temp
+        description: |
+          A temporary address. The period can provide more detailed information.
+      - name: Old
+        value: old
+        description: |+
+          This address is no longer in use (or was never correct but retained for records).
+
+      - name: Billing
+        value: billing
+        description: "An address to be used to send bills, invoices, receipts etc.\n\
+          \ \n "
+      x-data-type: Enum
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/Client/applications/User/datasets/AddressUse
+    AddressType:
+      type: string
+      description: |
+        Address type enumerator. Include all codes defined in http://hl7.org/fhir/address-type.
+      enum:
+      - postal
+      - physical
+      - both
+      x-enum-metadata:
+      - name: Postal
+        value: postal
+        description: |
+          Mailing addresses - PO Boxes and care-of addresses.
+      - name: Physical
+        value: physical
+        description: |
+          A physical address that can be visited.
+      - name: Postal & Physical
+        value: both
+        description: |
+          An address that is both physical and postal.
+      x-data-type: Enum
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/Client/applications/User/datasets/AddressType
+    Country:
+      type: string
+      description: List of countries with codes. ISO 3166
+      enum:
+      - AE
+      - AX
+      - AL
+      - DZ
+      - AS
+      - AD
+      - AO
+      - AI
+      - AG
+      - AR
+      - AM
+      - AW
+      - AU
+      - AT
+      - AZ
+      - BS
+      - BH
+      - BD
+      - BB
+      - BY
+      - BE
+      - BZ
+      - BJ
+      - BM
+      - BT
+      - BO
+      - BQ
+      - BA
+      - BW
+      - BR
+      - IO
+      - BN
+      - BG
+      - BF
+      - BI
+      - CV
+      - KH
+      - CM
+      - CA
+      - KY
+      - CF
+      - TD
+      - CL
+      - CN
+      - CX
+      - CC
+      - CO
+      - KM
+      - CG
+      - CD
+      - CK
+      - CR
+      - CI
+      - HR
+      - CU
+      - CW
+      - CY
+      - CZ
+      - DK
+      - DJ
+      - DM
+      - DO
+      - EC
+      - EG
+      - SV
+      - GQ
+      - ER
+      - EE
+      - ET
+      - FK
+      - ""
+      - FJ
+      - FI
+      - FR
+      - GF
+      - PF
+      - TF
+      - GA
+      - GM
+      - GE
+      - DE
+      - GH
+      - GI
+      - GR
+      - GL
+      - GD
+      - GP
+      - GU
+      - GT
+      - GG
+      - GN
+      - GW
+      - GY
+      - HT
+      - HM
+      - VA
+      - HN
+      - HK
+      - HU
+      - IS
+      - IN
+      - ID
+      - IR
+      - IQ
+      - IE
+      - IM
+      - IL
+      - IT
+      - JM
+      - JP
+      - JE
+      - JO
+      - KZ
+      - KE
+      - KI
+      - KP
+      - KR
+      - KW
+      - KG
+      - LA
+      - LV
+      - LB
+      - LS
+      - LR
+      - LY
+      - LI
+      - LT
+      - LU
+      - MO
+      - MK
+      - MG
+      - MW
+      - MY
+      - MV
+      - ML
+      - MT
+      - MH
+      - MQ
+      - MR
+      - MU
+      - YT
+      - MX
+      - FM
+      - MD
+      - MC
+      - MN
+      - ME
+      - MS
+      - MA
+      - MZ
+      - MM
+      - NA
+      - NR
+      - NP
+      - NL
+      - NC
+      - NZ
+      - NI
+      - NE
+      - NG
+      - NU
+      - NF
+      - MP
+      - NO
+      - OM
+      - PK
+      - PW
+      - PS
+      - PA
+      - PG
+      - PY
+      - PE
+      - PH
+      - PN
+      - PL
+      - PT
+      - PR
+      - QA
+      - RE
+      - RO
+      - RU
+      - RW
+      - BL
+      - SH
+      - KN
+      - LC
+      - MF
+      - PM
+      - VC
+      - WS
+      - SM
+      - ST
+      - SA
+      - SN
+      - RS
+      - SC
+      - SL
+      - SG
+      - SX
+      - SK
+      - SI
+      - SB
+      - SO
+      - ZA
+      - GS
+      - SS
+      - ES
+      - LK
+      - SD
+      - SR
+      - SJ
+      - SZ
+      - SE
+      - CH
+      - SY
+      - TW
+      - TJ
+      - TZ
+      - TH
+      - TL
+      - TG
+      - TK
+      - TO
+      - TT
+      - TN
+      - TR
+      - TM
+      - TC
+      - TV
+      - UG
+      - UA
+      - AE
+      - GB
+      - US
+      - UY
+      - UZ
+      - VU
+      - VE
+      - VN
+      - VG
+      - VI
+      - WF
+      - EH
+      - YE
+      - ZM
+      - ZW
+      x-enum-metadata:
+      - name: Afghanistan
+        value: AE
+        description: "93"
+      - name: Aland Islands
+        value: AX
+        description: "35818"
+      - name: Albania
+        value: AL
+        description: "355"
+      - name: Algeria
+        value: DZ
+        description: "213"
+      - name: American Samoa
+        value: AS
+        description: "1684"
+      - name: Andorra
+        value: AD
+        description: "376"
+      - name: Angola
+        value: AO
+        description: "244"
+      - name: Anguilla
+        value: AI
+        description: "1264"
+      - name: Antigua and Barbuda
+        value: AG
+        description: "1268"
+      - name: Argentina
+        value: AR
+        description: "54"
+      - name: Armenia
+        value: AM
+        description: "374"
+      - name: Aruba
+        value: AW
+        description: "297"
+      - name: Australia
+        value: AU
+        description: "61"
+      - name: Austria
+        value: AT
+        description: "43"
+      - name: Azerbaijan
+        value: AZ
+        description: "994"
+      - name: Bahamas
+        value: BS
+        description: "1242"
+      - name: Bahrain
+        value: BH
+        description: "973"
+      - name: Bangladesh
+        value: BD
+        description: "880"
+      - name: Barbados
+        value: BB
+        description: "1246"
+      - name: Belarus
+        value: BY
+        description: "375"
+      - name: Belgium
+        value: BE
+        description: "32"
+      - name: Belize
+        value: BZ
+        description: "501"
+      - name: Benin
+        value: BJ
+        description: "229"
+      - name: Bermuda
+        value: BM
+        description: "1441"
+      - name: Bhutan
+        value: BT
+        description: "975"
+      - name: Bolivia, Plurinational State of
+        value: BO
+        description: "591"
+      - name: Bonaire, Sint Eustatius and Saba
+        value: BQ
+        description: "5997"
+      - name: Bosnia and Herzegovina
+        value: BA
+        description: "387"
+      - name: Botswana
+        value: BW
+        description: "267"
+      - name: Brazil
+        value: BR
+        description: "55"
+      - name: British Indian Ocean Territory
+        value: IO
+        description: "246"
+      - name: Brunei Darussalam
+        value: BN
+        description: "673"
+      - name: Bulgaria
+        value: BG
+        description: "359"
+      - name: Burkina Faso
+        value: BF
+        description: "226"
+      - name: Burundi
+        value: BI
+        description: "257"
+      - name: Cabo Verde
+        value: CV
+        description: "238"
+      - name: Cambodia
+        value: KH
+        description: "855"
+      - name: Cameroon
+        value: CM
+        description: "237"
+      - name: Canada
+        value: CA
+        description: "1"
+      - name: Cayman Islands
+        value: KY
+        description: "1345"
+      - name: Central African Republic
+        value: CF
+        description: "236"
+      - name: Chad
+        value: TD
+        description: "235"
+      - name: Chile
+        value: CL
+        description: "56"
+      - name: China
+        value: CN
+        description: "86"
+      - name: Christmas Island
+        value: CX
+        description: "6189164"
+      - name: Cocos (Keeling) Islands
+        value: CC
+        description: "6189162"
+      - name: Colombia
+        value: CO
+        description: "57"
+      - name: Comoros
+        value: KM
+        description: "269"
+      - name: Congo
+        value: CG
+        description: "242"
+      - name: Congo, the Democratic Republic of the
+        value: CD
+        description: "243"
+      - name: Cook Islands
+        value: CK
+        description: "682"
+      - name: Costa Rica
+        value: CR
+        description: "506"
+      - name: Cote d'Ivoire
+        value: CI
+        description: "225"
+      - name: Croatia
+        value: HR
+        description: "385"
+      - name: Cuba
+        value: CU
+        description: "53"
+      - name: Curacao
+        value: CW
+        description: "5999"
+      - name: Cyprus
+        value: CY
+        description: "357"
+      - name: Czechia
+        value: CZ
+        description: "420"
+      - name: Denmark
+        value: DK
+        description: "45"
+      - name: Djibouti
+        value: DJ
+        description: "253"
+      - name: Dominica
+        value: DM
+        description: "1767"
+      - name: Dominican Republic
+        value: DO
+        description: "1809"
+      - name: Ecuador
+        value: EC
+        description: "593"
+      - name: Egypt
+        value: EG
+        description: "20"
+      - name: El Salvador
+        value: SV
+        description: "503"
+      - name: Equatorial Guinea
+        value: GQ
+        description: "240"
+      - name: Eritrea
+        value: ER
+        description: "291"
+      - name: Estonia
+        value: EE
+        description: "372"
+      - name: Ethiopia
+        value: ET
+        description: "251"
+      - name: Falkland Islands (Malvinas)
+        value: FK
+        description: "500"
+      - name: Faroe Islands
+        value: ""
+        description: "298"
+      - name: Fiji
+        value: FJ
+        description: "679"
+      - name: Finland
+        value: FI
+        description: "358"
+      - name: France
+        value: FR
+        description: "33"
+      - name: French Guiana
+        value: GF
+        description: "594"
+      - name: French Polynesia
+        value: PF
+        description: "689"
+      - name: French Southern Territories
+        value: TF
+        description: "689"
+      - name: Gabon
+        value: GA
+        description: "241"
+      - name: Gambia
+        value: GM
+        description: "220"
+      - name: Georgia
+        value: GE
+        description: "995"
+      - name: Germany
+        value: DE
+        description: "49"
+      - name: Ghana
+        value: GH
+        description: "233"
+      - name: Gibraltar
+        value: GI
+        description: "350"
+      - name: Greece
+        value: GR
+        description: "30"
+      - name: Greenland
+        value: GL
+        description: "299"
+      - name: Grenada
+        value: GD
+        description: "1473"
+      - name: Guadeloupe
+        value: GP
+        description: "590"
+      - name: Guam
+        value: GU
+        description: "1671"
+      - name: Guatemala
+        value: GT
+        description: "502"
+      - name: Guernsey
+        value: GG
+        description: "441481"
+      - name: Guinea
+        value: GN
+        description: "224"
+      - name: Guinea-Bissau
+        value: GW
+        description: "245"
+      - name: Guyana
+        value: GY
+        description: "592"
+      - name: Haiti
+        value: HT
+        description: "509"
+      - name: Heard Island and McDonald Islands
+        value: HM
+        description: "6723"
+      - name: Holy See
+        value: VA
+        description: "3906698"
+      - name: Honduras
+        value: HN
+        description: "504"
+      - name: Hong Kong
+        value: HK
+        description: "852"
+      - name: Hungary
+        value: HU
+        description: "36"
+      - name: Iceland
+        value: IS
+        description: "354"
+      - name: India
+        value: IN
+        description: "91"
+      - name: Indonesia
+        value: ID
+        description: "62"
+      - name: Iran, Islamic Republic of
+        value: IR
+        description: "98"
+      - name: Iraq
+        value: IQ
+        description: "964"
+      - name: Ireland
+        value: IE
+        description: "353"
+      - name: Isle of Man
+        value: IM
+        description: "441624"
+      - name: Israel
+        value: IL
+        description: "972"
+      - name: Italy
+        value: IT
+        description: "39"
+      - name: Jamaica
+        value: JM
+        description: "1876"
+      - name: Japan
+        value: JP
+        description: "81"
+      - name: Jersey
+        value: JE
+        description: "441534"
+      - name: Jordan
+        value: JO
+        description: "962"
+      - name: Kazakhstan
+        value: KZ
+        description: "76"
+      - name: Kenya
+        value: KE
+        description: "254"
+      - name: Kiribati
+        value: KI
+        description: "686"
+      - name: Korea, Democratic People's Republic of
+        value: KP
+        description: "850"
+      - name: Korea, Republic of
+        value: KR
+        description: "82"
+      - name: Kuwait
+        value: KW
+        description: "965"
+      - name: Kyrgyzstan
+        value: KG
+        description: "996"
+      - name: Lao People's Democratic Republic
+        value: LA
+        description: "856"
+      - name: Latvia
+        value: LV
+        description: "371"
+      - name: Lebanon
+        value: LB
+        description: "961"
+      - name: Lesotho
+        value: LS
+        description: "266"
+      - name: Liberia
+        value: LR
+        description: "231"
+      - name: Libya
+        value: LY
+        description: "218"
+      - name: Liechtenstein
+        value: LI
+        description: "423"
+      - name: Lithuania
+        value: LT
+        description: "370"
+      - name: Luxembourg
+        value: LU
+        description: "352"
+      - name: Macao
+        value: MO
+        description: "853"
+      - name: Macedonia, the former Yugoslav Republic of
+        value: MK
+        description: "389"
+      - name: Madagascar
+        value: MG
+        description: "261"
+      - name: Malawi
+        value: MW
+        description: "265"
+      - name: Malaysia
+        value: MY
+        description: "60"
+      - name: Maldives
+        value: MV
+        description: "960"
+      - name: Mali
+        value: ML
+        description: "223"
+      - name: Malta
+        value: MT
+        description: "356"
+      - name: Marshall Islands
+        value: MH
+        description: "692"
+      - name: Martinique
+        value: MQ
+        description: "596"
+      - name: Mauritania
+        value: MR
+        description: "222"
+      - name: Mauritius
+        value: MU
+        description: "230"
+      - name: Mayotte
+        value: YT
+        description: "262269"
+      - name: Mexico
+        value: MX
+        description: "52"
+      - name: Micronesia, Federated States of
+        value: FM
+        description: "691"
+      - name: Moldova, Republic of
+        value: MD
+        description: "373"
+      - name: Monaco
+        value: MC
+        description: "377"
+      - name: Mongolia
+        value: MN
+        description: "976"
+      - name: Montenegro
+        value: ME
+        description: "382"
+      - name: Montserrat
+        value: MS
+        description: "1664"
+      - name: Morocco
+        value: MA
+        description: "212"
+      - name: Mozambique
+        value: MZ
+        description: "258"
+      - name: Myanmar
+        value: MM
+        description: "95"
+      - name: Namibia
+        value: NA
+        description: "264"
+      - name: Nauru
+        value: NR
+        description: "674"
+      - name: Nepal
+        value: NP
+        description: "977"
+      - name: Netherlands
+        value: NL
+        description: "31"
+      - name: New Caledonia
+        value: NC
+        description: "687"
+      - name: New Zealand
+        value: NZ
+        description: "64"
+      - name: Nicaragua
+        value: NI
+        description: "505"
+      - name: Niger
+        value: NE
+        description: "227"
+      - name: Nigeria
+        value: NG
+        description: "234"
+      - name: Niue
+        value: NU
+        description: "683"
+      - name: Norfolk Island
+        value: NF
+        description: "6723"
+      - name: Northern Mariana Islands
+        value: MP
+        description: "1670"
+      - name: Norway
+        value: NO
+        description: "47"
+      - name: Oman
+        value: OM
+        description: "968"
+      - name: Pakistan
+        value: PK
+        description: "92"
+      - name: Palau
+        value: PW
+        description: "680"
+      - name: Palestine, State of
+        value: PS
+        description: "970"
+      - name: Panama
+        value: PA
+        description: "507"
+      - name: Papua New Guinea
+        value: PG
+        description: "675"
+      - name: Paraguay
+        value: PY
+        description: "595"
+      - name: Peru
+        value: PE
+        description: "51"
+      - name: Philippines
+        value: PH
+        description: "63"
+      - name: Pitcairn
+        value: PN
+        description: "64"
+      - name: Poland
+        value: PL
+        description: "48"
+      - name: Portugal
+        value: PT
+        description: "351"
+      - name: Puerto Rico
+        value: PR
+        description: "1787"
+      - name: Qatar
+        value: QA
+        description: "974"
+      - name: Reunion
+        value: RE
+        description: "262"
+      - name: Romania
+        value: RO
+        description: "40"
+      - name: Russian Federation
+        value: RU
+        description: "7"
+      - name: Rwanda
+        value: RW
+        description: "250"
+      - name: Saint Barthelemy
+        value: BL
+        description: "590"
+      - name: Saint Helena, Ascension and Tristan da Cunha
+        value: SH
+        description: "290"
+      - name: Saint Kitts and Nevis
+        value: KN
+        description: "1869"
+      - name: Saint Lucia
+        value: LC
+        description: "1758"
+      - name: Saint Martin (French part)
+        value: MF
+        description: "590"
+      - name: Saint Pierre and Miquelon
+        value: PM
+        description: "508"
+      - name: Saint Vincent and the Grenadines
+        value: VC
+        description: "1784"
+      - name: Samoa
+        value: WS
+        description: "685"
+      - name: San Marino
+        value: SM
+        description: "378"
+      - name: Sao Tome and Principe
+        value: ST
+        description: "239"
+      - name: Saudi Arabia
+        value: SA
+        description: "966"
+      - name: Senegal
+        value: SN
+        description: "221"
+      - name: Serbia
+        value: RS
+        description: "381"
+      - name: Seychelles
+        value: SC
+        description: "248"
+      - name: Sierra Leone
+        value: SL
+        description: "232"
+      - name: Singapore
+        value: SG
+        description: "65"
+      - name: Sint Maarten (Dutch part)
+        value: SX
+        description: "1721"
+      - name: Slovakia
+        value: SK
+        description: "421"
+      - name: Slovenia
+        value: SI
+        description: "386"
+      - name: Solomon Islands
+        value: SB
+        description: "677"
+      - name: Somalia
+        value: SO
+        description: "252"
+      - name: South Africa
+        value: ZA
+        description: "27"
+      - name: South Georgia and the South Sandwich Islands
+        value: GS
+        description: "500"
+      - name: South Sudan
+        value: SS
+        description: "211"
+      - name: Spain
+        value: ES
+        description: "34"
+      - name: Sri Lanka
+        value: LK
+        description: "94"
+      - name: Sudan
+        value: SD
+        description: "249"
+      - name: Suriname
+        value: SR
+        description: "597"
+      - name: Svalbard and Jan Mayen
+        value: SJ
+        description: "4779"
+      - name: Swaziland
+        value: SZ
+        description: "268"
+      - name: Sweden
+        value: SE
+        description: "46"
+      - name: Switzerland
+        value: CH
+        description: "41"
+      - name: Syrian Arab Republic
+        value: SY
+        description: "963"
+      - name: Taiwan, Province of China
+        value: TW
+        description: "886"
+      - name: Tajikistan
+        value: TJ
+        description: "992"
+      - name: Tanzania, United Republic of
+        value: TZ
+        description: "255"
+      - name: Thailand
+        value: TH
+        description: "66"
+      - name: Timor-Leste
+        value: TL
+        description: "670"
+      - name: Togo
+        value: TG
+        description: "228"
+      - name: Tokelau
+        value: TK
+        description: "690"
+      - name: Tonga
+        value: TO
+        description: "676"
+      - name: Trinidad and Tobago
+        value: TT
+        description: "1868"
+      - name: Tunisia
+        value: TN
+        description: "216"
+      - name: Turkey
+        value: TR
+        description: "90"
+      - name: Turkmenistan
+        value: TM
+        description: "993"
+      - name: Turks and Caicos Islands
+        value: TC
+        description: "1649"
+      - name: Tuvalu
+        value: TV
+        description: "688"
+      - name: Uganda
+        value: UG
+        description: "256"
+      - name: Ukraine
+        value: UA
+        description: "380"
+      - name: United Arab Emirates
+        value: AE
+        description: "971"
+      - name: United Kingdom of Great Britain and Northern Ireland
+        value: GB
+        description: "44"
+      - name: United States of America
+        value: US
+        description: "1"
+      - name: Uruguay
+        value: UY
+        description: "598"
+      - name: Uzbekistan
+        value: UZ
+        description: "998"
+      - name: Vanuatu
+        value: VU
+        description: "678"
+      - name: Venezuela, Bolivarian Republic of
+        value: VE
+        description: "58"
+      - name: Viet Nam
+        value: VN
+        description: "84"
+      - name: Virgin Islands, British
+        value: VG
+        description: "1284"
+      - name: Virgin Islands, U.S.
+        value: VI
+        description: "1340"
+      - name: Wallis and Futuna
+        value: WF
+        description: "681"
+      - name: Western Sahara
+        value: EH
+        description: "212"
+      - name: Yemen
+        value: YE
+        description: "967"
+      - name: Zambia
+        value: ZM
+        description: "260"
+      - name: Zimbabwe
+        value: ZW
+        description: "263"
+      x-data-type: Enum
+      x-version: 1.6.0
+      x-path: /organizations/Apdax/systems/DifHub/applications/User/datasets/Country
+    Period:
+      type: object
+      properties:
+        id:
+          type: string
+          description: xml:id (or equivalent in JSON)
+          x-data-type: String
+        ' extension':
+          type: array
+          description: Additional Content defined by implementations.
+          items:
+            description: Additional Content defined by implementations.
+            allOf:
+            - $ref: '#/components/schemas/Extension'
+        start:
+          type: string
+          description: Starting time with inclusive boundary
+          format: date-time
+          x-data-type: DateTime
+        end:
+          type: string
+          description: End time with inclusive boundary, if not ongoing.
+          format: date-time
+          x-data-type: DateTime
+      description: "A time period defined by a start and end date/time. \nA period\
+        \ specifies a range of times. The context of use will specify whether the\
+        \ entire range applies (e.g. \"the patient was an inpatient of the hospital\
+        \ for this time range\") or one value from the period applies (e.g. \"give\
+        \ to the patient between 2 and 4 pm on 24-Jun 2013\"). "
+      x-data-type: Structure
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/infrastructure/applications/Core/datasets/Period
+    Address:
+      type: object
+      properties:
+        id:
+          type: string
+          description: xml:id (or equivalent in JSON)
+          x-data-type: String
+        " extension\t":
+          type: array
+          description: Additional Content defined by implementations.
+          items:
+            description: Additional Content defined by implementations.
+            allOf:
+            - $ref: '#/components/schemas/Extension'
+        use:
+          description: What address use for.
+          allOf:
+          - $ref: '#/components/schemas/AddressUse'
+        type:
+          description: Type of address.
+          allOf:
+          - $ref: '#/components/schemas/AddressType'
+        text:
+          type: string
+          description: Text representation of the address
+          x-data-type: String
+        line:
+          type: array
+          description: |-
+            Street name, number, direction & P.O. Box etc.
+            This repeating element order: The order in which lines should appear in an address label
+          items:
+            type: string
+            description: |-
+              Street name, number, direction & P.O. Box etc.
+              This repeating element order: The order in which lines should appear in an address label
+            x-data-type: String
+        city:
+          type: string
+          description: Name of city, town etc.
+          x-data-type: String
+        district:
+          type: string
+          description: District name (aka county)
+          x-data-type: String
+        state:
+          type: string
+          description: Address state. Sub-unit of country (abbreviations ok)
+          x-data-type: String
+        postalCode:
+          type: string
+          description: Postal code for area
+          x-data-type: String
+        country:
+          description: Country (e.g. can be ISO 3166 2 or 3 letter code)
+          allOf:
+          - $ref: '#/components/schemas/Country'
+        period:
+          description: Time period when the address was/is in use.
+          allOf:
+          - $ref: '#/components/schemas/Period'
+      description: |
+        An address expressed using postal conventions (as opposed to GPS or other location definition formats). This data type may be used to convey addresses for use in delivering mail as well as for visiting locations which might not be valid for mail delivery. There are a variety of postal address formats defined around the world.
+
+        http://build.fhir.org//datatypes.html#Address
+      x-data-type: Structure
+      x-version: 1.1.0
+      x-path: /organizations/Infort Technologies/systems/Client/applications/User/datasets/Address
+    Identity:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Id of the object. It is global unique identificator, optional
+            for minor objects and required for major objects. When object created
+            Id will be generated by backend service.
+          format: guid
+          x-data-type: Guid
+        name:
+          type: string
+          description: Name of the object. It is textual object identificator, need
+            to be unique inside folder of the object.
+          x-data-type: String
+        description:
+          type: string
+          description: Description for the object functionality. It is text with specification
+            of object and way it used in application.
+          x-data-type: String
+      description: Identity of object in DifHub. Objects can be identify by globaly
+        unique Id and localy unique name.
+      x-data-type: Structure
+      x-version: 1.6.0
+      x-path: /organizations/Apdax/systems/DifHub/applications/Organization/datasets/Identity
+    EntityType:
+      type: string
+      description: Enumerator of entity types. Here listed all resources available
+        in organization.
+      enum:
+      - USER
+      - CONTACT
+      - PERSON
+      x-enum-metadata:
+      - name: User
+        value: USER
+        description: User of the Medical Network.
+      - name: Contact
+        value: CONTACT
+        description: Contact information for organization or other entities.
+      - name: Person
+        value: PERSON
+        description: Person represented in the system for contact.
+      x-data-type: Enum
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/infrastructure/applications/Core/datasets/EntityType
+    EntityState:
+      type: string
+      description: Enumerator of the entity state.
+      enum:
+      - DRAFT
+      - PENDING
+      - ACTIVE
+      - RETIRED
+      - ERROR
+      x-enum-metadata:
+      - name: Draft
+        value: DRAFT
+        description: Entity in draft state and not ready yet for approval.
+      - name: Pending
+        value: PENDING
+        description: Entity pending approval and can't be used.
+      - name: Active
+        value: ACTIVE
+        description: Entity in active state and can be used.
+      - name: Retired
+        value: RETIRED
+        description: Entity retired and cannot be executed any more.
+      - name: Error
+        value: ERROR
+        description: Entity in have error and can't be used.
+      x-data-type: Enum
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/infrastructure/applications/Core/datasets/EntityState
+    Meta:
+      type: object
+      properties:
+        id:
+          type: string
+          description: xml:id (or equivalent in JSON)
+          x-data-type: String
+        ' extension':
+          type: array
+          description: Additional Content defined by implementations.
+          items:
+            description: Additional Content defined by implementations.
+            allOf:
+            - $ref: '#/components/schemas/Extension'
+        'versionId ':
+          type: string
+          description: "Version specific identifier.\nChanges each time the content\
+            \ of the resource changes. Can be referenced in a resource reference.\
+            \ Can be used to ensure that updates are based on the latest version of\
+            \ the resource. \n\nThe version can be globally unique, or scoped by the\
+            \ Logical Id of the resource. Version identifiers are generally either\
+            \ a serially incrementing id scoped by the logical id, or a uuid, though\
+            \ neither of these approaches is required. There is no fixed order for\
+            \ version ids - clients cannot assume that a versionId that comes after\
+            \ another one either numerically or alphabetically represents a later\
+            \ version. The same versionId can never be used for more than one version\
+            \ of the same resource. "
+          x-data-type: String
+        lastUpdated:
+          type: string
+          description: |-
+            When the resource version last changed.
+            If populated, this value changes each time the content of the resource changes. It can be used by a system or a human to judge the currency of the resource content. Note that version aware updates do not use this element. Note that a timezone code extension may be present on Meta.lastUpdated. If present, the timezone code applies to the server copy of the resource, and not necessarily to other time related elements within the resource even if the timezone offsets are the same.
+          format: date-time
+          x-data-type: DateTime
+        source:
+          type: string
+          description: |-
+            Identifies where the resource comes from.
+            A uri that identifies the source system of the resource. This provides a minimal amount of Provenance information that can be used to track or differentiate the source of information in the resource. The source may identify another FHIR server, document, message, database, etc. In the provenance resource, this corresponds to Provenance.entity.what[x]. The exact use of the source (and the implied Provenance.entity.role) is left to implementer discretion. Only one nominated source is allowed; for additional provenance details, a full Provenance resource should be used.
+          x-data-type: String
+        profile:
+          type: array
+          description: |-
+            Profiles this resource claims to conform to.
+            An assertion that the content conforms to a resource profile (a StructureDefinition). See Extending and Restricting Resources for further discussion. Can be changed as profiles and value sets change or the system rechecks conformance. The profile can be used to indicate which version(s) of FHIR a resource conforms to. For DifHub we can provide URI to resource definition.
+          items:
+            type: string
+            description: |-
+              Profiles this resource claims to conform to.
+              An assertion that the content conforms to a resource profile (a StructureDefinition). See Extending and Restricting Resources for further discussion. Can be changed as profiles and value sets change or the system rechecks conformance. The profile can be used to indicate which version(s) of FHIR a resource conforms to. For DifHub we can provide URI to resource definition.
+            x-data-type: String
+        security:
+          type: array
+          description: Security labels applied to this resource. These tags connect
+            resources in specific ways to the overall security policy and infrastructure.
+            Security tags can be updated when the resource changes, or whenever the
+            security sub-system chooses to
+          items:
+            type: string
+            description: Security labels applied to this resource. These tags connect
+              resources in specific ways to the overall security policy and infrastructure.
+              Security tags can be updated when the resource changes, or whenever
+              the security sub-system chooses to
+            x-data-type: String
+        tag:
+          type: array
+          description: |-
+            Tags applied to this resource.
+            Tags applied to this resource. Tags are used to relate resources to process and workflow. Applications are not required to consider the tags when interpreting the meaning of a resource.
+          items:
+            type: string
+            description: |-
+              Tags applied to this resource.
+              Tags applied to this resource. Tags are used to relate resources to process and workflow. Applications are not required to consider the tags when interpreting the meaning of a resource.
+            x-data-type: String
+      description: |-
+        Each resource contains an element "meta", of type "Meta", which is a set of metadata that provides technical and workflow context to the resource. The metadata items are all optional, though some or all of them may be required in particular implementations or contexts of use.
+
+        http://build.fhir.org//resource.html#Meta
+      x-data-type: Structure
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/infrastructure/applications/Core/datasets/Meta
+    Locale:
+      type: string
+      description: Enumerator of supported locales.
+      enum:
+      - af
+      - sq
+      - am
+      - ar-dz
+      - ar-bh
+      - ar-eg
+      - ar-iq
+      - ar-jo
+      - ar-kw
+      - ar-lb
+      - ar-ly
+      - ar-ma
+      - ar-om
+      - ar-qa
+      - ar-sa
+      - ar-sy
+      - ar-tn
+      - ar-ae
+      - ar-ye
+      - hy
+      - as
+      - az-az
+      - az-az
+      - eu
+      - be
+      - bn
+      - bn
+      - bs
+      - bg
+      - my
+      - ca
+      - zh-cn
+      - zh-hk
+      - zh-mo
+      - zh-sg
+      - zh-tw
+      - cs
+      - da
+      - nl-be
+      - nl-nl
+      - en-au
+      - en-bz
+      - en-ca
+      - en-cb
+      - en-gb
+      - en-in
+      - en-ie
+      - en-jm
+      - en-nz
+      - en-ph
+      - en-za
+      - en-tt
+      - en-us
+      - ""
+      - et
+      - mk
+      - fo
+      - fa
+      - ""
+      - fi
+      - fr-be
+      - ""
+      - fr-ca
+      - ""
+      - ""
+      - fr-fr
+      - fr-lu
+      - ""
+      - ""
+      - ""
+      - fr-ch
+      - ""
+      - ""
+      - gd-ie
+      - gd
+      - ""
+      - ""
+      - de-at
+      - de-de
+      - de-li
+      - de-lu
+      - de-ch
+      - el
+      - gn
+      - gu
+      - he
+      - hi
+      - hu
+      - is
+      - ""
+      - id
+      - it-it
+      - it-ch
+      - ja
+      - kn
+      - ks
+      - kk
+      - km
+      - ""
+      - ko
+      - ""
+      - lo
+      - la
+      - lt
+      - ms-bn
+      - ms-my
+      - ml
+      - mt
+      - ""
+      - mi
+      - mr
+      - mn
+      - ne
+      - no-no
+      - no-no
+      - or
+      - pl
+      - pt-br
+      - pt-pt
+      - pa
+      - rm
+      - ro-mo
+      - ro
+      - ru
+      - ru-mo
+      - ""
+      - sa
+      - sr-sp
+      - sr-sp
+      - ""
+      - tn
+      - sd
+      - si
+      - sk
+      - sl
+      - so
+      - sb
+      - es-ar
+      - es-bo
+      - es-cl
+      - es-co
+      - es-cr
+      - es-do
+      - es-ec
+      - es-sv
+      - es-gt
+      - es-hn
+      - es-mx
+      - es-ni
+      - es-pa
+      - es-py
+      - es-pe
+      - es-pr
+      - es-es
+      - es-uy
+      - es-ve
+      - sw
+      - sv-fi
+      - sv-se
+      - ""
+      - tg
+      - ta
+      - tt
+      - te
+      - th
+      - bo
+      - ts
+      - tr
+      - tk
+      - uk
+      - ur
+      - uz-uz
+      - ""
+      - vi
+      - cy
+      - xh
+      - yi
+      x-enum-metadata:
+      - name: Afrikaans
+        value: af
+        description: af
+      - name: Albanian
+        value: sq
+        description: sq
+      - name: Amharic
+        value: am
+        description: am
+      - name: Arabic - Algeria
+        value: ar-dz
+        description: ar-dz
+      - name: Arabic - Bahrain
+        value: ar-bh
+        description: ar-bh
+      - name: Arabic - Egypt
+        value: ar-eg
+        description: ar-eg
+      - name: Arabic - Iraq
+        value: ar-iq
+        description: ar-iq
+      - name: Arabic - Jordan
+        value: ar-jo
+        description: ar-jo
+      - name: Arabic - Kuwait
+        value: ar-kw
+        description: ar-kw
+      - name: Arabic - Lebanon
+        value: ar-lb
+        description: ar-lb
+      - name: Arabic - Libya
+        value: ar-ly
+        description: ar-ly
+      - name: Arabic - Morocco
+        value: ar-ma
+        description: ar-ma
+      - name: Arabic - Oman
+        value: ar-om
+        description: ar-om
+      - name: Arabic - Qatar
+        value: ar-qa
+        description: ar-qa
+      - name: Arabic - Saudi Arabia
+        value: ar-sa
+        description: ar-sa
+      - name: Arabic - Syria
+        value: ar-sy
+        description: ar-sy
+      - name: Arabic - Tunisia
+        value: ar-tn
+        description: ar-tn
+      - name: Arabic - United Arab Emirates
+        value: ar-ae
+        description: ar-ae
+      - name: Arabic - Yemen
+        value: ar-ye
+        description: ar-ye
+      - name: Armenian
+        value: hy
+        description: hy
+      - name: Assamese
+        value: as
+        description: as
+      - name: Azeri - Cyrillic
+        value: az-az
+        description: az-az
+      - name: Azeri - Latin
+        value: az-az
+        description: az-az
+      - name: Basque
+        value: eu
+        description: eu
+      - name: Belarusian
+        value: be
+        description: be
+      - name: Bengali - Bangladesh
+        value: bn
+        description: bn
+      - name: Bengali - India
+        value: bn
+        description: bn
+      - name: Bosnian
+        value: bs
+        description: bs
+      - name: Bulgarian
+        value: bg
+        description: bg
+      - name: Burmese
+        value: my
+        description: my
+      - name: Catalan
+        value: ca
+        description: ca
+      - name: Chinese - China
+        value: zh-cn
+        description: zh-cn
+      - name: Chinese - Hong Kong SAR
+        value: zh-hk
+        description: zh-hk
+      - name: Chinese - Macau SAR
+        value: zh-mo
+        description: zh-mo
+      - name: Chinese - Singapore
+        value: zh-sg
+        description: zh-sg
+      - name: Chinese - Taiwan
+        value: zh-tw
+        description: zh-tw
+      - name: Croatian
+        value: cs
+        description: cs
+      - name: Danish
+        value: da
+        description: da
+      - name: Dutch - Belgium
+        value: nl-be
+        description: nl-be
+      - name: Dutch - Netherlands
+        value: nl-nl
+        description: nl-nl
+      - name: English - Australia
+        value: en-au
+        description: en-au
+      - name: English - Belize
+        value: en-bz
+        description: en-bz
+      - name: English - Canada
+        value: en-ca
+        description: en-ca
+      - name: English - Caribbean
+        value: en-cb
+        description: en-cb
+      - name: English - Great Britain
+        value: en-gb
+        description: en-gb
+      - name: English - India
+        value: en-in
+        description: en-in
+      - name: English - Ireland
+        value: en-ie
+        description: en-ie
+      - name: English - Jamaica
+        value: en-jm
+        description: en-jm
+      - name: English - New Zealand
+        value: en-nz
+        description: en-nz
+      - name: English - Phillippines
+        value: en-ph
+        description: en-ph
+      - name: English - Southern Africa
+        value: en-za
+        description: en-za
+      - name: English - Trinidad
+        value: en-tt
+        description: en-tt
+      - name: English - United States
+        value: en-us
+        description: en-us
+      - name: English - Zimbabwe
+        value: ""
+        description: ""
+      - name: Estonian
+        value: et
+        description: et
+      - name: FYRO Macedonia
+        value: mk
+        description: mk
+      - name: Faroese
+        value: fo
+        description: fo
+      - name: Farsi - Persian
+        value: fa
+        description: fa
+      - name: Filipino
+        value: ""
+        description: ""
+      - name: Finnish
+        value: fi
+        description: fi
+      - name: French - Belgium
+        value: fr-be
+        description: fr-be
+      - name: French - Cameroon
+        value: ""
+        description: ""
+      - name: French - Canada
+        value: fr-ca
+        description: fr-ca
+      - name: French - Congo
+        value: ""
+        description: ""
+      - name: French - Cote d'Ivoire
+        value: ""
+        description: ""
+      - name: French - France
+        value: fr-fr
+        description: fr-fr
+      - name: French - Luxembourg
+        value: fr-lu
+        description: fr-lu
+      - name: French - Mali
+        value: ""
+        description: ""
+      - name: French - Morocco
+        value: ""
+        description: ""
+      - name: French - Senegal
+        value: ""
+        description: ""
+      - name: French - Switzerland
+        value: fr-ch
+        description: fr-ch
+      - name: French - West Indies
+        value: ""
+        description: ""
+      - name: Frisian - Netherlands
+        value: ""
+        description: ""
+      - name: Gaelic - Ireland
+        value: gd-ie
+        description: gd-ie
+      - name: Gaelic - Scotland
+        value: gd
+        description: gd
+      - name: Galician
+        value: ""
+        description: ""
+      - name: Georgian
+        value: ""
+        description: ""
+      - name: German - Austria
+        value: de-at
+        description: de-at
+      - name: German - Germany
+        value: de-de
+        description: de-de
+      - name: German - Liechtenstein
+        value: de-li
+        description: de-li
+      - name: German - Luxembourg
+        value: de-lu
+        description: de-lu
+      - name: German - Switzerland
+        value: de-ch
+        description: de-ch
+      - name: Greek
+        value: el
+        description: el
+      - name: Guarani - Paraguay
+        value: gn
+        description: gn
+      - name: Gujarati
+        value: gu
+        description: gu
+      - name: Hebrew
+        value: he
+        description: he
+      - name: Hindi
+        value: hi
+        description: hi
+      - name: Hungarian
+        value: hu
+        description: hu
+      - name: Icelandic
+        value: is
+        description: is
+      - name: Igbo - Nigeria
+        value: ""
+        description: ""
+      - name: Indonesian
+        value: id
+        description: id
+      - name: Italian - Italy
+        value: it-it
+        description: it-it
+      - name: Italian - Switzerland
+        value: it-ch
+        description: it-ch
+      - name: Japanese
+        value: ja
+        description: ja
+      - name: Kannada
+        value: kn
+        description: kn
+      - name: Kashmiri
+        value: ks
+        description: ks
+      - name: Kazakh
+        value: kk
+        description: kk
+      - name: Khmer
+        value: km
+        description: km
+      - name: Konkani
+        value: ""
+        description: ""
+      - name: Korean
+        value: ko
+        description: ko
+      - name: Kyrgyz - Cyrillic
+        value: ""
+        description: ""
+      - name: Lao
+        value: lo
+        description: lo
+      - name: Latin
+        value: la
+        description: la
+      - name: Latvian
+        value: lt
+        description: lt
+      - name: Malay - Brunei
+        value: ms-bn
+        description: ms-bn
+      - name: Malay - Malaysia
+        value: ms-my
+        description: ms-my
+      - name: Malayalam
+        value: ml
+        description: ml
+      - name: Maltese
+        value: mt
+        description: mt
+      - name: Manipuri
+        value: ""
+        description: ""
+      - name: Maori
+        value: mi
+        description: mi
+      - name: Marathi
+        value: mr
+        description: mr
+      - name: Mongolian
+        value: mn
+        description: mn
+      - name: Nepali
+        value: ne
+        description: ne
+      - name: Norwegian - Bokml
+        value: no-no
+        description: no-no
+      - name: Norwegian - Nynorsk
+        value: no-no
+        description: no-no
+      - name: Oriya
+        value: or
+        description: or
+      - name: Polish
+        value: pl
+        description: pl
+      - name: Portuguese - Brazil
+        value: pt-br
+        description: pt-br
+      - name: Portuguese - Portugal
+        value: pt-pt
+        description: pt-pt
+      - name: Punjabi
+        value: pa
+        description: pa
+      - name: Raeto-Romance
+        value: rm
+        description: rm
+      - name: Romanian - Moldova
+        value: ro-mo
+        description: ro-mo
+      - name: Romanian - Romania
+        value: ro
+        description: ro
+      - name: Russian
+        value: ru
+        description: ru
+      - name: Russian - Moldova
+        value: ru-mo
+        description: ru-mo
+      - name: Sami Lappish
+        value: ""
+        description: ""
+      - name: Sanskrit
+        value: sa
+        description: sa
+      - name: Serbian - Cyrillic
+        value: sr-sp
+        description: sr-sp
+      - name: Serbian - Latin
+        value: sr-sp
+        description: sr-sp
+      - name: Sesotho (Sutu)
+        value: ""
+        description: ""
+      - name: Setsuana
+        value: tn
+        description: tn
+      - name: Sindhi
+        value: sd
+        description: sd
+      - name: Sinhala Sinhalese
+        value: si
+        description: si
+      - name: Slovak
+        value: sk
+        description: sk
+      - name: Slovenian
+        value: sl
+        description: sl
+      - name: Somali
+        value: so
+        description: so
+      - name: Sorbian
+        value: sb
+        description: sb
+      - name: Spanish - Argentina
+        value: es-ar
+        description: es-ar
+      - name: Spanish - Bolivia
+        value: es-bo
+        description: es-bo
+      - name: Spanish - Chile
+        value: es-cl
+        description: es-cl
+      - name: Spanish - Colombia
+        value: es-co
+        description: es-co
+      - name: Spanish - Costa Rica
+        value: es-cr
+        description: es-cr
+      - name: Spanish - Dominican Republic
+        value: es-do
+        description: es-do
+      - name: Spanish - Ecuador
+        value: es-ec
+        description: es-ec
+      - name: Spanish - El Salvador
+        value: es-sv
+        description: es-sv
+      - name: Spanish - Guatemala
+        value: es-gt
+        description: es-gt
+      - name: Spanish - Honduras
+        value: es-hn
+        description: es-hn
+      - name: Spanish - Mexico
+        value: es-mx
+        description: es-mx
+      - name: Spanish - Nicaragua
+        value: es-ni
+        description: es-ni
+      - name: Spanish - Panama
+        value: es-pa
+        description: es-pa
+      - name: Spanish - Paraguay
+        value: es-py
+        description: es-py
+      - name: Spanish - Peru
+        value: es-pe
+        description: es-pe
+      - name: Spanish - Puerto Rico
+        value: es-pr
+        description: es-pr
+      - name: Spanish - Spain (Traditional)
+        value: es-es
+        description: es-es
+      - name: Spanish - Uruguay
+        value: es-uy
+        description: es-uy
+      - name: Spanish - Venezuela
+        value: es-ve
+        description: es-ve
+      - name: Swahili
+        value: sw
+        description: sw
+      - name: Swedish - Finland
+        value: sv-fi
+        description: sv-fi
+      - name: Swedish - Sweden
+        value: sv-se
+        description: sv-se
+      - name: Syriac
+        value: ""
+        description: ""
+      - name: Tajik
+        value: tg
+        description: tg
+      - name: Tamil
+        value: ta
+        description: ta
+      - name: Tatar
+        value: tt
+        description: tt
+      - name: Telugu
+        value: te
+        description: te
+      - name: Thai
+        value: th
+        description: th
+      - name: Tibetan
+        value: bo
+        description: bo
+      - name: Tsonga
+        value: ts
+        description: ts
+      - name: Turkish
+        value: tr
+        description: tr
+      - name: Turkmen
+        value: tk
+        description: tk
+      - name: Ukrainian
+        value: uk
+        description: uk
+      - name: Urdu
+        value: ur
+        description: ur
+      - name: Uzbek - Cyrillic
+        value: uz-uz
+        description: uz-uz
+      - name: Venda
+        value: ""
+        description: ""
+      - name: Vietnamese
+        value: vi
+        description: vi
+      - name: Welsh
+        value: cy
+        description: cy
+      - name: Zulu
+        value: xh
+        description: xh
+      - name: Yiddish
+        value: yi
+        description: yi
+      x-data-type: Enum
+      x-version: 1.3.0
+      x-path: /organizations/Apdax/systems/DifHub/applications/Organization/datasets/Locale
+    NarrativeStatus:
+      type: string
+      description: Narrative status enumerator. Include all codes defined in http://hl7.org/fhir/narrative-status
+      enum:
+      - generated
+      - extensions
+      - 'additional '
+      - ' empty'
+      x-enum-metadata:
+      - name: Generated
+        value: generated
+        description: The contents of the narrative are entirely generated from the
+          structured data in the content.
+      - name: Extensions
+        value: extensions
+        description: The contents of the narrative are entirely generated from the
+          structured data in the content and some of the content is generated from
+          extensions.
+      - name: Additional
+        value: 'additional '
+        description: The contents of the narrative may contain additional information
+          not found in the structured data. Note that there is no computable way to
+          determine what the extra information is, other than by human inspection.
+      - name: Empty
+        value: ' empty'
+        description: "The contents of the narrative are some equivalent of 'No human-readable\
+          \ text provided in this case'\n "
+      x-data-type: Enum
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/infrastructure/applications/Core/datasets/NarrativeStatus
+    Narrative:
+      type: object
+      properties:
+        id:
+          type: string
+          description: xml:id (or equivalent in JSON)
+          x-data-type: String
+        ' extension':
+          type: array
+          description: Additional Content defined by implementations.
+          items:
+            description: Additional Content defined by implementations.
+            allOf:
+            - $ref: '#/components/schemas/Extension'
+        status:
+          description: Status for text.
+          allOf:
+          - $ref: '#/components/schemas/NarrativeStatus'
+        div:
+          type: string
+          description: |
+            Limited xhtml content
+            + The narrative SHALL contain only the basic html formatting elements and attributes described in chapters 7-11 (except section 4 of chapter 9) and 15 of the HTML 4.0 standard, <a> elements (either name or href), images and internally contained style attributes
+            + The narrative SHALL have some non-whitespace content
+          x-data-type: String
+      description: |-
+        Any resource that is a DomainResource (almost all types of resource) may include a human-readable narrative that contains a summary of the resource, and may be used to represent the content of the resource to a human.
+
+        If narrative is present with a status other than 'empty', it SHALL reflect all content needed for a human to understand the essential clinical and business information for the resource. In other words, it must be safe to render only the narrative of the resource without displaying any of the resource's discrete/encoded information. Resource definitions and/or profiles on resources may define what content should be represented in the narrative to ensure clinical safety.
+
+        The narrative for a resource can contain additional information that is not in the structured data, including human-edited content. Such additional information SHALL be in the scope of the definition of the resource, though it is common for the narrative to include additional descriptive information extracted from other referenced resources when describing references. Narrative for a resource should include summary information about any referenced resources that would be required for a consumer of the resource to be able to understand the key, essential information about a resource without retrieving any additional resources.
+
+        For example, the narrative for a MedicationRequest might include brief summary information about the referenced patient, prescriber and medication. Some resources (e.g. List, Composition) may provide specific rules about what content must (or must not) be included in the resource narrative. Consideration should be given to the fact that referenced resources may be updated without updating referencing resources, so the proportion of content of a referenced resource included in a referencing resource should be limited. Systems MAY choose how narrative is generated, including how much de-referencing to perform, but SHALL NOT assume that the resource is rendered in any particular context when generating narrative.
+      x-data-type: Structure
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/infrastructure/applications/Core/datasets/Narrative
+    Resource:
+      type: object
+      properties:
+        resourceType:
+          description: This is resource type specification. It is duplicate one in
+            entity.
+          allOf:
+          - $ref: '#/components/schemas/EntityType'
+        id:
+          type: string
+          description: |-
+            Logical id of this artifact.
+            Each resource has an "id" element which contains the logical identity of the resource assigned by the server responsible for storing it. Resources always have a known identity except for the special case when a new resource is being sent to a server to assign an identity (create interaction). The logical identity is unique within the space of all resources of the same type on the same server. Once assigned, the identity is never changed. Note that if the resource is copied to another server, the copy might not be able to retain the same logical identity.
+
+            The unique identifier of a resource instance is an absolute URI constructed from the server base address at which the instance is found, the resource type and the Logical ID, such as http://test.fhir.org/rest/Patient/123 (where 123 is the Logical Id). When the literal identity is an HTTP address, this address can generally be used to retrieve or manipulate the resource. Note that implementations SHOULD NOT assume that the identity of a resource is always resolvable to a literal server - it may be temporarily unavailable, or not available by policy (e.g. firewalls) or in some cases, it might not actually exist (e.g. use of resource outside a RESTful environment). Resources reference each other by their identity. These references are allowed to be absolute or relative (see Resource References for further discussion). Copying or moving resources from one server to another means that resources acquire a new identity. For further details, see Managing Resource Identity (including "Consistent Resource Identification").
+
+            Logical ids (and therefore literal identities) are case sensitive. Logical Ids are always opaque, and external systems need not and should not attempt to determine their internal structure. A logical id SHALL always be represented in the same way in resource references and URLs. Ids can be up to 64 characters long, and contain any combination of upper and lowercase ASCII letters, numerals, "-" and ".".
+          x-data-type: String
+        meta:
+          description: Metadata about the resource.
+          allOf:
+          - $ref: '#/components/schemas/Meta'
+        implicitRules:
+          type: string
+          description: |-
+            A set of rules under which this content was created.
+
+            A reference to a custom agreement that describes how the resource is being used (e.g. an implementation guide) that was followed when the resource was constructed, where the implemenation guide must be known and understood in order to safely processing the content.
+
+            Asserting this rule set restricts the content to be only understood by a limited set of trading partners. This inherently limits the usefulness of the data in the long term, and should be avoided where possible. However, the existing health eco-system is highly fractured, and not yet ready to define, collect, and exchange data in a generally exchangeable sense.
+
+            Note that resources are almost always constructed following some custom agreement. Best practice - which is recommended throughout the conformance resources - is that such agreements make all knowledge about the content of the resource explicit in the content of the resource; if custom agreements follow this advice, and declare their extensions as required, then it is not necessary to understand the agreement in order to safely process the resource content. For this reason, use of implicitRules is rare.
+          x-data-type: String
+        language:
+          description: Language of the resource content.
+          allOf:
+          - $ref: '#/components/schemas/Locale'
+      description: |-
+        This specification defines a series of different types of resource that can be used to exchange and/or store data in order to solve a wide range of healthcare related problems, both clinical and administrative. In addition, this specification defines several different ways of exchanging the resources.
+
+        A resource is an entity that:
+
+        has a known identity (a URL) by which it can be addressed
+        identifies itself as one of the types of resource defined in this specification
+        contains a set of structured data items as described by the definition of the resource type
+        has an identified version that changes if the contents of the resource change
+
+        http://build.fhir.org//resource.html
+      x-data-type: Structure
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/infrastructure/applications/Core/datasets/Resource
+    DomainResource:
+      type: object
+      properties:
+        resourceType:
+          description: This is resource type specification. It is duplicate one in
+            entity.
+          allOf:
+          - $ref: '#/components/schemas/EntityType'
+        id:
+          type: string
+          description: |-
+            Logical id of this artifact.
+            Each resource has an "id" element which contains the logical identity of the resource assigned by the server responsible for storing it. Resources always have a known identity except for the special case when a new resource is being sent to a server to assign an identity (create interaction). The logical identity is unique within the space of all resources of the same type on the same server. Once assigned, the identity is never changed. Note that if the resource is copied to another server, the copy might not be able to retain the same logical identity.
+
+            The unique identifier of a resource instance is an absolute URI constructed from the server base address at which the instance is found, the resource type and the Logical ID, such as http://test.fhir.org/rest/Patient/123 (where 123 is the Logical Id). When the literal identity is an HTTP address, this address can generally be used to retrieve or manipulate the resource. Note that implementations SHOULD NOT assume that the identity of a resource is always resolvable to a literal server - it may be temporarily unavailable, or not available by policy (e.g. firewalls) or in some cases, it might not actually exist (e.g. use of resource outside a RESTful environment). Resources reference each other by their identity. These references are allowed to be absolute or relative (see Resource References for further discussion). Copying or moving resources from one server to another means that resources acquire a new identity. For further details, see Managing Resource Identity (including "Consistent Resource Identification").
+
+            Logical ids (and therefore literal identities) are case sensitive. Logical Ids are always opaque, and external systems need not and should not attempt to determine their internal structure. A logical id SHALL always be represented in the same way in resource references and URLs. Ids can be up to 64 characters long, and contain any combination of upper and lowercase ASCII letters, numerals, "-" and ".".
+          x-data-type: String
+        meta:
+          description: Metadata about the resource.
+          allOf:
+          - $ref: '#/components/schemas/Meta'
+        implicitRules:
+          type: string
+          description: |-
+            A set of rules under which this content was created.
+
+            A reference to a custom agreement that describes how the resource is being used (e.g. an implementation guide) that was followed when the resource was constructed, where the implemenation guide must be known and understood in order to safely processing the content.
+
+            Asserting this rule set restricts the content to be only understood by a limited set of trading partners. This inherently limits the usefulness of the data in the long term, and should be avoided where possible. However, the existing health eco-system is highly fractured, and not yet ready to define, collect, and exchange data in a generally exchangeable sense.
+
+            Note that resources are almost always constructed following some custom agreement. Best practice - which is recommended throughout the conformance resources - is that such agreements make all knowledge about the content of the resource explicit in the content of the resource; if custom agreements follow this advice, and declare their extensions as required, then it is not necessary to understand the agreement in order to safely process the resource content. For this reason, use of implicitRules is rare.
+          x-data-type: String
+        language:
+          description: Language of the resource content.
+          allOf:
+          - $ref: '#/components/schemas/Locale'
+        text:
+          description: Text summary of the resource, for human interpretation.
+          allOf:
+          - $ref: '#/components/schemas/Narrative'
+        contained:
+          type: array
+          description: Contained, inline Resources
+          items:
+            description: Contained, inline Resources
+            allOf:
+            - $ref: '#/components/schemas/Resource'
+        extension:
+          type: array
+          description: Additional Content defined by implementations
+          items:
+            description: Additional Content defined by implementations
+            allOf:
+            - $ref: '#/components/schemas/Extension'
+        'modifierExtension ':
+          type: array
+          description: Extensions that cannot be ignoredю
+          items:
+            description: Extensions that cannot be ignoredю
+            allOf:
+            - $ref: '#/components/schemas/Extension'
+      description: |-
+        A domain resource is an resource that:
+        has a human-readable XHTML representation of the content of the resource (see Human Narrative in resources)
+        can contain additional related resources inside the resource (see Contained Resources)
+        can have additional extensions and modifierExtensions as well as the defined data (See Extensibility)
+        As an abstract resource, this resource is never created directly; instead, one of its descendent resources (see List of Resources) is created.
+
+        http://build.fhir.org//domainresource.html
+      x-data-type: Structure
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/infrastructure/applications/Core/datasets/DomainResource
+    IdentifierUse:
+      type: string
+      description: Identifier use enumerator. All codes from system http://hl7.org/fhir/identifier-use.
+      enum:
+      - usual
+      - official
+      - temp
+      - secondary
+      - old
+      x-enum-metadata:
+      - name: Usual
+        value: usual
+        description: The identifier recommended for display and use in real-world
+          interactions.
+      - name: Official
+        value: official
+        description: The identifier considered to be most trusted for the identification
+          of this item.
+      - name: Temp
+        value: temp
+        description: A temporary identifier.
+      - name: Secondary
+        value: secondary
+        description: ' An identifier that was assigned in secondary use - it serves
+          to identify the object in a relative context, but cannot be consistently
+          assigned to the same object again in a different context.'
+      - name: Old
+        value: old
+        description: "The identifier id no longer considered valid, but may be relevant\
+          \ for search purposes. E.g. Changes to identifier schemes, account merges,\
+          \ etc.\n "
+      x-data-type: Enum
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/infrastructure/applications/Core/datasets/IdentifierUse
+    IdentifierType:
+      type: string
+      description: Identifier type enumerator. A coded type for an identifier that
+        can be used to determine which identifier to use for a specific purpose.Include
+        these codes as defined in http://terminology.hl7.org/CodeSystem/v2-0203.
+      enum:
+      - DL
+      - PPN
+      - BRN
+      - 'MR '
+      - MCN
+      - EN
+      - TAX
+      x-enum-metadata:
+      - name: Driver's license number
+        value: DL
+        description: Driver's license number
+      - name: Passport number
+        value: PPN
+        description: Passport number
+      - name: Breed Registry Number
+        value: BRN
+        description: Breed Registry Number
+      - name: Medical record number
+        value: 'MR '
+        description: Medical record number
+      - name: Microchip Number
+        value: MCN
+        description: Microchip Number
+      - name: Employer number
+        value: EN
+        description: Employer number
+      - name: Tax ID number
+        value: TAX
+        description: Tax ID number
+      x-data-type: Enum
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/infrastructure/applications/Core/datasets/IdentifierType
+    Identifier:
+      type: object
+      properties:
+        id:
+          type: string
+          description: xml:id (or equivalent in JSON)
+          x-data-type: String
+        ' extension':
+          type: array
+          description: Additional Content defined by implementations.
+          items:
+            description: Additional Content defined by implementations.
+            allOf:
+            - $ref: '#/components/schemas/Extension'
+        use:
+          description: "A numeric or alphanumeric string that is associated with a\
+            \ single object or entity within a given system. Typically, identifiers\
+            \ are used to connect content in resources to external content available\
+            \ in other frameworks or protocols. Identifiers are associated with objects\
+            \ and may be changed or retired due to human or system process and errors.\
+            \ \n"
+          allOf:
+          - $ref: '#/components/schemas/IdentifierUse'
+        type:
+          description: Description of identifier
+          allOf:
+          - $ref: '#/components/schemas/IdentifierType'
+        system:
+          type: string
+          description: The namespace for the identifier value.
+          x-data-type: String
+        value:
+          type: string
+          description: The value that is unique.
+          x-data-type: String
+        period:
+          description: Time period when id is/was valid for use.
+          allOf:
+          - $ref: '#/components/schemas/Period'
+        ' assigner':
+          type: string
+          description: Organization that issued id (may be just text)
+          format: 'system:  | application:  | dataType: Identity'
+          x-data-type: Reference
+      description: "A numeric or alphanumeric string that is associated with a single\
+        \ object or entity within a given system. Typically, identifiers are used\
+        \ to connect content in resources to external content available in other frameworks\
+        \ or protocols. Identifiers are associated with objects and may be changed\
+        \ or retired due to human or system process and errors. \nStructure"
+      x-data-type: Structure
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/infrastructure/applications/Core/datasets/Identifier
+    BindingType:
+      type: string
+      description: 'Binding type represent system we are binding our entity to. '
+      enum:
+      - ERP
+      x-enum-metadata:
+      - name: 'ERP '
+        value: ERP
+        description: Corporate ERP system used in company.
+      x-data-type: Enum
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/infrastructure/applications/Core/datasets/BindingType
+    Binding:
+      required:
+      - identity
+      - type
+      type: object
+      properties:
+        identity:
+          description: Binding identity in system it imported from or exported to.
+          allOf:
+          - $ref: '#/components/schemas/Identity'
+        type:
+          description: Type of binding defines system we bind to.
+          allOf:
+          - $ref: '#/components/schemas/BindingType'
+        code:
+          type: string
+          description: Code of object in system we bind to if different from id.
+          x-data-type: String
+      description: 'Binding represents connection of entity to entity in other external
+        systems. It can be system where entity actually originated ond from which
+        it was imported or system where entity exported. '
+      x-data-type: Structure
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/infrastructure/applications/Core/datasets/Binding
+    Completion:
+      required:
+      - status
+      type: object
+      properties:
+        status:
+          description: Completion Status for some state of execution.
+          allOf:
+          - $ref: '#/components/schemas/EntityState'
+        completedAt:
+          type: string
+          description: Date of status acived and satge of activity completed.
+          format: date-time
+          x-data-type: DateTime
+        completedBy:
+          type: string
+          description: Person documented completion of this stage by user name.
+          x-data-type: String
+        completedNote:
+          type: string
+          description: Note provided by operator on completion.
+          x-data-type: String
+        completedMessage:
+          type: string
+          description: This is link to message, which change status of the issue to
+            specified by this completion.
+          x-data-type: String
+      description: 'Completion status for stage of execution like: finilization, aproval
+        and so on.'
+      x-data-type: Structure
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/infrastructure/applications/Core/datasets/Completion
+    History:
+      required:
+      - createdAt
+      - createdBy
+      type: object
+      properties:
+        createdAt:
+          type: string
+          description: Date of object creation.
+          format: date-time
+          x-data-type: DateTime
+        createdBy:
+          type: string
+          description: User created object.
+          x-data-type: String
+        updatedAt:
+          type: string
+          description: Date of object last update.
+          format: date-time
+          x-data-type: DateTime
+        updatedBy:
+          type: string
+          description: User last updated object.
+          x-data-type: String
+        updatedNote:
+          type: string
+          description: Mote about goal of object update.
+          x-data-type: String
+        updatedMessage:
+          type: string
+          description: Message in issue associated with changes in object.
+          x-data-type: String
+        retiredAt:
+          type: string
+          description: Date object was retired.
+          format: date-time
+          x-data-type: DateTime
+        retiredBy:
+          type: string
+          description: User retired object.
+          x-data-type: String
+        completions:
+          type: array
+          description: Array of completion statuses reached by this object.
+          items:
+            description: Array of completion statuses reached by this object.
+            allOf:
+            - $ref: '#/components/schemas/Completion'
+      description: Structure for object history. Object history provides information
+        when object was updated and in what completion state it is now.
+      x-data-type: Structure
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/infrastructure/applications/Core/datasets/History
+    Entity:
+      required:
+      - bindings
+      - history
+      - parent
+      - type
+      type: object
+      properties:
+        parent:
+          description: Reference to id of folder for current entity. It include URI
+            of parent entity in name.
+          allOf:
+          - $ref: '#/components/schemas/Identity'
+        type:
+          description: Type of the entity.
+          allOf:
+          - $ref: '#/components/schemas/EntityType'
+        state:
+          description: State of the entity
+          allOf:
+          - $ref: '#/components/schemas/EntityState'
+        resource:
+          description: 'Resource structure to define HL7 resource. '
+          allOf:
+          - $ref: '#/components/schemas/DomainResource'
+        'identifier ':
+          type: array
+          description: Identifiers for this entity. A human identifier for this person.
+          items:
+            description: Identifiers for this entity. A human identifier for this
+              person.
+            allOf:
+            - $ref: '#/components/schemas/Identifier'
+        active:
+          type: boolean
+          description: This entity record is in active use
+          x-data-type: Boolean
+          x-FHIR: Include
+        managingOrganization:
+          type: string
+          description: The organization that is the custodian of the entity
+          format: 'system:  | application:  | dataType: Identity'
+          x-data-type: Reference
+          x-FHIR: Include
+        source:
+          description: Source system originated the entity. If not specified entity
+            instantiated by core system.
+          allOf:
+          - $ref: '#/components/schemas/BindingType'
+        bindings:
+          type: array
+          description: Reference to entity system bind to.
+          items:
+            description: Reference to entity system bind to.
+            allOf:
+            - $ref: '#/components/schemas/Binding'
+        tags:
+          type: array
+          description: List of tags for entity association.
+          items:
+            description: List of tags for entity association.
+            allOf:
+            - $ref: '#/components/schemas/Identity'
+        history:
+          description: History of the entity instance.
+          allOf:
+          - $ref: '#/components/schemas/History'
+      description: Updatable entity. Entity can be accessed by API and referenced.
+      x-data-type: Structure
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/infrastructure/applications/Core/datasets/Entity
+    ContactType:
+      type: string
+      description: Contact type enumerator. Contact type specify what part of organization
+        you contact.
+      enum:
+      - ORG
+      - BILL
+      - ADMIN
+      - HR
+      - PAYOR
+      - PATINF
+      - PRESS
+      x-enum-metadata:
+      - name: Organization
+        value: ORG
+        description: Contact details for organization general information or head
+          quaters information.
+      - name: Billing
+        value: BILL
+        description: Contact details for information regarding to billing/general
+          finance enquiries.
+      - name: Administrative
+        value: ADMIN
+        description: Contact details for administrative enquiries.
+      - name: Human Resource
+        value: HR
+        description: Contact details for issues related to Human Resources, such as
+          staff matters, OH&S etc.
+      - name: Payor
+        value: PAYOR
+        description: Contact details for dealing with issues related to insurance
+          claims/adjudication/payment.
+      - name: Patient
+        value: PATINF
+        description: Generic information contact for patients.
+      - name: Press
+        value: PRESS
+        description: 'Dedicated contact point for matters relating to press enquiries. '
+      x-data-type: Enum
+      x-version: 1.3.0
+      x-path: /organizations/Infort Technologies/systems/Client/applications/User/datasets/ContactType
+    ContactPointSystem:
+      type: string
+      description: Contact point system enumerator. All codes from system http://hl7.org/fhir/contact-point-system.
+      enum:
+      - phone
+      - fax
+      - email
+      - pager
+      - url
+      - sms
+      - other
+      x-enum-metadata:
+      - name: Phone
+        value: phone
+        description: The value is a telephone number used for voice calls. Use of
+          full international numbers starting with + is recommended to enable automatic
+          dialing support but not required.
+      - name: Fax
+        value: fax
+        description: |
+          The value is a fax machine. Use of full international numbers starting with + is recommended to enable automatic dialing support but not required.
+      - name: Email
+        value: email
+        description: The value is an email address.
+      - name: Pager
+        value: pager
+        description: |
+          The value is a pager number. These may be local pager numbers that are only usable on a particular pager system.
+      - name: URL
+        value: url
+        description: A contact that is not a phone, fax, pager or email address and
+          is expressed as a URL. This is intended for various personal contacts including
+          blogs, Skype, Twitter, Facebook, etc. Do not use for email addresses.
+      - name: SMS
+        value: sms
+        description: |-
+          A contact that can be used for sending an sms message (e.g. mobile phones, some landlines)
+          other
+      - name: Other
+        value: other
+        description: "A contact that is not a phone, fax, page or email address and\
+          \ is not expressible as a URL. E.g. Internal mail address. This SHOULD NOT\
+          \ be used for contacts that are expressible as a URL (e.g. Skype, Twitter,\
+          \ Facebook, etc.) Extensions may be used to distinguish 'other' contact\
+          \ types.\n "
+      x-data-type: Enum
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/Client/applications/User/datasets/ContactPointSystem
+    ContactPointUse:
+      type: string
+      description: Contact point use enumerator. All codes from system http://hl7.org/fhir/contact-point-use
+      enum:
+      - home
+      - work
+      - temp
+      - old
+      - mobile
+      x-enum-metadata:
+      - name: Home
+        value: home
+        description: |-
+          A communication contact point at a home; attempted contacts for business purposes might intrude privacy and chances are one will contact family or other household members instead of the person one wishes to call. Typically used with urgent cases, or if no other contacts are available.
+          work
+      - name: Work
+        value: work
+        description: |
+          An office contact point. First choice for business related contacts during business hours.
+      - name: Temp
+        value: temp
+        description: |
+          A temporary contact point. The period can provide more detailed information.
+      - name: Old
+        value: old
+        description: |+
+          This contact point is no longer in use (or was never correct, but retained for records).
+
+      - name: Mobile
+        value: mobile
+        description: "A telecommunication device that moves and stays with its owner.\
+          \ May have characteristics of all other use codes, suitable for urgent matters,\
+          \ not the first choice for routine business.\n "
+      x-data-type: Enum
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/Client/applications/User/datasets/ContactPointUse
+    ContactPoint:
+      type: object
+      properties:
+        id:
+          type: string
+          description: xml:id (or equivalent in JSON)
+          x-data-type: String
+        " extension\t":
+          type: array
+          description: Additional Content defined by implementations.
+          items:
+            description: Additional Content defined by implementations.
+            allOf:
+            - $ref: '#/components/schemas/Extension'
+        system:
+          description: System for contact point
+          allOf:
+          - $ref: '#/components/schemas/ContactPointSystem'
+        value:
+          type: string
+          description: The actual contact point details
+          x-data-type: String
+        use:
+          description: What contact point use for.
+          allOf:
+          - $ref: '#/components/schemas/ContactPointUse'
+        rank:
+          type: object
+          description: Specify preferred order of use (1 = highest).
+          x-data-type: Unsigned Integer
+        period:
+          description: Time period when the contact point was/is in use.
+          allOf:
+          - $ref: '#/components/schemas/Period'
+      description: "Details for all kinds of technology-mediated contact points for\
+        \ a person or organization, including telephone, email, etc. \n\nhttp://build.fhir.org//datatypes.html#ContactPoint"
+      x-data-type: Structure
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/Client/applications/User/datasets/ContactPoint
+    Contact:
+      required:
+      - identity
+      type: object
+      properties:
+        identity:
+          description: Contact identity. Id is global (guid), Name is contact definition
+            and it is not unique.
+          allOf:
+          - $ref: '#/components/schemas/Identity'
+        entity:
+          description: Contact is an entity and can be created and updated through
+            API.
+          allOf:
+          - $ref: '#/components/schemas/Entity'
+        type:
+          description: Type of contact.
+          allOf:
+          - $ref: '#/components/schemas/ContactType'
+        telecom:
+          type: array
+          description: A contact detail.
+          items:
+            description: A contact detail.
+            allOf:
+            - $ref: '#/components/schemas/ContactPoint'
+        address:
+          type: array
+          description: One or more addresses for the contact.
+          items:
+            description: One or more addresses for the contact.
+            allOf:
+            - $ref: '#/components/schemas/Address'
+        person:
+          type: string
+          description: Person for contact if contact associated with one.
+          format: 'system: Client | application: User | dataType: Person'
+          x-data-type: Reference
+      description: "An individual has identity outside of a healthcare setting. The\
+        \ Person resource is used to capture this information and to relate the person\
+        \ as an individual to other resources that do have a health-related context.\
+        \ \nFor example, while a patient resource may be created and maintained by\
+        \ each organization providing care for that person as a patient, a person\
+        \ resource provides a mechanism for linking patient resources across different\
+        \ organizations and their unique patient identity domains. "
+      x-data-type: Resource
+      x-version: 1.6.0
+      x-path: /organizations/Infort Technologies/systems/Client/applications/User/datasets/Contact
+    emailAddresses:
+      required:
+      - address
+      - dateAdded
+      - verified
+      type: object
+      properties:
+        address:
+          type: string
+          description: The email address, e.g. `foo@example.com`
+          x-data-type: String
+        verified:
+          type: boolean
+          description: true if the user has clicked the link in a confirmation email
+            to this address.
+          x-data-type: Boolean
+        dateAdded:
+          type: number
+          description: Timestamp (milliseconds since epoch) when the email address
+            was added to the account.
+          format: long
+          x-data-type: Long
+        dateBounced:
+          type: number
+          description: Timestamp (milliseconds since epoch) when an email sent to
+            this address last bounced. Reset to null when the address no longer bounces.
+          format: long
+          x-data-type: Long
+      description: Stores details about an email address that a user has associated
+        with their account.
+      x-data-type: Structure
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/Client/applications/User/datasets/emailAddresses
+    ErrorCode:
+      type: string
+      description: List of error codes that can be returned by application. Enum provide
+        specification for errors reported by service defined in application.
+      enum:
+      - Oder have rong number
+      - Invalid Request
+      - Invalid Account Type
+      - Invalid Client Type
+      - Invalid LegalEntity Type
+      - Duplicate Client Name
+      - Invalid Account Name
+      - Invalid LegalEntity Name
+      - Account  does not exists
+      - Client  does not exists
+      - LegalEntity  does not exists
+      x-enum-metadata:
+      - name: Oder have rong number
+        value: Oder have rong number
+        description: ""
+      - name: Invalid Request
+        value: Invalid Request
+        description: Invalid Request
+      - name: Invalid Account Type
+        value: Invalid Account Type
+        description: 'Allowed values: [DISTRIBUTOR, SUPPLIER, AGENT]'
+      - name: Invalid Client Type
+        value: Invalid Client Type
+        description: 'Allowed values: [MERCHANT, CONSUMER]'
+      - name: Invalid LegalEntity Type
+        value: Invalid LegalEntity Type
+        description: 'Allowed values: [PERSONAL, BUSINESS]'
+      - name: Duplicate Client Name
+        value: Duplicate Client Name
+        description: Client Name @name should be unique.
+      - name: Invalid Account Name
+        value: Invalid Account Name
+        description: Account Name @name should be unique across the same Client
+      - name: Invalid LegalEntity Name
+        value: Invalid LegalEntity Name
+        description: Legal Entity Name @name should be unique across the same Client
+      - name: Account  does not exists
+        value: Account  does not exists
+        description: Account @entityId does not exists
+      - name: Client  does not exists
+        value: Client  does not exists
+        description: Client @entityId does not exists
+      - name: LegalEntity  does not exists
+        value: LegalEntity  does not exists
+        description: LegalEntity @entityId does not exists
+      x-data-type: Enum
+      x-version: 1.2.0
+      x-path: /organizations/Infort Technologies/systems/Client/applications/User/datasets/ErrorCode
+    NameUse:
+      type: string
+      description: Identifier use enumerator. All codes from system http://hl7.org/fhir/identifier-use.
+      enum:
+      - usual
+      - official
+      - temp
+      - nickname
+      - anonymous
+      - old
+      - maiden
+      x-enum-metadata:
+      - name: Usual
+        value: usual
+        description: Known as/conventional/the one you normally use
+      - name: Official
+        value: official
+        description: The formal name as registered in an official (government) registry,
+          but which name might not be commonly used. May be called 'legal name'.
+      - name: Temp
+        value: temp
+        description: A temporary name. Name.period can provide more detailed information.
+          This may also be used for temporary names assigned at birth or in emergency
+          situations.
+      - name: Nickname
+        value: nickname
+        description: A name that is used to address the person in an informal manner,
+          but is not part of their formal or usual name
+      - name: Anonymous
+        value: anonymous
+        description: Anonymous assigned name, alias, or pseudonym (used to protect
+          a person's identity for privacy reasons)
+      - name: Old
+        value: old
+        description: This name is no longer in use (or was never correct, but retained
+          for records)
+      - name: Name changed for Marriage
+        value: maiden
+        description: A name used prior to changing name because of marriage. This
+          name use is for use by applications that collect and store names that were
+          used prior to a marriage. Marriage naming customs vary greatly around the
+          world, and are constantly changing. This term is not gender specific. The
+          use of this term does not imply any particular history for a person's name
+      x-data-type: Enum
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/Client/applications/User/datasets/NameUse
+    HumanName:
+      type: object
+      properties:
+        id:
+          type: string
+          description: xml:id (or equivalent in JSON)
+          x-data-type: String
+        " extension\t":
+          type: array
+          description: Additional Content defined by implementations.
+          items:
+            description: Additional Content defined by implementations.
+            allOf:
+            - $ref: '#/components/schemas/Extension'
+        use:
+          description: The use of a human name.
+          allOf:
+          - $ref: '#/components/schemas/NameUse'
+        text:
+          type: string
+          description: Text representation of the full name.
+          x-data-type: String
+        family:
+          type: string
+          description: Family name (often called 'Surname')
+          x-data-type: String
+        given:
+          type: array
+          description: |-
+            Given names (not always 'first'). Includes middle names
+            This repeating element order: Given Names appear in the correct order for presenting the name
+          items:
+            type: string
+            description: |-
+              Given names (not always 'first'). Includes middle names
+              This repeating element order: Given Names appear in the correct order for presenting the name
+            x-data-type: String
+        prefix:
+          type: array
+          description: |-
+            Parts that come before the name
+            This repeating element order: Prefixes appear in the correct order for presenting the name
+          items:
+            type: string
+            description: |-
+              Parts that come before the name
+              This repeating element order: Prefixes appear in the correct order for presenting the name
+            x-data-type: String
+        suffix:
+          type: array
+          description: |-
+            Parts that come after the name
+            This repeating element order: Suffixes appear in the correct order for presenting the name
+          items:
+            type: string
+            description: |-
+              Parts that come after the name
+              This repeating element order: Suffixes appear in the correct order for presenting the name
+            x-data-type: String
+        period:
+          description: Time period when name is/was valid for use.
+          allOf:
+          - $ref: '#/components/schemas/Period'
+      description: "A name of a human with text, parts and usage information. \nNames\
+        \ may be changed or repudiated. People may have different names in different\
+        \ contexts. Names may be divided into parts of different type that have variable\
+        \ significance depending on context, though the division into parts is not\
+        \ always significant. With personal names, the different parts might or might\
+        \ not be imbued with some implicit meaning; various cultures associate different\
+        \ importance with the name parts and the degree to which systems SHALL care\
+        \ about name parts around the world varies widely. "
+      x-data-type: Structure
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/Client/applications/User/datasets/HumanName
+    Gender:
+      type: string
+      description: ISO/IEC 5218 Information technology. Codes for the representation
+        of human sexes is an international standard that defines a representation
+        of human sexes through a language-neutral single-digit code. It can be used
+        in information systems such as database applications.
+      enum:
+      - NOT_KNOWN
+      - MALE
+      - FEMALE
+      - NOT_APPLICABLE
+      x-enum-metadata:
+      - name: Not known
+        value: NOT_KNOWN
+        description: Gender specification not known.
+      - name: Male
+        value: MALE
+        description: Gander specified as male.
+      - name: Female
+        value: FEMALE
+        description: Gender specified as female.
+      - name: 'Not applicable '
+        value: NOT_APPLICABLE
+        description: Gender specification not applicable.
+      x-data-type: Enum
+      x-version: 1.5.0
+      x-path: /organizations/Apdax/systems/DifHub/applications/User/datasets/Gender
+    Attachment:
+      type: object
+      properties:
+        id:
+          type: string
+          description: xml:id (or equivalent in JSON)
+          x-data-type: String
+        ' extension':
+          type: array
+          description: Additional Content defined by implementations.
+          items:
+            description: Additional Content defined by implementations.
+            allOf:
+            - $ref: '#/components/schemas/Extension'
+        contentType:
+          type: string
+          description: Mime type of the content, with charset etc.
+          x-data-type: String
+        language:
+          description: Human language of the content (BCP-47)
+          allOf:
+          - $ref: '#/components/schemas/Locale'
+        data:
+          type: object
+          description: Data inline, base64ed
+          x-data-type: Binary
+        url:
+          type: string
+          description: Uri where the data can be found
+          x-data-type: String
+        size:
+          type: object
+          description: Number of bytes of content (if url provided)
+          x-data-type: Unsigned Integer
+        hash:
+          type: object
+          description: Hash of the data (sha-1, base64ed)
+          x-data-type: Binary
+        title:
+          type: string
+          description: Label to display in place of the data
+          x-data-type: String
+        creation:
+          type: string
+          description: Date attachment was first created
+          format: date-time
+          x-data-type: DateTime
+      description: |-
+        This type is for containing or referencing attachments - additional data content defined in other formats. The most common use of this type is to include images or reports in some report format such as PDF. However it can be used for any data that has a MIME type.
+
+        http://build.fhir.org//datatypes.html#Attachment
+      x-data-type: Structure
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/infrastructure/applications/Core/datasets/Attachment
+    IdentityAssuranceLevel:
+      type: string
+      description: 'Binding type represent system we are binding our entity to. '
+      enum:
+      - level1
+      - ' level2'
+      - level3
+      - level4
+      x-enum-metadata:
+      - name: Level 1
+        value: level1
+        description: Little or no confidence in the asserted identity's accuracy.
+      - name: Level 2
+        value: ' level2'
+        description: ' Some confidence in the asserted identity''s accuracy.'
+      - name: Level 3
+        value: level3
+        description: High confidence in the asserted identity's accuracy.
+      - name: Level 4
+        value: level4
+        description: 'Very high confidence in the asserted identity''s accuracy.  '
+      x-data-type: Enum
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/infrastructure/applications/Core/datasets/IdentityAssuranceLevel
+    Link:
+      type: object
+      properties:
+        id:
+          type: string
+          description: xml:id (or equivalent in JSON)
+          x-data-type: String
+        ' extension':
+          type: array
+          description: Additional Content defined by implementations.
+          items:
+            description: Additional Content defined by implementations.
+            allOf:
+            - $ref: '#/components/schemas/Extension'
+        modifierExtension:
+          type: array
+          description: Extensions that cannot be ignored
+          items:
+            description: Extensions that cannot be ignored
+            allOf:
+            - $ref: '#/components/schemas/Extension'
+        target:
+          type: string
+          description: ' The resource to which this resource is associated.'
+          format: 'system:  | application:  | dataType: Identity'
+          x-data-type: Reference
+        assurance:
+          description: Identity assurance level for related objects
+          allOf:
+          - $ref: '#/components/schemas/IdentityAssuranceLevel'
+      description: Link to a resource that associated with current resource.
+      x-data-type: Structure
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/infrastructure/applications/Core/datasets/Link
+    Person:
+      required:
+      - identity
+      type: object
+      properties:
+        identity:
+          description: Person identity. Id is global (guid), Name is person email.
+          allOf:
+          - $ref: '#/components/schemas/Identity'
+        entity:
+          description: Person is an entity and can be created and updated through
+            API.
+          allOf:
+          - $ref: '#/components/schemas/Entity'
+        name:
+          type: array
+          description: A name associated with the person.
+          items:
+            description: A name associated with the person.
+            allOf:
+            - $ref: '#/components/schemas/HumanName'
+        telecom:
+          type: array
+          description: A contact detail for the person.
+          items:
+            description: A contact detail for the person.
+            allOf:
+            - $ref: '#/components/schemas/ContactPoint'
+        gender:
+          description: Person gender.
+          allOf:
+          - $ref: '#/components/schemas/Gender'
+        birthDate:
+          type: object
+          description: The date on which the person was born.
+          x-data-type: Date
+        address:
+          type: array
+          description: One or more addresses for the person.
+          items:
+            description: One or more addresses for the person.
+            allOf:
+            - $ref: '#/components/schemas/Address'
+        photo:
+          description: Image of the person
+          allOf:
+          - $ref: '#/components/schemas/Attachment'
+        link:
+          type: array
+          description: Link to a resource that concerns the same actual person.
+          items:
+            description: Link to a resource that concerns the same actual person.
+            allOf:
+            - $ref: '#/components/schemas/Link'
+      description: "An individual has identity outside of a healthcare setting. The\
+        \ Person resource is used to capture this information and to relate the person\
+        \ as an individual to other resources that do have a health-related context.\
+        \ \nFor example, while a patient resource may be created and maintained by\
+        \ each organization providing care for that person as a patient, a person\
+        \ resource provides a mechanism for linking patient resources across different\
+        \ organizations and their unique patient identity domains. "
+      x-data-type: Resource
+      x-version: 1.5.0
+      x-path: /organizations/Infort Technologies/systems/Client/applications/User/datasets/Person
+    User:
+      required:
+      - identity
+      type: object
+      properties:
+        identity:
+          description: User identity. Id is user global id (guid), Name is user email,
+            description - used for user resume.
+          allOf:
+          - $ref: '#/components/schemas/Identity'
+        entity:
+          description: User is an entity/resource and can be created and updated through
+            RESTful API.
+          allOf:
+          - $ref: '#/components/schemas/Entity'
+        profile:
+          type: string
+          description: User public profile. Profile contains public information about
+            user. This information will be visible to other users of organization.
+            Additional profiles can be used in specific organization to override elements
+            of profile different for this organization.
+          format: 'system: Client | application: User | dataType: Person'
+          x-data-type: Reference
+        eyeColor:
+          type: integer
+          x-data-type: Integer
+      description: Complete information about user.
+      x-data-type: Resource
+      x-version: 1.1.4
+      x-path: /organizations/Infort Technologies/systems/Client/applications/User/datasets/User
+    userPhone:
+      required:
+      - home
+      - work
+      type: object
+      properties:
+        home:
+          type: string
+          description: The user's home or cell phone.
+          x-data-type: String
+        work:
+          type: string
+          description: The user's work phone.
+          x-data-type: String
+      description: The user's phone numbers for home and work.
+      x-data-type: Structure
+      x-version: 1.0.0
+      x-path: /organizations/Infort Technologies/systems/Client/applications/User/datasets/userPhone
+    Severity:
+      type: string
+      description: 'Severity of the error. Enumerate classification of the error severity
+        in execution path.  '
+      enum:
+      - "0"
+      - "1"
+      - "2"
+      - "3"
+      x-enum-metadata:
+      - name: Fatal
+        value: "0"
+        description: A severe error that causes your system to crash, resulting in
+          the loss or corruption of unsaved data.
+      - name: Error
+        value: "1"
+        description: A severe error that might cause the loss or corruption of unsaved
+          data. Immediate action must be taken to prevent losing data.
+      - name: Warning
+        value: "2"
+        description: Action must be taken at some stage to prevent a severe error
+          from occurring in the future.
+      - name: Info
+        value: "3"
+        description: An informative message, usually describing server activity. No
+          action is necessary.
+      x-data-type: Enum
+      x-version: 1.1.0
+      x-path: /organizations/Apdax/systems/DifHub/applications/Organization/datasets/Severity
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          description: 'Error code. '
+          x-data-type: String
+        severity:
+          description: 'Severity specified how severe error in current execution path. '
+          allOf:
+          - $ref: '#/components/schemas/Severity'
+        text:
+          type: string
+          description: Error text. When error return text will be formate, based on
+            text string, properties and language.
+          x-data-type: String
+        description:
+          type: string
+          description: 'Error description contains detailed information about error. '
+          x-data-type: String
+        entity:
+          type: string
+          description: URI to object or entity error associated with.
+          x-data-type: String
+        field:
+          type: string
+          description: Name of the field error associated with.
+          x-data-type: String
+      description: |
+        Entity encapsulating the details of an error. This allows the recipient to know details about the error and what may have caused the error.
+      x-data-type: Resource
+      x-version: 1.3.0
+      x-path: /organizations/Apdax/systems/DifHub/applications/Organization/datasets/Error
+  parameters:
+    bearer:
+      name: bearer
+      in: header
+      description: JWT Bearer token
+      required: false
+      schema:
+        type: object
+    endTime:
+      name: endTime
+      in: query
+      description: End of time window specified to limit objects with last updated
+        in this time window.
+      required: false
+      schema:
+        type: object
+    options:
+      name: options
+      in: query
+      description: 'Options specified additional requirements for returned entity.
+        For example reconcile option will require to send events to data lake and
+        mark as reconciliation. '
+      required: false
+      schema:
+        type: string
+    search:
+      name: search
+      in: query
+      description: Expression to limit number of entities in response.
+      required: false
+      schema:
+        type: string
+    startTime:
+      name: startTime
+      in: query
+      description: Beginning of time window specified to limit objects with last updated
+        in this time window.
+      required: false
+      schema:
+        type: object
+    contactId:
+      name: contactId
+      in: path
+      description: Contact Id to fetch and put records
+      required: true
+      schema:
+        type: string
+    entityId:
+      name: entityId
+      in: path
+      description: Id of entity operation executed for. When start with $ it is Id,
+        else it is name of object. When id not specified it is means operation apply
+        to every client.
+      required: true
+      schema:
+        type: string
+    source:
+      name: source
+      in: query
+      description: This option identifies the source system name
+      required: false
+      schema:
+        type: string
+    type:
+      name: type
+      in: query
+      description: This type  identifies the entity in the system
+      required: false
+      schema:
+        type: string
+    personId:
+      name: personId
+      in: path
+      description: Person Id to fetch and put records
+      required: true
+      schema:
+        type: string
+    userId:
+      name: userId
+      in: path
+      description: User Id to fetch and put records
+      required: true
+      schema:
+        type: string
+  requestBodies:
+    contact:
+      description: Contact data specification for update.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Contact'
+      required: false
+    person:
+      description: Person data specification for update.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Person'
+      required: false
+    user:
+      description: User data specification for update.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User'
+      required: false

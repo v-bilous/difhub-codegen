@@ -1,0 +1,29 @@
+package {{appPackage}}.controller
+
+{{#imports}}import {{import}}
+{{/imports}}
+import {{appPackage}}.service.{{serviceClassname}}
+import {{appPackage}}.controller.api.{{classname}}
+import {{basePackage}}.controller.AbstractController
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.data.web.PageableDefault
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
+
+{{>generatedAnnotation}}
+@RestController
+{{#operations}}
+class {{controllerClassname}}(service: {{serviceClassname}})
+    : AbstractController<{{returnEntityType}}, {{serviceClassname}}>(service), {{classname}} {
+
+{{#operation}}
+
+    override fun {{vendorExtensions.operationMethodName}}({{#allParams}}{{>queryParams}}{{>pathParams}}{{>headerParams}}{{>bodyParams}}{{>formParams}}{{>pageParams}}{{#hasMore}},{{/hasMore}}{{/allParams}}): {{#responseWrapper}}{{.}}<{{/responseWrapper}}ResponseEntity<{{>returnTypes}}>{{#responseWrapper}}>{{/responseWrapper}} {
+        {{>apiControllerMethodBody}}
+    }
+{{/operation}}
+
+}
+{{/operations}}

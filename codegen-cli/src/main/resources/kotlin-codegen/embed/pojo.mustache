@@ -1,0 +1,35 @@
+{{>generatedAnnotation}}{{#discriminator}}{{>typeInfoAnnotation}}{{/discriminator}}
+{{#description}}@ApiModel(description = "{{{description}}}"){{/description}}
+@Getter
+@Setter
+public class {{classname}} {{#parent}}extends {{{parent}}}{{/parent}}{{^parent}}{{/parent}} {
+{{#vendorExtensions.addIdVar}}
+
+	private String id;
+{{/vendorExtensions.addIdVar}}
+
+  {{#vars}}
+    {{#isEnum}}
+    {{^isContainer}}
+{{>enumClass}}
+    {{/isContainer}}
+    {{#isContainer}}
+    {{#mostInnerItems}}
+{{>enumClass}}
+    {{/mostInnerItems}}
+    {{/isContainer}}
+    {{/isEnum}}
+	{{#vendorExtensions.extraAnnotation}}
+		{{{vendorExtensions.extraAnnotation}}}
+	{{/vendorExtensions.extraAnnotation}}
+	@ApiModelProperty({{#example}}example = "{{{example}}}", {{/example}}{{#required}}required = {{required}}, {{/required}}{{#isReadOnly}}readOnly = {{{isReadOnly}}}, {{/isReadOnly}}value = "{{{description}}}")
+	{{#vendorExtensions.isMetadataAnnotation}}
+	@MetaDataAnnotation(groupName = "{{vendorExtensions.metaGroupName}}"{{#required}}, notNull = true{{/required}})
+	{{/vendorExtensions.isMetadataAnnotation}}
+	{{#vendorExtensions.isGuid}}
+	@Guid{{^required}}(allowEmpty = true){{/required}}
+	{{/vendorExtensions.isGuid}}
+	private {{{datatypeWithEnum}}} {{name}};
+
+  {{/vars}}
+}

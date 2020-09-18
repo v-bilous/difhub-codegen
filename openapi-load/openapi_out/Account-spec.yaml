@@ -1,0 +1,10 @@
+openapi: 3.0.1
+info:
+  title: Account API
+  description: User accounting & authorization
+  version: 1.0.0
+servers:
+- url: http://localhost:8442
+  description: Development server endpoint
+- url: https://domain.app/account/v1
+  description: Stage Server endpoint

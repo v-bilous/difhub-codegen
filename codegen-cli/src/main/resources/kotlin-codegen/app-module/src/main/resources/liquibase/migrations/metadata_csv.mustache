@@ -1,0 +1,8 @@
+group_name,code,name,description
+{{#metadataEnums}}
+{{#vendorExtensions.isMetadataEnum}}
+{{#vendorExtensions.x-enum-metadata}}
+{{{vendorExtensions.enumGroupName}}},{{{value}}},{{{name}}},{{{description}}}
+{{/vendorExtensions.x-enum-metadata}}
+{{/vendorExtensions.isMetadataEnum}}
+{{/metadataEnums}}

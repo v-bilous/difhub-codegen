@@ -1,0 +1,36 @@
+<idea-plugin allow-bundled-update="true">
+    <id>bhn.intellij.plugin</id>
+ <!--   <depends>com.intellij.properties</depends>
+    <depends>org.jetbrains.plugins.gradle</depends>
+    <depends>org.intellij.groovy</depends>
+    <depends>XPathView</depends>-->
+
+    <name>difhub-codegen</name>
+    <vendor email="vova.bilous@hotmail.com" url="https://bilous.pro">BilousPro</vendor>
+
+    <description><![CDATA[
+    Plugin to generate entire microservice system based on DifHub design.
+    ]]></description>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+
+    <extensions defaultExtensionNs="com.intellij">
+        <moduleBuilder builderClass="bhn.intellij.plugin.project.ProjectModuleBuilder"/>
+        <errorHandler implementation="bhn.intellij.plugin.errorreport.PluginErrorReportSubmitter"/>
+    </extensions>
+
+    <actions>
+        <group id="menuGroup" text="DifHub" popup="true">
+            <add-to-group group-id="MainMenu" relative-to-action="ToolsMenu" anchor="after"/>
+            <action id="projectSettings" text="Project Settings" class="bhn.intellij.plugin.action.menu.ProjectPropertiesAction"/>
+            <action id="loadOpenApiSpec" text="Load OpenApi" class="bhn.intellij.plugin.action.menu.DifHubLoadOpenApiAction"/>
+            <action id="generateCode" text="Generate Code" class="bhn.intellij.plugin.action.menu.GenerateCodeAction"/>
+            <separator/>
+            <action id="reportIssue" text="Report Issue" class="bhn.intellij.plugin.action.ReportIssueAction"/>
+        </group>
+    </actions>
+</idea-plugin>

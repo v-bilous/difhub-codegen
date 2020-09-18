@@ -1,0 +1,76 @@
+{{>generatedAnnotation}}
+{{^vendorExtensions.isEmbeddable}}
+@Entity
+@Table(name = "{{vendorExtensions.tableName}}")
+{{/vendorExtensions.isEmbeddable}}
+{{#vendorExtensions.isEmbeddable}}
+@Embeddable
+{{/vendorExtensions.isEmbeddable}}
+data class {{classname}}(
+{{#vendorExtensions.addIdVar}}
+
+    var id: String,
+{{/vendorExtensions.addIdVar}}
+
+{{#vars}}
+    {{#isEnum}}
+    {{^isContainer}}
+    {{>enumClass}}
+    {{/isContainer}}
+    {{#isContainer}}
+    {{#mostInnerItems}}
+    {{>enumClass}}
+    {{/mostInnerItems}}
+    {{/isContainer}}
+    {{/isEnum}}
+    {{#vendorExtensions.extraAnnotation}}
+    {{{vendorExtensions.extraAnnotation}}}
+    {{/vendorExtensions.extraAnnotation}}
+    {{#vendorExtensions.isEmbedded}}
+    @AttributeOverrides(
+    {{#vendorExtensions.embeddedComponent}}
+        {{#vars}}
+        AttributeOverride(name = "{{name}}", column = Column(name = "{{vendorExtensions.embeddedColumnName}}")),
+        {{/vars}}
+    )
+    @Embedded
+    {{/vendorExtensions.embeddedComponent}}
+    {{/vendorExtensions.isEmbedded}}
+    {{^vendorExtensions.isEmbedded}}
+    {{#vendorExtensions.hasJsonType}}
+    @Type(type = "json")
+    @Column(name = "{{vendorExtensions.columnName}}", columnDefinition = "json")
+    {{/vendorExtensions.hasJsonType}}
+    {{^vendorExtensions.hasJsonType}}
+    {{#isListContainer}}
+    {{#vendorExtensions.isReferenceElement}}
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "{{vendorExtensions.joinTableName}}",
+            joinColumns = [JoinColumn(name = "{{vendorExtensions.joinColumnName}}")]
+    )
+    @Column(name = "{{vendorExtensions.inverseJoinColumnName}}")
+    {{/vendorExtensions.isReferenceElement}}
+    {{^vendorExtensions.isReferenceElement}}
+    @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "{{vendorExtensions.joinTableName}}",
+            joinColumns = [JoinColumn(name = "{{vendorExtensions.joinColumnName}}", referencedColumnName = "id")],
+            inverseJoinColumns = [JoinColumn(name = "{{vendorExtensions.inverseJoinColumnName}}", referencedColumnName = "id")]
+    )
+    {{/vendorExtensions.isReferenceElement}}
+    {{/isListContainer}}
+    {{^isListContainer}}
+    @Column(name = "{{{vendorExtensions.escapedColumnName}}}")
+    {{/isListContainer}}
+    {{/vendorExtensions.hasJsonType}}
+    {{/vendorExtensions.isEmbedded}}
+    {{#isContainer}}
+    var {{name}}: {{{datatypeWithEnum}}}{{#hasMore}},{{/hasMore}}
+    {{/isContainer}}
+    {{^isContainer}}
+    var {{name}}: {{{datatypeWithEnum}}}{{#hasMore}},{{/hasMore}}
+    {{/isContainer}}
+
+{{/vars}}
+) {{#parent}}: {{{parent}}}{{/parent}}{{^parent}}{{/parent}}

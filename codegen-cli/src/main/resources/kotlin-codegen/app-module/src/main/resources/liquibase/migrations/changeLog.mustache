@@ -1,0 +1,70 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog logicalFilePath="initial/tables.xml"
+				   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+{{#models}}
+	{{#model}}
+	{{^vendorExtensions.isEmbeddable}}
+	<changeSet author="CodeGeneration" id="create_generated_table_{{vendorExtensions.tableName}}">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="{{vendorExtensions.tableName}}" />
+			</not>
+		</preConditions>
+		<createTable tableName="{{vendorExtensions.tableName}}">
+			<column name="id" type="VARCHAR(36)">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			{{#vendorExtensions.hasTableEntity}}
+			<column name="name" type="VARCHAR(255)"/>
+			<column name="description" type="VARCHAR(510)"/>
+			{{/vendorExtensions.hasTableEntity}}
+			{{#vars}}
+            {{#vendorExtensions.hasJsonType}}
+            <column name="{{vendorExtensions.columnName}}" type="{{vendorExtensions.columnType}}"/>
+            {{/vendorExtensions.hasJsonType}}
+            {{^isListContainer}}
+			{{#vendorExtensions.isEmbedded}}
+			{{#vendorExtensions.embeddedComponent}}
+			{{#vars}}
+			<column name="{{vendorExtensions.embeddedColumnName}}" type="{{vendorExtensions.columnType}}"/>
+			{{/vars}}
+			{{/vendorExtensions.embeddedComponent}}
+			{{/vendorExtensions.isEmbedded}}
+			{{^vendorExtensions.isEmbedded}}
+				{{^vendorExtensions.isNeedSkip}}
+			<column name="{{vendorExtensions.columnName}}" type="{{vendorExtensions.columnType}}"/>
+				{{/vendorExtensions.isNeedSkip}}
+			{{/vendorExtensions.isEmbedded}}
+			{{/isListContainer}}
+			{{/vars}}
+		</createTable>
+	</changeSet>
+	{{/vendorExtensions.isEmbeddable}}
+	{{/model}}
+{{/models}}
+
+{{#joinTables}}
+	<changeSet author="CodeGeneration" id="create_generated_join_table_{{vendorExtensions.joinTableName}}">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="{{vendorExtensions.joinTableName}}" />
+			</not>
+		</preConditions>
+		<createTable tableName="{{vendorExtensions.joinTableName}}">
+			<column name="{{vendorExtensions.joinColumnName}}" type="VARCHAR(36)">
+				<constraints nullable="false" referencedTableName="{{vendorExtensions.modelTableName}}"/>
+			</column>
+			<column name="{{vendorExtensions.inverseJoinColumnName}}" type="VARCHAR(36)">
+				<constraints nullable="false"{{#vendorExtensions.hasPropertyTable}} referencedTableName="{{vendorExtensions.propertyTableName}}"{{/vendorExtensions.hasPropertyTable}}/>
+			</column>
+		</createTable>
+		<addPrimaryKey columnNames="{{vendorExtensions.joinColumnName}}, {{vendorExtensions.inverseJoinColumnName}}"
+					   constraintName="pk_{{vendorExtensions.joinTableName}}"
+					   tableName="{{vendorExtensions.joinTableName}}"/>
+	</changeSet>
+{{/joinTables}}
+</databaseChangeLog>
