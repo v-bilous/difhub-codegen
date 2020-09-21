@@ -9,7 +9,9 @@ group = "pro.bilous"
 version = "1.0-SNAPSHOT"
 
 allprojects {
-    repositories {
+	apply(plugin = "jacoco")
+
+	repositories {
 		mavenLocal()
         mavenCentral()
         jcenter()
@@ -45,8 +47,12 @@ tasks.withType<JacocoReport> {
 
 	reports {
 		xml.isEnabled = true
-		xml.destination = file("${buildDir}/reports/jacoco/report.xml")
 		html.isEnabled = false
 		csv.isEnabled = false
 	}
+}
+
+tasks.test {
+	useJUnitPlatform()
+	finalizedBy(tasks.jacocoTestReport)
 }
