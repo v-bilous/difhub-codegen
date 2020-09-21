@@ -1,3 +1,5 @@
+[![CodeFactor](https://www.codefactor.io/repository/github/v-bilous/difhub-codegen/badge)](https://www.codefactor.io/repository/github/v-bilous/difhub-codegen)
+
 # DifHub Code Generation tools.
 Set of tools for the integration with https://difhub.com. Contains API loader, codegen and IntelliJ Idea plugin. New features and instrumentation coming soon.
 
