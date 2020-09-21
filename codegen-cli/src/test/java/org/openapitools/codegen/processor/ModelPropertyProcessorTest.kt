@@ -1,10 +1,9 @@
 package org.openapitools.codegen.processor
 
-import org.junit.Test
-
-import org.junit.Assert.*
+import org.junit.jupiter.api.Test
 import org.openapitools.codegen.CodeCodegen
 import org.openapitools.codegen.CodegenProperty
+import kotlin.test.assertEquals
 
 class ModelPropertyProcessorTest {
 

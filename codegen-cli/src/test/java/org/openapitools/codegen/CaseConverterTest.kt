@@ -1,6 +1,6 @@
 package org.openapitools.codegen
 
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.openapitools.codegen.utils.CamelCaseConverter
 import kotlin.test.assertEquals
 

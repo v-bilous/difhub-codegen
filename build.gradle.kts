@@ -1,4 +1,5 @@
 plugins {
+	base
     kotlin("jvm") version "1.4.0"
     id("org.jetbrains.intellij") version "0.4.12" apply false
     id("org.jetbrains.gradle.plugin.idea-ext") version "0.7" apply false
@@ -9,8 +10,6 @@ group = "pro.bilous"
 version = "1.0-SNAPSHOT"
 
 allprojects {
-	apply(plugin = "jacoco")
-
 	repositories {
 		mavenLocal()
         mavenCentral()
@@ -40,19 +39,24 @@ tasks {
     }
 }
 
-tasks.withType<JacocoReport> {
-	executionData(
-		fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
-	)
+subprojects {
+
+}
+
+tasks.register<JacocoReport>("jacocoRootReport") {
+	subprojects {
+		this@subprojects.plugins.withType<JacocoPlugin>().configureEach {
+			this@subprojects.tasks.matching {
+				it.extensions.findByType<JacocoTaskExtension>() != null }
+				.configureEach {
+					sourceSets(this@subprojects.the<SourceSetContainer>().named("main").get())
+					executionData(this)
+				}
+		}
+	}
 
 	reports {
 		xml.isEnabled = true
-		html.isEnabled = false
-		csv.isEnabled = false
+		html.isEnabled = true
 	}
-}
-
-tasks.test {
-	useJUnitPlatform()
-	finalizedBy(tasks.jacocoTestReport)
 }
