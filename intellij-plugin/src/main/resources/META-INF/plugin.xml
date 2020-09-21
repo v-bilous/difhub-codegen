@@ -19,20 +19,20 @@
     -->
 
     <extensions defaultExtensionNs="com.intellij">
-        <moduleBuilder builderClass="bhn.intellij.plugin.project.ProjectModuleBuilder"/>
-        <errorHandler implementation="bhn.intellij.plugin.errorreport.PluginErrorReportSubmitter"/>
+        <moduleBuilder builderClass="pro.bilous.intellij.plugin.project.ProjectModuleBuilder"/>
+        <errorHandler implementation="pro.bilous.intellij.plugin.errorreport.PluginErrorReportSubmitter"/>
     </extensions>
 
     <actions>
         <group id="menuGroup" text="DifHub" popup="true">
             <add-to-group group-id="MainMenu" relative-to-action="ToolsMenu" anchor="after"/>
-			<action id="difhubCredentials" text="DifHub Login" class="bhn.intellij.plugin.action.menu.DifHubLoginAction"/>
-			<action id="projectSettings" text="Project Settings" class="bhn.intellij.plugin.action.menu.ProjectPropertiesAction"/>
+			<action id="difhubCredentials" text="DifHub Login" class="pro.bilous.intellij.plugin.action.menu.DifHubLoginAction"/>
+			<action id="projectSettings" text="Project Settings" class="pro.bilous.intellij.plugin.action.menu.ProjectPropertiesAction"/>
 			<separator/>
-			<action id="loadOpenApiSpec" text="Load OpenApi" class="bhn.intellij.plugin.action.menu.DifHubLoadOpenApiAction"/>
-            <action id="generateCode" text="Generate Code" class="bhn.intellij.plugin.action.menu.GenerateCodeAction"/>
+			<action id="loadOpenApiSpec" text="Load OpenApi" class="pro.bilous.intellij.plugin.action.menu.DifHubLoadOpenApiAction"/>
+            <action id="generateCode" text="Generate Code" class="pro.bilous.intellij.plugin.action.menu.GenerateCodeAction"/>
             <separator/>
-            <action id="reportIssue" text="Report Issue" class="bhn.intellij.plugin.action.ReportIssueAction"/>
+            <action id="reportIssue" text="Report Issue" class="pro.bilous.intellij.plugin.action.ReportIssueAction"/>
         </group>
     </actions>
 </idea-plugin>
