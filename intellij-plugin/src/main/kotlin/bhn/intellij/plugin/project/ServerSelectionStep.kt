@@ -21,11 +21,14 @@ class ServerSelectionStep(val moduleBuilder: ProjectModuleBuilder) : ModuleWizar
     val difhub = ConfigReader.loadConfig().difhub
 
     override fun updateDataModel() {
-
+		moduleBuilder.request.username = userField.text
+		moduleBuilder.request.password = passwordField.text
+		moduleBuilder.request.organization = textFieldWithHistory.text
+		writeCredentialsToProps()
     }
 
     override fun getComponent(): JComponent {
-
+		loadCredentials()
         return panel {
             titledRow("DifHub Credentials") {
                 row {
@@ -67,14 +70,19 @@ class ServerSelectionStep(val moduleBuilder: ProjectModuleBuilder) : ModuleWizar
         }
         try {
             URI(serverUrl)
-            applyCredentials()
             return true
         } catch (e: URISyntaxException) {
             throw ConfigurationException("Server URL must be a valid url")
         }
     }
 
-    private fun applyCredentials() {
+	private fun loadCredentials() {
+		textFieldWithHistory.text = System.getProperty("DIFHUB_ORG_NAME", "")
+		userField.text = System.setProperty("DIFHUB_USERNAME", "")
+		passwordField.text = System.setProperty("DIFHUB_PASSWORD", "")
+	}
+
+    private fun writeCredentialsToProps() {
         System.setProperty("DIFHUB_ORG_NAME", textFieldWithHistory.text)
         System.setProperty("DIFHUB_USERNAME", userField.text)
         System.setProperty("DIFHUB_PASSWORD", passwordField.text)

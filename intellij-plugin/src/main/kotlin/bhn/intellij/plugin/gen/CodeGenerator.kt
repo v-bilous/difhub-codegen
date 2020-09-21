@@ -1,5 +1,6 @@
 package bhn.intellij.plugin.gen
 
+import bhn.intellij.plugin.PathTools
 import com.intellij.openapi.vfs.VirtualFileManager
 import io.airlift.airline.*
 import org.openapitools.codegen.cmd.*
@@ -7,8 +8,8 @@ import java.util.*
 
 class CodeGenerator {
     fun generate(projectPath: String) {
-        val specFilePath = "$projectPath/.openapi-generator/"
-        val configFile = "$projectPath/.openapi-generator/settings.yaml"
+        val specFilePath = "${PathTools.getHomePath(projectPath)}/"
+        val configFile = PathTools.getSettingsPath(projectPath)
 
         val args = arrayOf(
             "generate",

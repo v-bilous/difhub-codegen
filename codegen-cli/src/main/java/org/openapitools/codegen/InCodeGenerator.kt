@@ -40,4 +40,11 @@ open class InCodeGenerator : DefaultGenerator() {
 			config!!.templateDir() + File.separator + "embed" + File.separator + templateFile
 		}
 	}
+
+	override fun writeToFile(filename: String, contents: String?): File {
+		val newFilename = if (filename.contains("/.openapi-generator/")) {
+			filename.replace("/.openapi-generator/", "/.difhub-codegen/")
+		} else filename
+		return super.writeToFile(newFilename, contents)
+	}
 }

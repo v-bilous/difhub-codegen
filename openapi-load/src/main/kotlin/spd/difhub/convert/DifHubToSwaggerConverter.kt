@@ -17,10 +17,11 @@ import java.lang.IllegalStateException
 class DifHubToSwaggerConverter(val system: String) {
 	private val log = LoggerFactory.getLogger(DifHubToSwaggerConverter::class.java)
 
-	private val openApi = OpenAPI()
-	val appLoader = ApplicationsLoader()
+	private val appLoader = ApplicationsLoader()
 
 	fun convertAll(): List<OpenApiData> {
+		ModelLoader.globalModelCache.clear()
+
 		val appModels = appLoader.loadAll(system)
 
 		val result = mutableListOf<OpenApiData>()
@@ -36,26 +37,25 @@ class DifHubToSwaggerConverter(val system: String) {
 	}
 
 	fun convert(application: String): OpenAPI {
+		val openApi = OpenAPI()
 
 		val appModel = appLoader.loadOne(system, application)
 		if (appModel!!.`object`!!.usage != "Service") {
 			throw IllegalStateException("Only Service application open for Generation. Please change Usage on Difhub!")
 		}
 		val appSettings = appLoader.loadAppSettings(system, application)
-		if (appSettings != null) {
-			openApi.info = readInfo(appModel)
-		}
+		openApi.info = readInfo(appModel)
 		openApi.servers = buildServers(appSettings)
 
 		//addPathAndDefRecursively()
-		convertModelsToDefinitions(application)
+		convertModelsToDefinitions(application, openApi)
 
-		convertInterfacesToPaths(application)
+		convertInterfacesToPaths(application, openApi)
 
 		return openApi
 	}
 
-	private fun convertInterfacesToPaths(application: String) {
+	private fun convertInterfacesToPaths(application: String, openApi: OpenAPI) {
 		val interfaces = InterfacesLoader().load(system, application)
 
 		val modelsToLoad = mutableMapOf<String, String>()
@@ -103,7 +103,7 @@ class DifHubToSwaggerConverter(val system: String) {
 		modelsToLoad.forEach {
 			val model = ModelLoader(DefLoader()).loadModel(it.value)
 			if (model != null) {
-				addDefRecursively(model)
+				addDefRecursively(model, openApi)
 			} else {
 				System.err.println("Model failed when load: ${it.value}")
 			}
@@ -113,24 +113,26 @@ class DifHubToSwaggerConverter(val system: String) {
 		}
 	}
 
-	private fun convertModelsToDefinitions(application: String) {
+	private fun convertModelsToDefinitions(application: String, openApi: OpenAPI) {
 		val datatests = DatasetsLoader().load(system, application, type = "Resource")
 
 		datatests?.forEach {
-			addDefRecursively(it)
+			addDefRecursively(it, openApi)
 		}
 	}
 
-	private val processedDefinitions = mutableListOf<String>()
+	private val processedDefinitions = mutableMapOf<String, MutableList<String>>()
 	//private val innerPaths = mutableListOf<Model>()
 
-	private fun addDefRecursively(source: Model) {
+	private fun addDefRecursively(source: Model, openApi: OpenAPI) {
+		val definition = processedDefinitions.getOrPut(openApi.info.title) { mutableListOf() }
+
 		val targetName = normalizeTypeName(source.identity.name)
-		if (processedDefinitions.contains(targetName)) {
+		if (definition.contains(targetName)) {
 			return
 		}
 
-		processedDefinitions.add(targetName)
+		definition.add(targetName)
 		val defConverter = DefinitionConverter(source)
 		defConverter.convert()
 				.forEach {

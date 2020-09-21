@@ -26,8 +26,10 @@
     <actions>
         <group id="menuGroup" text="DifHub" popup="true">
             <add-to-group group-id="MainMenu" relative-to-action="ToolsMenu" anchor="after"/>
-            <action id="projectSettings" text="Project Settings" class="bhn.intellij.plugin.action.menu.ProjectPropertiesAction"/>
-            <action id="loadOpenApiSpec" text="Load OpenApi" class="bhn.intellij.plugin.action.menu.DifHubLoadOpenApiAction"/>
+			<action id="difhubCredentials" text="DifHub Login" class="bhn.intellij.plugin.action.menu.DifHubLoginAction"/>
+			<action id="projectSettings" text="Project Settings" class="bhn.intellij.plugin.action.menu.ProjectPropertiesAction"/>
+			<separator/>
+			<action id="loadOpenApiSpec" text="Load OpenApi" class="bhn.intellij.plugin.action.menu.DifHubLoadOpenApiAction"/>
             <action id="generateCode" text="Generate Code" class="bhn.intellij.plugin.action.menu.GenerateCodeAction"/>
             <separator/>
             <action id="reportIssue" text="Report Issue" class="bhn.intellij.plugin.action.ReportIssueAction"/>

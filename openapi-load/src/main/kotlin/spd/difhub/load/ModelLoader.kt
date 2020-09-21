@@ -10,7 +10,7 @@ import io.swagger.util.Json
 class ModelLoader(private val defLoader: DefLoader) {
 
 	companion object {
-		private val globalModelCache = mutableMapOf<String, String>()
+		val globalModelCache = mutableMapOf<String, String>()
 	}
 
 	init {

@@ -15,16 +15,7 @@ dependencies {
     implementation(project(":openapi-load"))
     implementation(project(":codegen-cli"))
 
-//    implementation ("in.code:openapi-gen:1.0.0-SNAPSHOT") {
-//        exclude(group = "org.slf4j")
-//    }
-//    implementation ("in.code:codegen-cli:1.0.0-SNAPSHOT") {
-//        exclude(group = "org.slf4j")
-//    }
-//    implementation("com.google.guava:guava:'28.1-jre")
-//    implementation ("io.sentry:sentry:1.7.27")  {
-//        exclude group: 'org.slf4j'
-//    }
+	testImplementation(kotlin("test-junit"))
 }
 
 group = "pro.bilous.code"
@@ -33,7 +24,7 @@ version = "0.0.7"
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
 //    pulginName = "DifHub"
-    version = "2019.3"
+    version = "2020.2.2"
 }
 
 tasks.patchPluginXml {

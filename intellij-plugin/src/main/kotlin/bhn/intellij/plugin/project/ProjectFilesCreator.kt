@@ -1,5 +1,6 @@
 package bhn.intellij.plugin.project
 
+import bhn.intellij.plugin.PathTools
 import bhn.intellij.plugin.gen.CodeGenerator
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.vfs.VirtualFileManager
@@ -15,7 +16,7 @@ class ProjectFilesCreator {
         val project = module.project
         val basePath = project.basePath
 
-        val configFolder = "$basePath/.openapi-generator"
+        val configFolder = PathTools.getHomePath(basePath)
 
         createCredentialsFile(request, configFolder)
         createOpenApiFiles(request, configFolder)
@@ -25,7 +26,7 @@ class ProjectFilesCreator {
         VirtualFileManager.getInstance().syncRefresh()
     }
 
-    private fun createCredentialsFile(request: ProjectCreationRequest, configFolder: String) {
+	fun createCredentialsFile(request: ProjectCreationRequest, configFolder: String) {
         val fileContent = mapOf(
             "username" to request.username,
             "password" to request.password,
@@ -44,7 +45,7 @@ class ProjectFilesCreator {
         }
     }
 
-    private fun createConfigFile(request: ProjectCreationRequest, configFolder: String) {
+	fun createConfigFile(request: ProjectCreationRequest, configFolder: String) {
         val configMap = mapOf(
             "system" to request.system,
             "application" to request.applications,

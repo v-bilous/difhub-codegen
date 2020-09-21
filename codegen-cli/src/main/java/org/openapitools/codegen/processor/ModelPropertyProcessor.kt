@@ -192,7 +192,7 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 		}
 	}
 
-	private val columnNamesToEscape = arrayOf("use", "open", "drop", "create", "table")
+	private val columnNamesToEscape = arrayOf("use", "open", "drop", "create", "table", "rank", "system")
 	fun applyColumnNames(model: CodegenModel, property: CodegenProperty) {
 		val columnName = CamelCaseConverter.convert(property.name).toLowerCase()
 		property.getVendorExtensions()["columnName"] = columnName
