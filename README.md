@@ -1,3 +1,6 @@
+
+[![Build Status](https://dev.azure.com/vovabilous/Bilous/_apis/build/status/v-bilous.difhub-codegen?branchName=master)](https://dev.azure.com/vovabilous/Bilous/_build/latest?definitionId=1&branchName=master) 
+[![codecov](https://codecov.io/gh/v-bilous/difhub-codegen/branch/master/graph/badge.svg)](https://codecov.io/gh/v-bilous/difhub-codegen) 
 [![CodeFactor](https://www.codefactor.io/repository/github/v-bilous/difhub-codegen/badge)](https://www.codefactor.io/repository/github/v-bilous/difhub-codegen)
 
 # DifHub Code Generation tools.
