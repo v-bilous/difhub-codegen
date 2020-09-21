@@ -1,16 +1,10 @@
 plugins {
     id("org.jetbrains.intellij")
-    kotlin("jvm")
-	jacoco
 }
 
 repositories {
     mavenCentral()
     mavenLocal()
-}
-
-jacoco {
-	toolVersion = "0.8.5"
 }
 
 dependencies {
@@ -38,17 +32,4 @@ tasks.patchPluginXml {
       Add change notes here.<br>
       <em>most HTML tags may be used</em>""")
     sinceBuild("192")
-}
-
-tasks.jacocoTestReport {
-	reports {
-		xml.isEnabled = true
-	}
-}
-
-tasks.test {
-	finalizedBy(tasks.jacocoTestReport)
-}
-tasks.jacocoTestReport {
-	dependsOn(tasks.test)
 }

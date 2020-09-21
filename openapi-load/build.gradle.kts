@@ -1,7 +1,3 @@
-plugins {
-    kotlin("jvm")
-	jacoco
-}
 
 configure<SourceSetContainer> {
 	named("main") {
@@ -19,23 +15,7 @@ dependencies {
 	implementation("com.amazonaws:aws-java-sdk-cognitoidp:1.11.699")
 	implementation("org.json:json:20170516")
 
+	testImplementation(kotlin("test-junit"))
 	testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
 	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-}
-
-jacoco {
-	toolVersion = "0.8.5"
-}
-
-tasks.jacocoTestReport {
-	reports {
-		xml.isEnabled = true
-	}
-}
-
-tasks.test {
-	finalizedBy(tasks.jacocoTestReport)
-}
-tasks.jacocoTestReport {
-	dependsOn(tasks.test)
 }

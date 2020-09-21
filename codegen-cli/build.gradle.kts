@@ -1,14 +1,6 @@
-plugins {
-    kotlin("jvm")
-	jacoco
-}
 
 sourceSets.main {
     java.srcDirs("src/main/java", "src/main/kotlin")
-}
-
-jacoco {
-	toolVersion = "0.8.5"
 }
 
 dependencies {
@@ -25,17 +17,4 @@ dependencies {
 	testImplementation(kotlin("test-junit"))
 	testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
 	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-}
-
-tasks.jacocoTestReport {
-	reports {
-		xml.isEnabled = true
-	}
-}
-
-tasks.test {
-	finalizedBy(tasks.jacocoTestReport)
-}
-tasks.jacocoTestReport {
-	dependsOn(tasks.test)
 }
