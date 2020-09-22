@@ -2,7 +2,7 @@ package {{basePackage}}.service
 
 import {{basePackage}}.domain.BaseResource
 import {{basePackage}}.repository.CommonRepository
-import {{basePackage}}.rsql.CustomRsqlVisitor
+import com.github.ichanzhar.rsql.JpaRsqlVisitor
 import cz.jirutka.rsql.parser.ast.Node
 import cz.jirutka.rsql.parser.RSQLParser
 import org.springframework.data.domain.Page
@@ -65,8 +65,8 @@ abstract class AbstractService<E: BaseResource, R: CommonRepository<E>>(protecte
 	}
 
 	private fun doGetAll(pageable: Pageable, query: String): Page<E> {
-		val rootNode: Node = RSQLParser().parse("isDeleted==false;$query")
-		val spec: Specification<E> = rootNode.accept(CustomRsqlVisitor())
+		val rootNode: Node = RSQLParser().parse("entity.state!=deleted;$query")
+		val spec: Specification<E> = rootNode.accept(JpaRsqlVisitor())
 		return repository.findAll(spec,pageable)
 	}
 }

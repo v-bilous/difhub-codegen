@@ -190,7 +190,7 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 		val inputRoot = "app-module/"
 		val destinationRoot = "app-${artifactId.toLowerCase()}"
 		addSupportFile(source = "$inputRoot/build.gradle.kts.mustache",  target = "$destinationRoot/build.gradle.kts")
-		addSupportFile(source = "$inputRoot/Dockerfile",  target = "$destinationRoot/Dockerfile")
+		addSupportFile(source = "$inputRoot/Dockerfile.mustache",  target = "$destinationRoot/Dockerfile")
 	}
 
 	private fun setupRawFiles() {
