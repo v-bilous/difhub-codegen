@@ -15,6 +15,8 @@ dependencies {
     implementation("junit:junit:4.8.1")
 
 	testImplementation(kotlin("test-junit"))
+	testImplementation("org.mockito:mockito-core:3.5.11")
+	testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
 	testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
 	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }

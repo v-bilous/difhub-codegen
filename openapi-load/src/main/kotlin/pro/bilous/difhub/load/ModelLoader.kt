@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.swagger.util.Json
 
-class ModelLoader(private val defLoader: DefLoader) {
+class ModelLoader(private val defLoader: DefLoader) : IModelLoader {
 
 	companion object {
 		val globalModelCache = mutableMapOf<String, String>()
@@ -17,7 +17,7 @@ class ModelLoader(private val defLoader: DefLoader) {
 		Json.mapper().registerKotlinModule()
 	}
 
-	fun loadModel(reference: String): Model? {
+	override fun loadModel(reference: String): Model? {
 		// remove the version suffix to always get the latest one.
 		var fixedRef = reference
 		if (fixedRef.contains("/versions/")) {
@@ -33,7 +33,7 @@ class ModelLoader(private val defLoader: DefLoader) {
 		}
 	}
 
-	fun loadModels(reference: String): List<Model>? {
+	override fun loadModels(reference: String): List<Model>? {
 		val text = loadString(reference)
 		return if (text.isNullOrEmpty()) null else Json.mapper().readValue<List<Model>>(text)
 	}

@@ -5,6 +5,9 @@ import pro.bilous.difhub.config.ConfigReader
 
 class SystemsLoader {
 
+	var modelLoader: IModelLoader = ModelLoader(DefLoader())
+	var config = ConfigReader.loadConfig()
+
 	fun loadSystems(): List<String> {
 		val difhub = config().difhub
 
@@ -21,11 +24,11 @@ class SystemsLoader {
 		return systems
 	}
 
-	fun config(): Config {
-		return ConfigReader.loadConfig()
+	private fun config(): Config {
+		return config
 	}
 
-	fun loader(): ModelLoader {
-		return ModelLoader(DefLoader())
+	private fun loader(): IModelLoader {
+		return modelLoader
 	}
 }
