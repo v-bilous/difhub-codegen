@@ -22,5 +22,5 @@ steps:
     testResultsFiles: '**/TEST-*.xml'
     tasks: 'build'
 - script: |
-    bash <(curl -s https://codecov.io/bash)
+    bash <(curl -s https://codecov.io/bash -v)
   displayName: 'Upload to codecov.io'
