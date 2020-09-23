@@ -115,8 +115,16 @@ class InterfaceToPathConverter(private val source: Model, private val openApi: O
 	}
 
 	private fun wrap200ResponseAsArray(apiResponses: ApiResponses): ApiResponses {
-		val get200Response = apiResponses["200"]!!
-		if (get200Response.content == null) {
+		if (!apiResponses.containsKey("200") && !apiResponses.containsKey("201") ) {
+			return apiResponses
+		}
+		val get200Response = when {
+			apiResponses.containsKey("200") -> apiResponses["200"]
+			apiResponses.containsKey("201") -> apiResponses["201"]
+			else -> throw IllegalArgumentException("Success response was not found. Fix your DifHub Interface!")
+		}
+
+		if (get200Response!!.content == null) {
 			return apiResponses
 		}
 		val objectSchema = get200Response.content["application/json"]?.schema ?: return apiResponses
