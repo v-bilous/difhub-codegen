@@ -35,9 +35,13 @@
 			{{/vendorExtensions.embeddedComponent}}
 			{{/vendorExtensions.isEmbedded}}
 			{{^vendorExtensions.isEmbedded}}
-				{{^vendorExtensions.isNeedSkip}}
-			<column name="{{vendorExtensions.columnName}}" type="{{vendorExtensions.columnType}}"/>
-				{{/vendorExtensions.isNeedSkip}}
+			{{^vendorExtensions.isNeedSkip}}
+			<column name="{{vendorExtensions.columnName}}" type="{{vendorExtensions.columnType}}" {{^required}}/{{/required}}>
+				{{#required}}
+				<constraints nullable="false"/>
+			</column>
+			{{/required}}
+			{{/vendorExtensions.isNeedSkip}}
 			{{/vendorExtensions.isEmbedded}}
 			{{/isListContainer}}
 			{{/vars}}
