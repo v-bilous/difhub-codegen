@@ -178,10 +178,6 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 		addSupportFile(source = "$inputSrc/listener/BaseResourceListener.kt.mustache", folder = "$destSrc/listener", target = "BaseResourceListener.kt")
 		addSupportFile(source = "$inputSrc/listener/BaseDomainListener.kt.mustache", folder = "$destSrc/listener", target = "BaseDomainListener.kt")
 		addSupportFile(source = "$inputSrc/repository/CommonRepository.kt.mustache", folder = "$destSrc/repository", target = "CommonRepository.kt")
-		addSupportFile(source = "$inputSrc/rsql/CustomRsqlVisitor.kt.mustache", folder = "$destSrc/rsql", target = "CustomRsqlVisitor.kt")
-		addSupportFile(source = "$inputSrc/rsql/GenericRsqlSpecBuilder.kt.mustache", folder = "$destSrc/rsql", target = "GenericRsqlSpecBuilder.kt")
-		addSupportFile(source = "$inputSrc/rsql/GenericRsqlSpecification.kt.mustache", folder = "$destSrc/rsql", target = "GenericRsqlSpecification.kt")
-		addSupportFile(source = "$inputSrc/rsql/RsqlSearchOperation.kt.mustache", folder = "$destSrc/rsql", target = "RsqlSearchOperation.kt")
 		addSupportFile(source = "$inputSrc/service/AbstractService.kt.mustache", folder = "$destSrc/service", target = "AbstractService.kt")
 		addSupportFile(source = "$inputSrc/service/CommonService.kt.mustache", folder = "$destSrc/service", target = "CommonService.kt")
 	}
