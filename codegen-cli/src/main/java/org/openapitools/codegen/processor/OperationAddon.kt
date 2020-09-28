@@ -8,7 +8,7 @@ import org.openapitools.codegen.CodegenParameter
 class OperationAddon(val codegen: CodeCodegen) {
 
 	@Suppress("UNCHECKED_CAST")
-	fun populate(objs: MutableMap<String, Any> ) {
+	fun populate(objs: MutableMap<String, Any>) {
 		val operations = objs["operations"] as MutableMap<String, Any>
 		val ops = operations["operation"] as MutableList<CodegenOperation>
 		populateClassnames(objs, operations, ops)
@@ -26,6 +26,7 @@ class OperationAddon(val codegen: CodeCodegen) {
 			operation.hasProduces = true
 			operation.vendorExtensions["x-operationProduces"] = "APPLICATION_JSON_VALUE"
 			populateBooleanHttpMethods(operation)
+			populatePrimaryQueryParam(operation)
 			populatePrimaryPathParam(operation, objs)
 			populateEventMapping(operation)
 		}
@@ -42,6 +43,13 @@ class OperationAddon(val codegen: CodeCodegen) {
 		when (operation.httpMethod.toLowerCase()) {
 			"post", "put", "patch", "delete" -> operation.vendorExtensions[OptsPreProcessor.EVENT_MAPPING] = true
 			else -> operation.vendorExtensions[OptsPreProcessor.EVENT_MAPPING] = false
+		}
+	}
+
+	private fun populatePrimaryQueryParam(operation: CodegenOperation) {
+		if (operation.queryParams.isNotEmpty()) {
+			val firstQueryParam = operation.queryParams.first()
+			operation.vendorExtensions["primaryQueryParamName"] = firstQueryParam.paramName
 		}
 	}
 
@@ -114,9 +122,10 @@ class OperationAddon(val codegen: CodeCodegen) {
 
 	private fun fixOperationParams(operation: CodegenOperation) {
 		// remove bearer token header param if exist.
-		operation.allParams.removeIf{ it.isHeaderParam && it.paramName == "bearer"}
-		operation.allParams.removeIf { it.isQueryParam &&
-				arrayOf("options", "startTime", "endTime").contains(it.paramName)
+		operation.allParams.removeIf { it.isHeaderParam && it.paramName == "bearer" }
+		operation.allParams.removeIf {
+			it.isQueryParam &&
+					arrayOf("options", "startTime", "endTime").contains(it.paramName)
 		}
 
 		operation.allParams.forEach {
@@ -128,7 +137,7 @@ class OperationAddon(val codegen: CodeCodegen) {
 		// add all query params
 		val searchParam = operation.queryParams.find { it.paramName == "search" }
 		if (searchParam == null) {
-			operation.allParams.forEach { it.hasMore = true}
+			operation.allParams.forEach { it.hasMore = true }
 			operation.allParams.last().hasMore = false
 		}
 
@@ -141,22 +150,26 @@ class OperationAddon(val codegen: CodeCodegen) {
 			return
 		}
 		// add page parameter
-		val pageParameter = CodegenParameter()
-				.apply {
-					dataType = "Pageable"
-					baseType = "Pageable"
-					paramName = "page"
-					baseName = "page"
-					isPrimitiveType = false
-					isInteger = false
-					vendorExtensions["isPageParam"] = true
-				}
+		if (operation.httpMethod.toLowerCase() == "get" && operation.isListContainer) {
+			val pageParameter = CodegenParameter()
+					.apply {
+						dataType = "Pageable"
+						baseType = "Pageable"
+						paramName = "page"
+						baseName = "page"
+						isPrimitiveType = false
+						isInteger = false
+						vendorExtensions["isPageParam"] = true
+					}
+			operation.allParams.add(pageParameter)
+		}
+
 		//operation.queryParams.add(pageParameter)
 		//operation.queryParams.forEach { it.isQueryParam = true}
 
-		operation.allParams.add(pageParameter)
 
-		operation.allParams.forEach { it.hasMore = true}
+
+		operation.allParams.forEach { it.hasMore = true }
 		operation.allParams.last().hasMore = false
 
 	}
@@ -176,17 +189,17 @@ class OperationAddon(val codegen: CodeCodegen) {
 
 		objs["converterLinkMethodname"] = ops.find { operation ->
 			val idPathParam = operation.path.split("/").last().removePrefix("{").removeSuffix("}")
-			operation.httpMethod == "GET" && operation.pathParams.any{ it.paramName == idPathParam }
+			operation.httpMethod == "GET" && operation.pathParams.any { it.paramName == idPathParam }
 		}?.operationId ?: "getMethodNotFound"
 
 		objs["validationRuleClassname"] = classPrefix + "ValidationRule"
 		objs["returnModelType"] = returnType
 	}
 
-	private fun findControllerPath(ops: List<CodegenOperation>):String {
+	private fun findControllerPath(ops: List<CodegenOperation>): String {
 		val path = ops.find { operation ->
 			val idPathParam = operation.path.split("/").last().removePrefix("{").removeSuffix("}")
-			operation.httpMethod == "GET" && operation.pathParams.any{ it.paramName == idPathParam }
+			operation.httpMethod == "GET" && operation.pathParams.any { it.paramName == idPathParam }
 		}?.path ?: "/path-not-found"
 
 		if (path.endsWith("}")) {

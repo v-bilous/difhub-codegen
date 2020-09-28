@@ -271,6 +271,7 @@ class CodeCodegen : AbstractJavaCodegen() {
 			OperationResponseResolver(this).resolve(operation, codegenOperation)
 		}
 		codegenOperation.imports.remove("Error")
+		codegenOperation.imports.remove("List")
 
 		return codegenOperation
 	}
