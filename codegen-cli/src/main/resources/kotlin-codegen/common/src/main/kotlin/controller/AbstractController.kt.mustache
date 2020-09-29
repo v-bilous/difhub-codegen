@@ -88,6 +88,7 @@ abstract class AbstractController<E: BaseResource, S: CommonService<E>>(val  ser
 	override fun saveAll(parentId: String, domains: List<E>): List<E> {
 		domains.forEach {
 			validateParent(it, parentId)
+			it.id = it.identity.id
 		}
 		return service.saveAll(domains)
 	}
@@ -114,7 +115,7 @@ abstract class AbstractController<E: BaseResource, S: CommonService<E>>(val  ser
 	}
 
 	private fun getSearchCriteria(query: String?, parentId: String): String {
-		val underParentSearchCriteria = "parent_id==$parentId"
+		val underParentSearchCriteria = "entity.parent.id==$parentId"
 		return if (query.isNullOrBlank()) {
 			underParentSearchCriteria
 		} else {
