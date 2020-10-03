@@ -8,12 +8,13 @@ class DataCodeGenerator(private val specIndex: Int = 0) : InCodeGenerator() {
 		setGeneratorPropertyDefault(CodegenConstants.SUPPORTING_FILES, java.lang.Boolean.TRUE.toString())
 		setGeneratorPropertyDefault(CodegenConstants.MODEL_TESTS, java.lang.Boolean.FALSE.toString())
 		setGeneratorPropertyDefault(CodegenConstants.MODEL_DOCS, java.lang.Boolean.FALSE.toString())
-		setGeneratorPropertyDefault(CodegenConstants.API_TESTS, java.lang.Boolean.FALSE.toString())
+		setGeneratorPropertyDefault(CodegenConstants.API_TESTS, java.lang.Boolean.TRUE.toString())
 		setGeneratorPropertyDefault(CodegenConstants.API_DOCS, java.lang.Boolean.FALSE.toString())
 	}
 
 	override fun opts(opts: ClientOptInput): Generator {
 		val appRoot = "app-module/src/main/kotlin"
+		val testRoot = "app-module/src/test/kotlin"
 
 		val config = opts.config as CodeCodegen
 		config.entityMode = true
@@ -29,6 +30,9 @@ class DataCodeGenerator(private val specIndex: Int = 0) : InCodeGenerator() {
 
 		config.apiTemplateFiles["$appRoot/repository/repository.mustache"] = "Repository.kt"
 		config.apiTemplateFiles["$appRoot/service/service.mustache"] = "Service.kt"
+
+		config.apiTestTemplateFiles.clear()
+		config.apiTestTemplateFiles["$testRoot/controller/apiTest.kt.mustache"] = ".kt"
 //		config.apiTemplateFiles["resources/mapper.mustache"] = ".kt"
 //		config.apiTemplateFiles["resources/converter.mustache"] = ".kt"
 //		config.apiTemplateFiles["resources/validationRules.mustache"] = ".kt"

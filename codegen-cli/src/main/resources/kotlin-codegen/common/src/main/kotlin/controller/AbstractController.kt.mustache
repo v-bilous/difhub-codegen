@@ -16,7 +16,7 @@ abstract class AbstractController<E: BaseResource, S: CommonService<E>>(val  ser
 
 	override fun create(domain: E): ResponseEntity<E> {
 		val result = service.save(domain)?: throw InvalidRequestException()
-		return ResponseEntity(result, HttpStatus.OK)
+		return ResponseEntity(result, HttpStatus.CREATED)
 	}
 
 	override fun delete(id: String): ResponseEntity<E> {
@@ -58,7 +58,7 @@ abstract class AbstractController<E: BaseResource, S: CommonService<E>>(val  ser
 	override fun create(parentId: String, domain: E): ResponseEntity<E> {
 		validateParent(domain, parentId)
 		val result = service.save(domain) ?: throw InvalidRequestException()
-		return ResponseEntity(result, HttpStatus.OK)
+		return ResponseEntity(result, HttpStatus.CREATED)
 	}
 
 	override fun getById(parentId: String, id: String): ResponseEntity<E> {
@@ -114,7 +114,7 @@ abstract class AbstractController<E: BaseResource, S: CommonService<E>>(val  ser
 	}
 
 	private fun getSearchCriteria(query: String?, parentId: String): String {
-		val underParentSearchCriteria = "parent_id==$parentId"
+		val underParentSearchCriteria = "entity.parent.id==$parentId"
 		return if (query.isNullOrBlank()) {
 			underParentSearchCriteria
 		} else {

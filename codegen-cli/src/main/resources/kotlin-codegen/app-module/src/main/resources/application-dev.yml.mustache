@@ -1,0 +1,9 @@
+spring:
+  profiles:
+    active: development
+  jpa:
+    show-sql: true
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/{{systemLower}}_{{appNameLower}}?autoReconnect=true&useSSL=false&rewriteBatchedStatements=true&serverTimezone=UTC&createDatabaseIfNotExist=true
+    username: ${DB_USER:root}
+    password: ${DB_PASS:Qw123456}
