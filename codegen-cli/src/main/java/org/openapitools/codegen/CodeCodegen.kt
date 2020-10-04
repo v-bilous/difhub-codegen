@@ -24,7 +24,7 @@ import java.io.File
 
 import org.openapitools.codegen.utils.StringUtils.camelize
 
-class CodeCodegen : AbstractJavaCodegen() {
+open class CodeCodegen : AbstractJavaCodegen() {
 	companion object {
 		private val LOGGER = LoggerFactory.getLogger(CodeCodegen::class.java)
 

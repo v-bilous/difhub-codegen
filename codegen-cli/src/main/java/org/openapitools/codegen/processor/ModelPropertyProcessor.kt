@@ -54,28 +54,6 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 
 		populateTableExtension(model, property)
 		// TODO support all possible types
-		if (property.vendorExtensions["columnType"] == null) {
-			when (property.datatypeWithEnum) {
-				"Boolean", "Boolean?" -> {
-					property.vendorExtensions["columnType"] = "TINYINT(1)"
-					property.vendorExtensions["hibernateType"] = "java.lang.Boolean"
-					property.isBoolean = true
-				}
-				"Date", "Date?" -> {
-					property.vendorExtensions["columnType"] = "datetime(6)"
-					property.vendorExtensions["hibernateType"] = "java.util.Date"
-					property.isDate = true
-				}
-				"Int", "Int?" -> {
-					property.vendorExtensions["columnType"] = "int"
-					property.isInteger = true
-				}
-				else -> {
-					property.vendorExtensions["columnType"] = "VARCHAR(255)"
-					property.vendorExtensions["hibernateType"] = "java.lang.String"
-				}
-			}
-		}
 		property.vendorExtensions["isNeedSkip"] = "id" == property.name.toLowerCase()
 
 		if (property.vendorExtensions.containsKey("x-codegen-type")) {
@@ -109,6 +87,32 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 			convertToMetadataProperty(property, model)
 		}
 		addGuidAnnotation(property, model)
+	}
+
+	fun resolvePropertyType(property: CodegenProperty) {
+		if (property.vendorExtensions["columnType"] != null) {
+			return
+		}
+		when (property.datatypeWithEnum) {
+			"Boolean", "Boolean?" -> {
+				property.vendorExtensions["columnType"] = "TINYINT(1)"
+				property.vendorExtensions["hibernateType"] = "java.lang.Boolean"
+				property.isBoolean = true
+			}
+			"Date", "Date?" -> {
+				property.vendorExtensions["columnType"] = "datetime(6)"
+				property.vendorExtensions["hibernateType"] = "java.util.Date"
+				property.isDate = true
+			}
+			"Int", "Int?" -> {
+				property.vendorExtensions["columnType"] = "int"
+				property.isInteger = true
+			}
+			else -> {
+				property.vendorExtensions["columnType"] = "VARCHAR(255)"
+				property.vendorExtensions["hibernateType"] = "java.lang.String"
+			}
+		}
 	}
 
 	private fun addGuidAnnotation(property: CodegenProperty, model: CodegenModel) {
