@@ -111,16 +111,28 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 
 		additionalProperties["javaVersion"] = "1.8"
 
+		val inputTest = "common/src/test/kotlin/"
+		val destTest = "$appRoot/src/test/kotlin/$appPackage"
+
+		addSupportFile(source = "$inputTest/controller/AbstractIntegrationTest.kt.mustache", folder = "$destTest/controller", target = "AbstractIntegrationTest.kt")
+		addSupportFile(source = "$inputTest/controller/CommonIntegrationTest.kt.mustache", folder = "$destTest/controller", target = "CommonIntegrationTest.kt")
+
+		val inputResTest = "app-module/src/test/resources/"
+		val destResTest = "$appRoot/src/test/resources/"
+
+		addSupportFile(source = "$inputResTest/application.yml.mustache", folder = destResTest, target = "application.yml")
+		addSupportFile(source = "$inputResTest/application-testcontainers.yml.mustache", folder = destResTest, target = "application-testcontainers.yml")
+
 		setupModuleFiles()
 
 		//addSupportFile("resources/errorCode-default.mustache", baseResourceResFolder, "errorCode-default.json")
 
 		val integrationTestConfigFolder = codegen.getIntegrationTestFolder(basePackage, "-resources")
 
-		addSupportFile("$inputResRoot/application.properties.mustache", baseResourceResFolder, "application.properties")
-		addSupportFile("$inputResRoot/application-dev.properties.mustache", baseResourceResFolder, "application-dev.properties")
-		addSupportFile("$inputResRoot/application-prod.properties.mustache", baseResourceResFolder, "application-prod.properties")
-		addSupportFile(source = "$inputResRoot/hibernate-types.properties", baseResourceResFolder, target = "hibernate-types.properties")
+		addSupportFile("$inputResRoot/application.yml.mustache", baseResourceResFolder, "application.yml")
+		addSupportFile("$inputResRoot/application-dev.yml.mustache", baseResourceResFolder, "application-dev.yml")
+		addSupportFile("$inputResRoot/application-prod.yml.mustache", baseResourceResFolder, "application-prod.yml")
+		addSupportFile(source = "$inputResRoot/hibernate-types.properties", folder = baseResourceResFolder, target = "hibernate-types.properties")
 
 //		addSupportFile("resources/integration-test/configurationIT.mustache", "$integrationTestConfigFolder/config", "ConfigurationIT.kt")
 //		addSupportFile("resources/integration-test/mockBeansConfigIT.mustache", "$integrationTestConfigFolder/config", "MockBeansConfigIT.kt")
@@ -153,7 +165,7 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 		addSupportFile(source = "gradlew.bat", target = "gradlew.bat")
 
 		addSupportFile(source = "README.mustache", target = "README.md")
-		addSupportFile(source = "gradle/wrapper/gradle-wrapper.properties", "", target = "gradle/wrapper/gradle-wrapper.properties")
+		addSupportFile(source = "gradle/wrapper/gradle-wrapper.properties", folder = "", target = "gradle/wrapper/gradle-wrapper.properties")
 
 	}
 
@@ -161,7 +173,7 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 		val commonRoot = "common"
 		val inputSrc = "$commonRoot/src/main/kotlin/"
 		val destSrc = "$commonRoot/src/main/kotlin/$basePackage"
-		addSupportFile(source = "$commonRoot/build.gradle.kts.mustache", commonRoot, "build.gradle.kts")
+		addSupportFile(source = "$commonRoot/build.gradle.kts.mustache", folder = commonRoot, target = "build.gradle.kts")
 		addSupportFile(source = "$inputSrc/config/WebConfig.kt.mustache", folder = "$destSrc/config", target = "WebConfig.kt")
 		addSupportFile(source = "$inputSrc/config/SpringFoxConfig.kt.mustache", folder = "$destSrc/config", target = "SpringFoxConfig.kt")
 		addSupportFile(source = "$inputSrc/constant/EntityState.kt.mustache", folder = "$destSrc/constant", target = "EntityState.kt")

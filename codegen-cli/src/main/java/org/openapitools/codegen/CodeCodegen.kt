@@ -24,7 +24,7 @@ import java.io.File
 
 import org.openapitools.codegen.utils.StringUtils.camelize
 
-class CodeCodegen : AbstractJavaCodegen() {
+open class CodeCodegen : AbstractJavaCodegen() {
 	companion object {
 		private val LOGGER = LoggerFactory.getLogger(CodeCodegen::class.java)
 
@@ -135,8 +135,6 @@ class CodeCodegen : AbstractJavaCodegen() {
 		updateOption(CodegenConstants.API_PACKAGE, apiPackage)
 		updateOption(CodegenConstants.MODEL_PACKAGE, modelPackage)
 		updateOption(CodegenConstants.MODEL_NAME_SUFFIX, modelNameSuffix)
-
-		apiTestTemplateFiles.clear() // TODO: add test template
 
 		// spring uses the jackson lib
 		additionalProperties["jackson"] = "true"
@@ -363,8 +361,9 @@ class CodeCodegen : AbstractJavaCodegen() {
 	}
 
 	fun getTestFolder(sourcePackage: String?, subModule: String): String {
-		val subFolder = if (enableSubModules) artifactId + subModule else ""
-		return (subFolder + File.separator + testFolder + File.separator + sourcePackage).replace(".", File.separator)
+		val subFolder = "app-$artifactId"
+		val rightSourcePkg = sourcePackage?.replace("repository", "controller")
+		return (subFolder + File.separator + "src/test/kotlin" + File.separator + rightSourcePkg).replace(".", File.separator)
 	}
 
 	fun getIntegrationTestFolder(sourcePackage: String, subModule: String): String {

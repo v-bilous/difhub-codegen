@@ -1,0 +1,124 @@
+package {{appPackage}}.controller
+
+import {{basePackage}}.controller.AbstractIntegrationTest
+{{#hasPathParent}}
+import {{basePackage}}.domain.Identity
+{{/hasPathParent}}
+import {{appPackage}}.{{appRealName}}Application
+import {{appPackage}}.domain.{{returnEntityType}}
+import {{appPackage}}.repository.{{repositoryClassname}}
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.test.web.servlet.MvcResult
+import org.springframework.util.LinkedMultiValueMap
+import java.util.*
+
+@ExtendWith(SpringExtension::class)
+@SpringBootTest(classes = [{{appRealName}}Application::class])
+@AutoConfigureMockMvc
+class {{classname}}IT : AbstractIntegrationTest<{{returnEntityType}}>() {
+
+	private val url = "{{^hasPathParent}}{{controllerPath}}{{/hasPathParent}}{{#hasPathParent}}{{testParentControllerPath}}{{/hasPathParent}}"
+
+	@Autowired
+	lateinit var repository: {{repositoryClassname}}
+
+{{#operations}}
+{{#operation}}
+{{>app-module/src/test/kotlin/controller/apiTestMethod}}
+{{/operation}}
+{{/operations}}
+
+	private fun resourceAsserts(savedResource: {{returnEntityType}}, result: MvcResult) {
+		if (savedResource.id != null) {
+			assertEquals(savedResource.id, getValue(result, "$.identity.id"))
+		} else {
+			assertNotNull(getValue(result, "$.identity.id"))
+		}
+		assertEquals(savedResource.identity.name, getValue(result, "$.identity.name"))
+		assertEquals(savedResource.identity.description, getValue(result, "$.identity.description"))
+		assertEquals(savedResource.entity.state, getValue(result, "$.entity.state"))
+		assertEquals(savedResource.entity.entityId, savedResource.identity.id)
+{{#testModel}}
+	{{#vars}}
+		{{^isListContainer}}
+		{{#isDate}}
+		assertDateEquals(savedResource.{{name}}, getValue(result, "$.{{name}}"))
+		{{/isDate}}
+		{{^isDate}}
+		assertEquals(savedResource.{{name}}, getValue(result, "$.{{name}}"){{#isInteger}} as Int?{{/isInteger}})
+		{{/isDate}}
+		{{/isListContainer}}
+		{{#isListContainer}}
+		assertListsEqual(savedResource.{{name}}, getValue(result, "$.{{name}}"))
+		{{/isListContainer}}
+	{{/vars}}
+{{/testModel}}
+	}
+
+	private fun resourceListAsserts(savedResource: {{returnEntityType}}, result: MvcResult, index: Int) {
+		if (savedResource.id != null) {
+			assertEquals(savedResource.id, getValue(result, "$.content[$index].identity.id"))
+		} else {
+			assertNotNull(getValue(result, "$.content[$index].identity.id"))
+		}
+		assertEquals(savedResource.identity.name, getValue(result, "$.content[$index].identity.name"))
+		assertEquals(savedResource.identity.description, getValue(result, "$.content[$index].identity.description"))
+		assertEquals(savedResource.entity.state, getValue(result, "$.content[$index].entity.state"))
+		{{#testModel}}
+		{{#vars}}
+		{{^isListContainer}}
+		{{#isDate}}
+		assertDateEquals(savedResource.{{name}}, getValue(result, "$.content[$index].{{name}}"))
+		{{/isDate}}
+		{{^isDate}}
+		assertEquals(savedResource.{{name}}, getValue(result, "$.content[$index].{{name}}"){{#isInteger}} as Int?{{/isInteger}})
+		{{/isDate}}
+		{{/isListContainer}}
+		{{#isListContainer}}
+		assertListsEqual(savedResource.{{name}}, getValue(result, "$.content[$index].{{name}}"))
+		{{/isListContainer}}
+		{{/vars}}
+		{{/testModel}}
+	}
+
+	private fun createWithRequiredFields(): {{returnEntityType}} {
+	return {{returnEntityType}}(
+			{{#testModel}}
+				{{#vars}}
+				{{name}} = {{#required}}{{#isString}}"{{/isString}}{{{defaultValue}}}{{#isString}}"{{/isString}}{{/required}}{{^required}}null{{/required}},
+				{{/vars}}
+			{{/testModel}}
+		).apply {
+			this.identity.name = "test name"
+			this.identity.description = "test description"
+			this.entity.state = "active"
+			{{#hasPathParent}}
+			this.entity.parent = Identity(id = "parent-id")
+			{{/hasPathParent}}
+		}
+	}
+
+	private fun createWithAllFields(): {{returnEntityType}} {
+		return {{returnEntityType}}(
+			{{#testModel}}
+				{{#vars}}
+				{{name}} = {{#isString}}"{{/isString}}{{{defaultValue}}}{{#isString}}"{{/isString}},
+				{{/vars}}
+			{{/testModel}}
+		).apply {
+			this.identity.name = "test user name"
+			this.identity.description = "test user description"
+			this.entity.state = "active"
+			{{#hasPathParent}}
+			this.entity.parent = Identity(id = "parent-id")
+			{{/hasPathParent}}
+		}
+	}
+
+}

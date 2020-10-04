@@ -54,25 +54,6 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 
 		populateTableExtension(model, property)
 		// TODO support all possible types
-		if (property.vendorExtensions["columnType"] == null) {
-			when (property.datatypeWithEnum) {
-				"Boolean", "Boolean?" -> {
-					property.vendorExtensions["columnType"] = "TINYINT(1)"
-					property.vendorExtensions["hibernateType"] = "java.lang.Boolean"
-				}
-				"Date", "Date?" -> {
-					property.vendorExtensions["columnType"] = "datetime(6)"
-					property.vendorExtensions["hibernateType"] = "java.util.Date"
-				}
-				"Int", "Int?" -> {
-					property.vendorExtensions["columnType"] = "int"
-				}
-				else -> {
-					property.vendorExtensions["columnType"] = "VARCHAR(255)"
-					property.vendorExtensions["hibernateType"] = "java.lang.String"
-				}
-			}
-		}
 		property.vendorExtensions["isNeedSkip"] = "id" == property.name.toLowerCase()
 
 		if (property.vendorExtensions.containsKey("x-codegen-type")) {
@@ -90,11 +71,10 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 		}
 
 		if (property.isListContainer && property.datatypeWithEnum.startsWith("List")) {
-			property.datatypeWithEnum = "Set" + property.datatypeWithEnum.removePrefix("List")
-			property.defaultValue = "new HashSet<>()"
+//			property.datatypeWithEnum = "Set" + property.datatypeWithEnum.removePrefix("List")
+			property.defaultValue = "listOf()"
 			model.imports.remove("List")
 			model.imports.remove("ArrayList")
-			model.imports.add("Set")
 		} else if (property.isModel && property.complexType.endsWith("IdentityModel") && property.name.endsWith("Id")) {
 			// convert Reference Type to the String
 			property.dataType = "String"
@@ -107,6 +87,32 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 			convertToMetadataProperty(property, model)
 		}
 		addGuidAnnotation(property, model)
+	}
+
+	fun resolvePropertyType(property: CodegenProperty) {
+		if (property.vendorExtensions["columnType"] != null) {
+			return
+		}
+		when (property.datatypeWithEnum) {
+			"Boolean", "Boolean?" -> {
+				property.vendorExtensions["columnType"] = "TINYINT(1)"
+				property.vendorExtensions["hibernateType"] = "java.lang.Boolean"
+				property.isBoolean = true
+			}
+			"Date", "Date?" -> {
+				property.vendorExtensions["columnType"] = "datetime(6)"
+				property.vendorExtensions["hibernateType"] = "java.util.Date"
+				property.isDate = true
+			}
+			"Int", "Int?" -> {
+				property.vendorExtensions["columnType"] = "int"
+				property.isInteger = true
+			}
+			else -> {
+				property.vendorExtensions["columnType"] = "VARCHAR(255)"
+				property.vendorExtensions["hibernateType"] = "java.lang.String"
+			}
+		}
 	}
 
 	private fun addGuidAnnotation(property: CodegenProperty, model: CodegenModel) {
@@ -197,8 +203,10 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 		val columnName = CamelCaseConverter.convert(property.name).toLowerCase()
 		property.getVendorExtensions()["columnName"] = columnName
 		property.getVendorExtensions()["escapedColumnName"] = if (columnNamesToEscape.contains(columnName)) {
-			"""\"${columnName}\""""
+			"${columnName}_"
 		} else columnName
+		property.getVendorExtensions()["columnName"] = property.getVendorExtensions()["escapedColumnName"]
+
 	}
 
 	fun applyEmbeddedComponent(model: CodegenModel, property: CodegenProperty) {

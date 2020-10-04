@@ -36,7 +36,7 @@ class OptsImportMappings(val codegen: CodeCodegen) {
 			"Function" to "Function",
 			"BaseResource" to "$basePackage.domain.BaseResource",
 			"BaseDomain" to "$basePackage.domain.BaseDomain",
-			"JsonType" to "org.hibernate.annotations.Type"
+			"JsonType" to "org.hibernate.annotations.Type",
 	)
 
 	fun addDefaultMappings() {

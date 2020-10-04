@@ -3,6 +3,8 @@ package {{package}}
 {{#imports}}import {{import}}
 {{/imports}}
 import javax.persistence.*
+import org.hibernate.annotations.LazyCollection
+import org.hibernate.annotations.LazyCollectionOption
 
 {{#models}}
 {{#model}}
