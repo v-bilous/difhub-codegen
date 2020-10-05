@@ -127,7 +127,7 @@ class OperationAddon(val codegen: CodeCodegen) {
 		}
 	}
 
-	private fun fixOperationParams(operation: CodegenOperation) {
+	fun fixOperationParams(operation: CodegenOperation) {
 		// remove bearer token header param if exist.
 		operation.allParams.removeIf { it.isHeaderParam && it.paramName == "bearer" }
 		operation.allParams.removeIf {
