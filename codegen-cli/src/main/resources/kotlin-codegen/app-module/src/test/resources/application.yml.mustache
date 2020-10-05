@@ -1,0 +1,27 @@
+spring:
+  profiles:
+  # Uncomment the following line to enable tests against production database type rather than H2, using Testcontainers
+  #active: testcontainers
+  application:
+    name: {{appNameLower}}
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:h2:mem:{{systemLower}}_{{appNameLower}};DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MYSQL
+    name:
+    username:
+    password:
+    hikari:
+      auto-commit: false
+    driver-class-name: org.h2.Driver
+  jpa:
+    database: H2
+    open-in-view: false
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+  liquibase:
+    change-log: classpath:/liquibase/liquibase-changeLog.xml
+
+server:
+  port: 1{{serverPort}}
+  address: localhost

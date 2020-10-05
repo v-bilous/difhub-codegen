@@ -17,12 +17,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("cz.jirutka.rsql:rsql-parser:2.1.0")
     implementation("jakarta.persistence:jakarta.persistence-api")
     implementation("org.springframework.data:spring-data-commons")
     implementation("org.liquibase:liquibase-core")
     implementation("mysql:mysql-connector-java")
-	implementation("com.github.ichanzhar:rsql-hibernate-jpa:0.2")
+    implementation("com.github.ichanzhar:rsql-hibernate-jpa:0.6")
 }
 
 tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {

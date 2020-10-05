@@ -52,8 +52,9 @@ data class {{classname}}(
     @Column(name = "{{vendorExtensions.inverseJoinColumnName}}")
     {{/vendorExtensions.isReferenceElement}}
     {{^vendorExtensions.isReferenceElement}}
-    @ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    @JoinTable(
+	@OneToMany(cascade = [CascadeType.ALL])
+	@LazyCollection(LazyCollectionOption.FALSE)
+	@JoinTable(
             name = "{{vendorExtensions.joinTableName}}",
             joinColumns = [JoinColumn(name = "{{vendorExtensions.joinColumnName}}", referencedColumnName = "id")],
             inverseJoinColumns = [JoinColumn(name = "{{vendorExtensions.inverseJoinColumnName}}", referencedColumnName = "id")]

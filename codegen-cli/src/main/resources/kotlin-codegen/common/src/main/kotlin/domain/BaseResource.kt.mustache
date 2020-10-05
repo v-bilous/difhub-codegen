@@ -17,10 +17,10 @@ open class BaseResource {
 			entity.entityId = value
 		}
 
-    @Embedded
-    var identity: Identity = Identity()
+	@Embedded
+	var identity: Identity = Identity()
 
-	@OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+	@OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "id")
-    var entity: ResourceEntity = ResourceEntity()
+	var entity: ResourceEntity = ResourceEntity()
 }

@@ -1,7 +1,9 @@
 package org.openapitools.codegen.processor
 
+import io.swagger.v3.oas.models.media.Schema
 import org.apache.commons.lang3.StringUtils
 import org.openapitools.codegen.CodeCodegen
+import org.openapitools.codegen.CodegenModel
 import org.openapitools.codegen.CodegenOperation
 import org.openapitools.codegen.CodegenParameter
 
@@ -77,6 +79,11 @@ class OperationAddon(val codegen: CodeCodegen) {
 				operation.vendorExtensions["hasPathParent"] = true
 				objs["hasPathParent"] = true
 				objs["parentPathParamName"] = parentParam.paramName
+				// add also test version of controller path
+				val controllerPath = objs["controllerPath"].toString()
+				val testPath = controllerPath.replace("{${parentParam.paramName}}", "parent-id")
+				// also remove all curly braces
+				objs["testParentControllerPath"] = testPath.replace("{", "").replace("}", "")
 				break
 			}
 		}
@@ -186,6 +193,10 @@ class OperationAddon(val codegen: CodeCodegen) {
 		objs["mapperClassname"] = classPrefix + "Mapper"
 		objs["converterClassname"] = classPrefix + "Converter"
 		objs["controllerPath"] = findControllerPath(ops)
+		if (returnType == "Person") {
+			println("")
+		}
+		objs["testModel"] = findTestCodegenModel(returnType)
 
 		objs["converterLinkMethodname"] = ops.find { operation ->
 			val idPathParam = operation.path.split("/").last().removePrefix("{").removeSuffix("}")
@@ -194,6 +205,32 @@ class OperationAddon(val codegen: CodeCodegen) {
 
 		objs["validationRuleClassname"] = classPrefix + "ValidationRule"
 		objs["returnModelType"] = returnType
+	}
+
+	private fun findTestCodegenModel(returnType: String): CodegenModel {
+		val schema = codegen.getOpenApi().components.schemas[returnType] as Schema<*>
+		val model = codegen.fromModel(returnType, schema)
+		model.vars.forEach {
+			if (returnType == "Account") {
+				println("")
+			}
+			it.defaultValue = when {
+				!it.defaultValue.isNullOrEmpty() && it.defaultValue != "null" -> {
+					it.defaultValue
+				}
+				it.isString -> "test string value"
+				it.isInteger -> "8"
+				it.dataType == "Date" -> {
+					"Date()"
+				}
+				it.isModel && it.datatypeWithEnum == "String" -> {
+					it.isString = true
+					"test_type"
+				}
+				else -> "null"
+			}
+		}
+		return model
 	}
 
 	private fun findControllerPath(ops: List<CodegenOperation>): String {
