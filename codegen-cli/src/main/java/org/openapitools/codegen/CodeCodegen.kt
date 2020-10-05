@@ -151,7 +151,7 @@ open class CodeCodegen : AbstractJavaCodegen() {
 		modelPropertyProcessor = ModelPropertyProcessor(this)
 	}
 
-	public override fun findMethodResponse(responses: ApiResponses): ApiResponse {
+	public override fun findMethodResponse(responses: ApiResponses): ApiResponse? {
 		return super.findMethodResponse(responses)
 	}
 
@@ -269,6 +269,7 @@ open class CodeCodegen : AbstractJavaCodegen() {
 			OperationResponseResolver(this).resolve(operation, codegenOperation)
 		}
 		codegenOperation.imports.remove("Error")
+		codegenOperation.imports.remove("List")
 
 		return codegenOperation
 	}
