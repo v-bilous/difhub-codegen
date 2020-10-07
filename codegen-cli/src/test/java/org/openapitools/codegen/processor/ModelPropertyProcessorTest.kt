@@ -109,7 +109,7 @@ class ModelPropertyProcessorTest {
 	}
 
 	@Test
-	fun `should assign UUID type`() {
+	fun `should assign UUID type from Guid`() {
 		val processor = ModelPropertyProcessor(mock())
 
 		val property = CodegenProperty()
