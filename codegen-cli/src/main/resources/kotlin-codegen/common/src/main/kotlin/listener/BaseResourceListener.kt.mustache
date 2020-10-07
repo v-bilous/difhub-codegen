@@ -17,7 +17,7 @@ class BaseResourceListener : AuditorAware<UUID> {
         val now = Date()
         val auditor = currentAuditor.orElse(null)?.toString()
 
-        domain.id = UUID.randomUUID().toString()
+        domain.id = UUID.randomUUID()
         domain.entity.history.createdBy = auditor
         domain.entity.history.createdDate = now
         domain.entity.history.updatedBy = auditor

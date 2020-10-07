@@ -1,8 +1,10 @@
 package org.openapitools.codegen.processor
 
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
 import org.junit.jupiter.api.Test
 import org.openapitools.codegen.CodeCodegen
+import org.openapitools.codegen.CodegenModel
 import org.openapitools.codegen.CodegenProperty
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -44,7 +46,7 @@ class ModelPropertyProcessorTest {
 
 		assertTrue(property.isBoolean)
 		val ve = property.vendorExtensions
-		assertEquals("TINYINT(1)", ve["columnType"])
+		assertEquals("\${BOOLEAN_VALUE}", ve["columnType"])
 		assertEquals("java.lang.Boolean", ve["hibernateType"])
 	}
 
@@ -61,6 +63,19 @@ class ModelPropertyProcessorTest {
 		val ve = property.vendorExtensions
 		assertEquals("datetime(6)", ve["columnType"])
 		assertEquals("java.util.Date", ve["hibernateType"])
+	}
+
+	@Test
+	fun `should assign uuid type`() {
+		val processor = ModelPropertyProcessor(mock())
+
+		val property = CodegenProperty()
+		property.datatypeWithEnum = "UUID?"
+		processor.resolvePropertyType(property)
+
+		val ve = property.vendorExtensions
+		assertEquals("\${UUID}", ve["columnType"])
+		assertEquals("java.util.UUID", ve["hibernateType"])
 	}
 
 	@Test
@@ -91,5 +106,43 @@ class ModelPropertyProcessorTest {
 		val ve = property.vendorExtensions
 		assertEquals("VARCHAR(255)", ve["columnType"])
 		assertEquals("java.lang.String", ve["hibernateType"])
+	}
+
+	@Test
+	fun `should assign UUID type`() {
+		val processor = ModelPropertyProcessor(mock())
+
+		val property = CodegenProperty()
+		property.name = "MyUuidProperty"
+		property.datatypeWithEnum = "integer"
+		property.vendorExtensions["x-data-type"] = "Guid"
+		processor.postProcessModelProperty(CodegenModel(), property)
+
+		val ve = property.vendorExtensions
+		assertEquals("\${UUID}", ve["columnType"])
+		assertEquals("java.util.UUID", ve["hibernateType"])
+		assertEquals("my_uuid_property", ve["escapedColumnName"])
+		assertEquals("my_uuid_property", ve["columnName"])
+	}
+
+	@Test
+	fun `should assign JSON type`() {
+		val codegen  = CodeCodegen()
+		codegen.entityMode = true
+		val processor = ModelPropertyProcessor(codegen)
+
+		val property = CodegenProperty()
+		property.name = "MyJsonProperty"
+		property.datatypeWithEnum = "OtherType"
+		property.isListContainer = true
+		val model = CodegenModel()
+		model.name = "Name"
+
+		processor.postProcessModelProperty(model, property)
+
+		val ve = property.vendorExtensions
+		assertEquals("\${JSON_OBJECT}", ve["columnType"])
+		assertEquals("my_json_property", ve["escapedColumnName"])
+		assertEquals("my_json_property", ve["columnName"])
 	}
 }

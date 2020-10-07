@@ -8,6 +8,6 @@ class BaseDomainListener {
 
     @PrePersist
     fun <T : BaseDomain> touchForCreate(domain: T) {
-        domain.id = UUID.randomUUID().toString()
+        domain.id = UUID.randomUUID()
     }
 }

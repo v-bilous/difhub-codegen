@@ -26,8 +26,10 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 		if ("null" == property.example) {
 			property.example = null
 		}
-
-		if (property.datatypeWithEnum == "Object" && property.vendorExtensions.containsKey("x-data-type")) {
+		if (property.vendorExtensions["x-data-type"] == "Guid") {
+			property.dataType = "UUID"
+			property.datatypeWithEnum = "UUID"
+		} else if (property.datatypeWithEnum == "Object" && property.vendorExtensions.containsKey("x-data-type")) {
 			val ktType = when (property.vendorExtensions["x-data-type"]) {
 				"Unsigned Integer" -> "Int"
 				"Date" -> "Date"
@@ -42,6 +44,9 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 		if (property.datatypeWithEnum == "Date") {
 			model.imports.add("Date")
 		}
+		if (property.datatypeWithEnum == "UUID") {
+			model.imports.add("UUID")
+		}
 
 		if (model.name == "HumanName") {
 			println("")
@@ -54,6 +59,7 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 
 		populateTableExtension(model, property)
 		// TODO support all possible types
+		resolvePropertyType(property)
 		property.vendorExtensions["isNeedSkip"] = "id" == property.name.toLowerCase()
 
 		if (property.vendorExtensions.containsKey("x-codegen-type")) {
@@ -63,7 +69,7 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 				model.imports.add(codegenType)
 				if (codegenType == "JSONObject" && entityMode) {
 					property.vendorExtensions["hibernateType"] = "com.bhn.datamanagement.usertype.JSONObjectUserType"
-					property.vendorExtensions["columnType"] = "TEXT"
+					property.vendorExtensions["columnType"] = "\${JSON_OBJECT}"
 					model.imports.add("Type")
 				}
 				return
@@ -95,7 +101,7 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 		}
 		when (property.datatypeWithEnum) {
 			"Boolean", "Boolean?" -> {
-				property.vendorExtensions["columnType"] = "TINYINT(1)"
+				property.vendorExtensions["columnType"] = "\${BOOLEAN_VALUE}"
 				property.vendorExtensions["hibernateType"] = "java.lang.Boolean"
 				property.isBoolean = true
 			}
@@ -107,6 +113,10 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 			"Int", "Int?" -> {
 				property.vendorExtensions["columnType"] = "int"
 				property.isInteger = true
+			}
+			"UUID", "UUID?" -> {
+				property.vendorExtensions["columnType"] = "\${UUID}"
+				property.vendorExtensions["hibernateType"] = "java.util.UUID"
 			}
 			else -> {
 				property.vendorExtensions["columnType"] = "VARCHAR(255)"
@@ -160,7 +170,7 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 			// if we do not have information for the join table. set it to JSON field
 			if (complexType == null) {
 				property.vendorExtensions["hasJsonType"] = true
-				property.vendorExtensions["columnType"] = "JSON"
+				property.vendorExtensions["columnType"] = "\${JSON_OBJECT}"
 				model.imports.add("JsonType")
 				return
 			} else if (property.complexType != null) {
@@ -172,7 +182,7 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 							&& innerModel.allVars.find { it.name == "id" || it.name == "identity" } == null
 				if (forceToJson) {
 					property.vendorExtensions["hasJsonType"] = true
-					property.vendorExtensions["columnType"] = "JSON"
+					property.vendorExtensions["columnType"] = "\${JSON_OBJECT}"
 					model.imports.add("JsonType")
 					return
 				}
