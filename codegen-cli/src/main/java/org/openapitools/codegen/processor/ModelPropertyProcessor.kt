@@ -53,6 +53,7 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 		}
 
 		populateTableExtension(model, property)
+		resolvePropertyType(property)
 		// TODO support all possible types
 		property.vendorExtensions["isNeedSkip"] = "id" == property.name.toLowerCase()
 
