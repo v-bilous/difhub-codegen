@@ -22,9 +22,6 @@ data class ResourceEntity(
 		@Column(name = "type")
 		var type: String? = null,
 
-		@Column(name = "realm")
-		var realm: String? = null,
-
 		@AttributeOverrides(
 				AttributeOverride(name = "id", column = Column(name = "parent_id")),
 				AttributeOverride(name = "name", column = Column(name = "parent_name")),

@@ -17,7 +17,7 @@ class ProjectDetails(moduleBuilder: ProjectModuleBuilder, wizardContext: WizardC
     val systemComboBox = ComboBox(DefaultComboBoxModel(difHubData!!.keys.toTypedArray()))
 //    val appComboBoxModel = DefaultComboBoxModel<String>()
 //    val appComboBox = ComboBox<String>(appComboBoxModel)
-
+    val databaseComboBox = ComboBox(DefaultComboBoxModel(arrayOf("MySQL", "PostgreSQL")))
     init {
         systemComboBox.addActionListener {
             request.system = systemComboBox.selectedItem as String
@@ -33,7 +33,12 @@ class ProjectDetails(moduleBuilder: ProjectModuleBuilder, wizardContext: WizardC
         if (difHubData != null) {
             selectSystemApplications(difHubData.keys.first())
         }
+        databaseComboBox.addActionListener {
+            request.database = databaseComboBox.selectedItem as String
+        }
     }
+
+
 
     fun fullPanel(): JPanel {
         rootPanel = panel(LCFlags.fillX) {
@@ -48,6 +53,7 @@ class ProjectDetails(moduleBuilder: ProjectModuleBuilder, wizardContext: WizardC
                 row("Title") { textField(request::title) }
                 row("Description") { textField(request::description) }
                 row("Base Package") { textField(request::basePackage) }
+                row("Database") { databaseComboBox() }
 //                row("DB Name") { textField(request::dbName) }
 //                row("Binding Entity") { checkBox("", request::addBindingEntity) }
             }

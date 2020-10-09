@@ -18,6 +18,7 @@ class ProjectCreationRequest {
     var title = ""
     var basePackage = ""
     var dbName = ""
+    var database = "MySQL"
     var addKotlin = true
     var dateLibrary = "default"
     var addBindingEntity = true

@@ -61,21 +61,8 @@ class ModelPropertyProcessorTest {
 
 		assertTrue(property.isDate)
 		val ve = property.vendorExtensions
-		assertEquals("datetime(6)", ve["columnType"])
+		assertEquals("datetime", ve["columnType"])
 		assertEquals("java.util.Date", ve["hibernateType"])
-	}
-
-	@Test
-	fun `should assign uuid type`() {
-		val processor = ModelPropertyProcessor(mock())
-
-		val property = CodegenProperty()
-		property.datatypeWithEnum = "UUID?"
-		processor.resolvePropertyType(property)
-
-		val ve = property.vendorExtensions
-		assertEquals("\${UUID}", ve["columnType"])
-		assertEquals("java.util.UUID", ve["hibernateType"])
 	}
 
 	@Test
@@ -120,7 +107,7 @@ class ModelPropertyProcessorTest {
 
 		val ve = property.vendorExtensions
 		assertEquals("\${UUID}", ve["columnType"])
-		assertEquals("java.util.UUID", ve["hibernateType"])
+		assertEquals("java.lang.String", ve["hibernateType"])
 		assertEquals("my_uuid_property", ve["escapedColumnName"])
 		assertEquals("my_uuid_property", ve["columnName"])
 	}
@@ -135,6 +122,7 @@ class ModelPropertyProcessorTest {
 		property.name = "MyJsonProperty"
 		property.datatypeWithEnum = "OtherType"
 		property.isListContainer = true
+		property.example = "null"
 		val model = CodegenModel()
 		model.name = "Name"
 
@@ -144,5 +132,47 @@ class ModelPropertyProcessorTest {
 		assertEquals("\${JSON_OBJECT}", ve["columnType"])
 		assertEquals("my_json_property", ve["escapedColumnName"])
 		assertEquals("my_json_property", ve["columnName"])
+	}
+
+	@Test
+	fun `should assign Int for object Unsigned Integer`() {
+		testForObject("Unsigned Integer", "int")
+	}
+
+	@Test
+	fun `should assign datetine for object Date`() {
+		testForObject("Date", "datetime")
+	}
+
+	@Test
+	fun `should assign varchar for object with other types`() {
+		testForObject("OtherType", "VARCHAR(255)")
+	}
+
+	@Test
+	fun `should escape column name`() {
+		val processor = ModelPropertyProcessor(mock())
+
+		val property = CodegenProperty()
+		property.name = "table"
+		property.datatypeWithEnum = "Integer"
+		processor.postProcessModelProperty(CodegenModel(), property)
+
+		val ve = property.vendorExtensions
+		assertEquals("table_", ve["columnName"])
+		assertEquals("table_", ve["escapedColumnName"])
+	}
+
+	private fun testForObject(dataType: String, expectedColumnType: String) {
+		val processor = ModelPropertyProcessor(mock())
+
+		val property = CodegenProperty()
+		property.name = "ObjectProp"
+		property.datatypeWithEnum = "Object"
+		property.vendorExtensions["x-data-type"] = dataType
+		processor.postProcessModelProperty(CodegenModel(), property)
+
+		val ve = property.vendorExtensions
+		assertEquals(expectedColumnType, ve["columnType"])
 	}
 }

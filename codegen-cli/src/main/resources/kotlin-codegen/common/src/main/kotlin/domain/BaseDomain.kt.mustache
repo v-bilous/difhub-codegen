@@ -7,7 +7,6 @@ import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
 import org.hibernate.annotations.TypeDefs
 import javax.persistence.*
-import java.util.UUID
 
 @TypeDefs(value = [
     TypeDef(name = "json", typeClass = JsonStringType::class),
@@ -17,5 +16,5 @@ import java.util.UUID
 @EntityListeners(BaseDomainListener::class)
 open class BaseDomain {
     @Id
-    open var id: UUID? = null
+    open var id: String? = null
 }

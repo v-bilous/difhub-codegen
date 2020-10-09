@@ -5,14 +5,14 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/{{systemLower}}_{{appNameLower}}?autoReconnect=true&useSSL=false&rewriteBatchedStatements=true&serverTimezone=UTC&createDatabaseIfNotExist=true
+    url: jdbc:{{database.name}}://${DB_HOST:localhost}:${DB_PORT:{{database.port}}}/{{systemLower}}_{{appNameLower}}?autoReconnect=true&useSSL=false&rewriteBatchedStatements=true&serverTimezone=UTC&createDatabaseIfNotExist=true
     username: ${DB_USER:root}
     password: ${DB_PASS:Qw123456}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: {{database.driver}}
     type: com.zaxxer.hikari.HikariDataSource
   jpa:
     open-in-view: false
-    database: MYSQL
+    database: {{database.type}}
     hibernate:
       ddl-auto: validate
   liquibase:

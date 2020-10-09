@@ -21,10 +21,12 @@ class ConfiguratorWrapper(val instance: InCustomCodegenConfigurator) {
 
 		val specDir = instance.specCopy
 		val basePackage =  settings.dynamicProperties["basePackage"]
+		val database = settings.dynamicProperties["database"]?.toString() ?: "MySQL"
 
 		val system = settings.dynamicProperties["system"]!!.toString()
 		instance.addAdditionalProperty("systemLower", system.toLowerCase())
 		instance.addAdditionalProperty("appsLower", apps)
+		instance.addAdditionalProperty("database", DatabaseResolver.getByType(database))
 
 		apps.forEachIndexed { index, appName ->
 			try {

@@ -27,8 +27,10 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 			property.example = null
 		}
 		if (property.vendorExtensions["x-data-type"] == "Guid") {
-			property.dataType = "UUID"
-			property.datatypeWithEnum = "UUID"
+			property.datatypeWithEnum = "String"
+			property.dataType = "String"
+			property.vendorExtensions["columnType"] = "\${UUID}"
+			property.vendorExtensions["hibernateType"] = "java.lang.String"
 		} else if (property.datatypeWithEnum == "Object" && property.vendorExtensions.containsKey("x-data-type")) {
 			val ktType = when (property.vendorExtensions["x-data-type"]) {
 				"Unsigned Integer" -> "Int"
@@ -43,9 +45,6 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 		}
 		if (property.datatypeWithEnum == "Date") {
 			model.imports.add("Date")
-		}
-		if (property.datatypeWithEnum == "UUID") {
-			model.imports.add("UUID")
 		}
 
 		if (model.name == "HumanName") {
@@ -106,17 +105,13 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 				property.isBoolean = true
 			}
 			"Date", "Date?" -> {
-				property.vendorExtensions["columnType"] = "datetime(6)"
+				property.vendorExtensions["columnType"] = "datetime"
 				property.vendorExtensions["hibernateType"] = "java.util.Date"
 				property.isDate = true
 			}
 			"Int", "Int?" -> {
 				property.vendorExtensions["columnType"] = "int"
 				property.isInteger = true
-			}
-			"UUID", "UUID?" -> {
-				property.vendorExtensions["columnType"] = "\${UUID}"
-				property.vendorExtensions["hibernateType"] = "java.util.UUID"
 			}
 			else -> {
 				property.vendorExtensions["columnType"] = "VARCHAR(255)"

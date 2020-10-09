@@ -56,6 +56,7 @@ class ProjectFilesCreator {
             "title" to request.title,
             "basePackage" to request.basePackage,
             "dbName" to request.dbName,
+            "database" to request.database,
             "addKotlin" to request.addKotlin,
             "dateLibrary" to request.dateLibrary,
             "addBindingEntity" to request.addBindingEntity

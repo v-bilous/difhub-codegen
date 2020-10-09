@@ -34,6 +34,7 @@ class ProjectFileManager {
 			title = "add title"
 			basePackage = "add base package"
 			dbName = "add db name"
+			database = "MySQL"
 			addKotlin = true
 			dateLibrary = "default"
 			addBindingEntity = true
