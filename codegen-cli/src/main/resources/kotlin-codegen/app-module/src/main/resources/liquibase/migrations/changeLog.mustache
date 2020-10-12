@@ -30,7 +30,16 @@
 			{{#vendorExtensions.isEmbedded}}
 			{{#vendorExtensions.embeddedComponent}}
 			{{#vars}}
+			{{#vendorExtensions.isEmbedded}}
+			{{#vendorExtensions.embeddedComponent}}
+			{{#vars}}
 			<column name="{{vendorExtensions.embeddedColumnName}}" type="{{vendorExtensions.columnType}}"/>
+			{{/vars}}
+			{{/vendorExtensions.embeddedComponent}}
+			{{/vendorExtensions.isEmbedded}}
+			{{^vendorExtensions.isEmbedded}}
+			<column name="{{vendorExtensions.embeddedColumnName}}" type="{{vendorExtensions.columnType}}"/>
+			{{/vendorExtensions.isEmbedded}}
 			{{/vars}}
 			{{/vendorExtensions.embeddedComponent}}
 			{{/vendorExtensions.isEmbedded}}

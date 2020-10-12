@@ -1,5 +1,5 @@
 package pro.bilous.difhub.convert
 
 fun normalizeTypeName(source: String): String {
-	return source.replace(" ", "")
+	return source.replace(" ", "").trimStart().trimEnd().capitalize()
 }

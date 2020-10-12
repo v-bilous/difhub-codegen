@@ -6,13 +6,15 @@ import org.openapitools.codegen.CodegenModel
 import org.openapitools.codegen.CodegenProperty
 import org.openapitools.codegen.utils.CamelCaseConverter
 
-class ModelPropertyProcessor(val codegen: CodeCodegen) {
+open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 
 	private val additionalProperties = codegen.additionalProperties()
 	private val entityMode = codegen.entityMode
 	private val importMappings = codegen.importMapping()
 
 	private val joinProperties: MutableList<CodegenProperty>
+
+	var openApiWrapper: IOpenApiWrapper = OpenApiWrapper(codegen)
 
 	init {
 		if (additionalProperties["joinTables"] == null) {
@@ -47,9 +49,6 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 			model.imports.add("Date")
 		}
 
-		if (model.name == "HumanName") {
-			println("")
-		}
 		// set property as optional
 		if (!property.required) {
 			val realType = "${property.datatypeWithEnum}?"
@@ -57,6 +56,7 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 		}
 
 		populateTableExtension(model, property)
+		resolvePropertyType(property)
 		// TODO support all possible types
 		resolvePropertyType(property)
 		property.vendorExtensions["isNeedSkip"] = "id" == property.name.toLowerCase()
@@ -88,7 +88,7 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 			property.isString = true
 		}
 
-		if (hasEnumValues(property)) {
+		if (isEnum(property)) {
 			convertToMetadataProperty(property, model)
 		}
 		addGuidAnnotation(property, model)
@@ -113,6 +113,10 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 				property.vendorExtensions["columnType"] = "int"
 				property.isInteger = true
 			}
+			"BigDecimal", "BigDecimal?" -> {
+				property.vendorExtensions["columnType"] = "decimal"
+				property.isNumber = true
+			}
 			else -> {
 				property.vendorExtensions["columnType"] = "VARCHAR(255)"
 				property.vendorExtensions["hibernateType"] = "java.lang.String"
@@ -133,15 +137,24 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 		}
 	}
 
-	private fun convertToMetadataProperty(property: CodegenProperty, model: CodegenModel) {
+	fun convertToMetadataProperty(property: CodegenProperty, model: CodegenModel) {
 		property.vendorExtensions["isMetadataAnnotation"] = true
-
 		property.vendorExtensions["metaGroupName"] = CamelCaseConverter.convert(property.complexType.removeSuffix("Model"))
-		property.datatypeWithEnum = if(property.required) "String" else "String?"
+		if (property.isListContainer) {
+			property.datatypeWithEnum = if (property.required) "List<String>" else "List<String>?"
+		} else {
+			property.datatypeWithEnum = if (property.required) "String" else "String?"
+		}
 		model.imports.removeIf { it == property.complexType }
+
 		if (!codegen.entityMode) {
 			model.imports.add("MetaDataAnnotation")
 		}
+	}
+
+	fun isEnum(property: CodegenProperty): Boolean {
+		val prop = if (property.isListContainer && property.items != null) property.items else property
+		return hasEnumValues(prop)
 	}
 
 	private fun hasEnumValues(property: CodegenProperty): Boolean {
@@ -154,7 +167,7 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 
 	private fun populateTableExtension(model: CodegenModel, property: CodegenProperty) {
 		applyColumnNames(model, property)
-		applyEmbeddedComponent(model, property)
+		applyEmbeddedComponentOrOneToOne(model, property)
 
 		if (entityMode && property.isListContainer) {
 			val modelTableName = CamelCaseConverter.convert(model.name).toLowerCase()
@@ -183,7 +196,7 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 				}
 			}
 
-			val propertyTableName = if (isCurrentAppModel(complexType)) {
+			val propertyTableName = if (openApiWrapper.isOpenApiContainsType(complexType)) {
 				CamelCaseConverter.convert(complexType).toLowerCase()
 			} else {
 				CamelCaseConverter.convert(property.name).toLowerCase()
@@ -191,7 +204,7 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 			val joinTableName = joinTableName(modelTableName, propertyTableName)
 			property.getVendorExtensions()["modelTableName"] = modelTableName
 			property.getVendorExtensions()["propertyTableName"] = propertyTableName
-			property.vendorExtensions["hasPropertyTable"] = isCurrentAppModel(complexType)
+			property.vendorExtensions["hasPropertyTable"] = openApiWrapper.isOpenApiContainsType(complexType)
 			property.getVendorExtensions()["joinTableName"] = joinTableName
 			property.getVendorExtensions()["joinColumnName"] = "${modelTableName}_id"
 			property.getVendorExtensions()["inverseJoinColumnName"] = "${propertyTableName}_id"
@@ -214,35 +227,62 @@ class ModelPropertyProcessor(val codegen: CodeCodegen) {
 
 	}
 
-	fun applyEmbeddedComponent(model: CodegenModel, property: CodegenProperty) {
-		val isInnerModel
-				= property.isModel && !property.complexType.isNullOrEmpty()
-				&& !importMappings.containsKey(property.nameInCamelCase)
-				&& !importMappings.containsKey(property.complexType)
-				&& codegen.getOpenApi().components.schemas.containsKey(property.complexType)
-				&& !hasEnumValues(property)
-
-		if (!isInnerModel) {
+	fun applyEmbeddedComponentOrOneToOne(model: CodegenModel, property: CodegenProperty) {
+		if (!isInnerModel(property)) {
 			return
 		}
 		val realType = property.complexType.removeSuffix("Model")
-		val innerModelSchema = codegen.getOpenApi().components.schemas[realType] as Schema<*>
+		val innerModelSchema = openApiWrapper.findSchema(realType)
 		val innerModel = codegen.fromModel(realType, innerModelSchema)
 		if (innerModel.vendorExtensions["isEmbeddable"] == true) {
-			property.vendorExtensions["embeddedComponent"] = innerModel
-			property.vendorExtensions["isEmbedded"] = true
-			// add embedded column names since we are in embedded mode.
-			innerModel.vars.forEach { prop ->
-				val originalName = prop.vendorExtensions["columnName"]
-				val parentName = property.vendorExtensions["columnName"]
-				prop.vendorExtensions["embeddedColumnName"] = "${parentName}_${originalName}"
+			assignEmbeddedModel(property, innerModel, true)
+		} else { // assign one-to-one relationship if not isEmbeddable model (has id)
+			property.vendorExtensions["isOneToOne"] = true
+		}
+	}
+
+	private fun isInnerModel(property: CodegenProperty): Boolean {
+		return property.isModel && !property.complexType.isNullOrEmpty()
+				&& !importMappings.containsKey(property.nameInCamelCase)
+				&& !importMappings.containsKey(property.complexType)
+				&& openApiWrapper.isOpenApiContainsType(property.complexType)
+				&& !isEnum(property)
+	}
+
+	fun assignEmbeddedModel(
+		property: CodegenProperty,
+		innerModel: CodegenModel,
+		isRoot: Boolean
+	) {
+		property.vendorExtensions["embeddedComponent"] = innerModel
+		property.vendorExtensions["isEmbedded"] = true
+		// add embedded column names since we are in embedded mode.
+		innerModel.vars.forEach { prop ->
+			val originalColumnName = prop.vendorExtensions["columnName"]
+			val originalVarName = prop.name
+			val parentColumnName = if (property.vendorExtensions.containsKey("embeddedColumnName")) {
+				property.vendorExtensions["embeddedColumnName"]
+			} else {
+				property.vendorExtensions["columnName"]
+			}
+
+			prop.vendorExtensions["embeddedColumnName"] = "${parentColumnName}_${originalColumnName}"
+
+			if (!isRoot) {
+				val parentVarName = if (property.vendorExtensions.containsKey("embeddedVarName")) {
+					property.vendorExtensions["embeddedVarName"]
+				} else {
+					property.name
+				}
+				prop.vendorExtensions["embeddedVarName"] = "${parentVarName}.${originalVarName}"
+			}
+
+			if (isInnerModel(prop) && prop.vendorExtensions.containsKey("embeddedComponent")) {
+				assignEmbeddedModel(prop, prop.vendorExtensions["embeddedComponent"] as CodegenModel, false)
 			}
 		}
 	}
 
-	private fun isCurrentAppModel(modelName: String): Boolean {
-		return codegen.getOpenApi().components.schemas.containsKey(modelName)
-	}
 
 	fun readTypeFromFormat(property: CodegenProperty): String? {
 		val dataKey = "dataType:"

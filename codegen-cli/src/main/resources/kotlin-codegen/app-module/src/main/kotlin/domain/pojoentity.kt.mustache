@@ -30,8 +30,17 @@ data class {{classname}}(
     @AttributeOverrides(
     {{#vendorExtensions.embeddedComponent}}
         {{#vars}}
-        AttributeOverride(name = "{{name}}", column = Column(name = "{{vendorExtensions.embeddedColumnName}}")),
-        {{/vars}}
+			{{#vendorExtensions.isEmbedded}}
+				{{#vendorExtensions.embeddedComponent}}
+					{{#vars}}
+        AttributeOverride(name = "{{vendorExtensions.embeddedVarName}}", column = Column(name = "{{vendorExtensions.embeddedColumnName}}")),
+					{{/vars}}
+				{{/vendorExtensions.embeddedComponent}}
+			{{/vendorExtensions.isEmbedded}}
+			{{^vendorExtensions.isEmbedded}}
+		AttributeOverride(name = "{{name}}", column = Column(name = "{{vendorExtensions.embeddedColumnName}}")),
+			{{/vendorExtensions.isEmbedded}}
+		{{/vars}}
     )
     @Embedded
     {{/vendorExtensions.embeddedComponent}}
@@ -62,7 +71,13 @@ data class {{classname}}(
     {{/vendorExtensions.isReferenceElement}}
     {{/isListContainer}}
     {{^isListContainer}}
-    @Column(name = "{{{vendorExtensions.escapedColumnName}}}")
+	{{#vendorExtensions.isOneToOne}}
+	@OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.EAGER{{#required}}, optional = false{{/required}})
+	@JoinColumn(name = "{{{vendorExtensions.escapedColumnName}}}", referencedColumnName = "id")
+	{{/vendorExtensions.isOneToOne}}
+	{{^vendorExtensions.isOneToOne}}
+	@Column(name = "{{{vendorExtensions.escapedColumnName}}}")
+	{{/vendorExtensions.isOneToOne}}
     {{/isListContainer}}
     {{/vendorExtensions.hasJsonType}}
     {{/vendorExtensions.isEmbedded}}

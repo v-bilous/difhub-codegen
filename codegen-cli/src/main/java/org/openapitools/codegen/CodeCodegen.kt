@@ -41,6 +41,8 @@ open class CodeCodegen : AbstractJavaCodegen() {
 
 	fun getOpenApi() = openAPI
 
+	open fun findOpenApi() = openAPI
+
 	private var modelPropertyProcessor: ModelPropertyProcessor
 	private var title = "RESTful Application"
 
