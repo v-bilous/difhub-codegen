@@ -148,7 +148,7 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 			val destinationRoot = "app-${artifactId.toLowerCase()}/src/main/resources/liquibase"
 
 			addSupportFile(source = "$inputRoot/liquibase-changeLog.xml", target = "$destinationRoot/liquibase-changeLog.xml")
-			addSupportFile(source = "$inputRoot/settings.xml", target = "$destinationRoot/settings.xml")
+			addSupportFile(source = "$inputRoot/settings.xml.mustache", target = "$destinationRoot/settings.xml")
 			addSupportFile(source = "$inputRoot/migrations/changeLog.mustache", target = "$destinationRoot/migrations/generatedChangeLog.xml")
 			addSupportFile(source = "$inputRoot/migrations/common_tables.xml.mustache", target = "$destinationRoot/migrations/common_tables.xml")
 			addSupportFile(source ="$inputRoot/migrations/metadata_data.xml", target = "$destinationRoot/migrations/metadata_data.xml")
