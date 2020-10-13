@@ -9,7 +9,7 @@ object TypesConverter {
 			"Structure" to Type("object"),
 			"Reference" to Type("string", "reference"),
 			"String" to Type("string"),
-			"Guid" to Type("integer", "guid"),
+			"Guid" to Type("string"),
 			"Decimal" to Type("number", "decimal"),
 			"Integer" to Type("integer"),
 			"Short" to Type("integer", "short"),

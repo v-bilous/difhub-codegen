@@ -6,6 +6,7 @@ import org.openapitools.codegen.CodeCodegen
 import org.openapitools.codegen.CodegenModel
 import org.openapitools.codegen.CodegenOperation
 import org.openapitools.codegen.CodegenParameter
+import java.util.*
 
 class OperationAddon(val codegen: CodeCodegen) {
 
@@ -218,11 +219,13 @@ class OperationAddon(val codegen: CodeCodegen) {
 				!it.defaultValue.isNullOrEmpty() && it.defaultValue != "null" -> {
 					it.defaultValue
 				}
-				it.isString -> "test string value"
+				it.vendorExtensions["x-data-type"] == "Guid" -> UUID.randomUUID().toString()
+				it.isString ->  "test string value"
 				it.isInteger -> "8"
 				it.dataType == "Date" -> {
 					"Date()"
 				}
+				it.isBoolean -> "false"
 				it.isModel && it.datatypeWithEnum == "String" -> {
 					it.isString = true
 					"test_type"

@@ -56,11 +56,11 @@
 		</preConditions>
 
 		<createTable tableName="entity">
-			<column name="entity_id" type="VARCHAR(36)">
+			<column name="entity_id" type="${UUID}">
 				<constraints primaryKey="true"/>
 			</column>
 			<column name="type" type="VARCHAR(255)"/>
-			<column name="parent_id" type="VARCHAR(255)"/>
+			<column name="parent_id" type="${UUID}"/>
 			<column name="parent_name" type="VARCHAR(255)"/>
 			<column name="parent_description" type="VARCHAR(255)"/>
 			<column name="state" type="VARCHAR(255)"/>

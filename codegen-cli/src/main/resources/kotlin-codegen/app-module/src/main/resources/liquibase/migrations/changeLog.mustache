@@ -15,7 +15,7 @@
 			</not>
 		</preConditions>
 		<createTable tableName="{{vendorExtensions.tableName}}">
-			<column name="id" type="VARCHAR(36)">
+			<column name="id" type="${UUID}">
 				<constraints nullable="false" primaryKey="true"/>
 			</column>
 			{{#vendorExtensions.hasTableEntity}}
@@ -68,10 +68,10 @@
 			</not>
 		</preConditions>
 		<createTable tableName="{{vendorExtensions.joinTableName}}">
-			<column name="{{vendorExtensions.joinColumnName}}" type="VARCHAR(36)">
+			<column name="{{vendorExtensions.joinColumnName}}" type="${UUID}">
 				<constraints nullable="false" referencedTableName="{{vendorExtensions.modelTableName}}"/>
 			</column>
-			<column name="{{vendorExtensions.inverseJoinColumnName}}" type="VARCHAR(36)">
+			<column name="{{vendorExtensions.inverseJoinColumnName}}" type="${UUID}">
 				<constraints nullable="false"{{#vendorExtensions.hasPropertyTable}} referencedTableName="{{vendorExtensions.propertyTableName}}"{{/vendorExtensions.hasPropertyTable}}/>
 			</column>
 		</createTable>
