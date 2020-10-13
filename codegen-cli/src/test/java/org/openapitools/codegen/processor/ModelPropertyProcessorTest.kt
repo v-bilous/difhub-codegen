@@ -298,7 +298,7 @@ class ModelPropertyProcessorTest {
 
 		return ModelPropertyProcessor(codegen).apply {
 			openApiWrapper = object : IOpenApiWrapper {
-				override fun isOpenApiContainsType(complexType: String?) = (type == complexType)
+				override fun isOpenApiContainsType(complexType: String?) = type == complexType
 				override fun findSchema(complexType: String?) = fakeSchema
 			}
 		}
