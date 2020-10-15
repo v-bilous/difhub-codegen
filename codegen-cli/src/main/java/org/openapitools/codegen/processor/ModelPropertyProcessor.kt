@@ -117,6 +117,10 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 				property.vendorExtensions["columnType"] = "decimal"
 				property.isNumber = true
 			}
+			"Long", "Long?" -> {
+				property.vendorExtensions["columnType"] = "bigint"
+				property.isNumber = true
+			}
 			else -> {
 				property.vendorExtensions["columnType"] = "VARCHAR(255)"
 				property.vendorExtensions["hibernateType"] = "java.lang.String"

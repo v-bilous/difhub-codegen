@@ -9,14 +9,14 @@ object TypesConverter {
 			"Structure" to Type("object"),
 			"Reference" to Type("string", "reference"),
 			"String" to Type("string"),
-			"Guid" to Type("string"),
+			"Guid" to Type("string", "uuid"),
 			"Decimal" to Type("number", "decimal"),
 			"Integer" to Type("integer"),
 			"Short" to Type("integer", "short"),
 			"DateTime" to Type("string", "date-time"),
 			"Enum" to Type("string"),
 			"Money" to Type("number", "money"),
-			"Long" to Type("number", "long"),
+			"Long" to Type("integer", "int64"),
 			"Boolean" to Type("boolean"),
 			"Text" to Type("string")
 	)

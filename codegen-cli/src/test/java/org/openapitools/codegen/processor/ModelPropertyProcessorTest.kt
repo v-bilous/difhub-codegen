@@ -96,6 +96,20 @@ class ModelPropertyProcessorTest {
 	}
 
 	@Test
+	fun `should assign bigint type`() {
+		val processor = createModelProcessor()
+
+		val property = CodegenProperty()
+		property.datatypeWithEnum = "Long?"
+		property.isNumber = false
+		processor.resolvePropertyType(property)
+
+		val ve = property.vendorExtensions
+		assertEquals("bigint", ve["columnType"])
+		assertTrue(property.isNumber)
+	}
+
+	@Test
 	fun `should assign db fallback other type`() {
 		val processor = createModelProcessor()
 
