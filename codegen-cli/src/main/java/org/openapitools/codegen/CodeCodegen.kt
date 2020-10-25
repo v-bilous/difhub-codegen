@@ -8,21 +8,17 @@ import io.swagger.v3.oas.models.responses.ApiResponse
 import io.swagger.v3.oas.models.responses.ApiResponses
 import io.swagger.v3.oas.models.servers.Server
 import org.openapitools.codegen.languages.AbstractJavaCodegen
-import org.openapitools.codegen.processor.OperationResponseResolver
-import org.openapitools.codegen.processor.FromModelProcessor
-import org.openapitools.codegen.processor.FromPropertyProcessor
-import org.openapitools.codegen.processor.ModelPropertyProcessor
-import org.openapitools.codegen.processor.ModelsEnumPostProcessor
-import org.openapitools.codegen.processor.OpenApiProcessor
-import org.openapitools.codegen.processor.OperationsWithModelsProcessor
-import org.openapitools.codegen.processor.OptsPostProcessor
-import org.openapitools.codegen.processor.OptsPreProcessor
 import org.openapitools.codegen.utils.ModelUtils
 import org.slf4j.LoggerFactory
 
 import java.io.File
 
 import org.openapitools.codegen.utils.StringUtils.camelize
+import pro.bilous.codegen.process.*
+import pro.bilous.codegen.process.filename.ModelFileNameArgs
+import pro.bilous.codegen.process.filename.ModelFileNameResolver
+import pro.bilous.codegen.process.models.AllModelsProcessor
+import pro.bilous.codegen.process.models.CommonModelsProcessor
 
 open class CodeCodegen : AbstractJavaCodegen() {
 	companion object {
@@ -197,7 +193,8 @@ open class CodeCodegen : AbstractJavaCodegen() {
 	}
 
 	override fun postProcessOperationsWithModels(objs: MutableMap<String, Any>, allModels: List<Any>?): Map<String, Any> {
-		return OperationsWithModelsProcessor(this).postProcessOperationsWithModels(objs, allModels!!)
+		return OperationsWithModelsProcessor(this)
+			.postProcessOperationsWithModels(objs, allModels!!)
 	}
 
 	override fun postProcessSupportingFileData(objs: MutableMap<String, Any>): Map<String, Any> {
@@ -256,11 +253,13 @@ open class CodeCodegen : AbstractJavaCodegen() {
 	}
 
 	override fun fromModel(name: String, model: Schema<*>): CodegenModel {
-		return FromModelProcessor(this).process(super.fromModel(name, model))
+		return FromModelProcessor(this)
+			.process(super.fromModel(name, model))
 	}
 
 	override fun fromProperty(name: String?, p: Schema<*>?): CodegenProperty {
-		return FromPropertyProcessor(this).process(name, p, super.fromProperty(name, p))
+		return FromPropertyProcessor(this)
+			.process(name, p, super.fromProperty(name, p))
 	}
 
 	override fun fromOperation(path: String, httpMethod: String, operation: Operation, servers: List<Server>?): CodegenOperation {
@@ -268,7 +267,8 @@ open class CodeCodegen : AbstractJavaCodegen() {
 
 		// try to fetch baseType with DifHub issue (wrong model)
 		if (codegenOperation.returnBaseType == null) {
-			OperationResponseResolver(this).resolve(operation, codegenOperation)
+			OperationResponseResolver(this)
+				.resolve(operation, codegenOperation)
 		}
 		codegenOperation.imports.remove("Error")
 		codegenOperation.imports.remove("List")
@@ -278,7 +278,8 @@ open class CodeCodegen : AbstractJavaCodegen() {
 
 	override fun postProcessModelProperty(model: CodegenModel, property: CodegenProperty?) {
 		super.postProcessModelProperty(model, property)
-		ModelPropertyProcessor(this).postProcessModelProperty(model, property!!)
+		ModelPropertyProcessor(this)
+			.postProcessModelProperty(model, property!!)
 	}
 
 	fun getImportMappings() = importMapping
@@ -353,9 +354,12 @@ open class CodeCodegen : AbstractJavaCodegen() {
 		return "${toApiName(name)}IT"
 	}
 
-	override fun toModelFilename(name: String): String {
-		val fileName = super.toModelFilename(name)
-		return if (metadataEnums.containsKey(fileName)) fileName.removeSuffix(modelNameSuffix) else fileName
+	override fun toModelName(name: String?): String {
+		val modelName =  super.toModelName(name)
+		return ModelFileNameResolver(ModelFileNameArgs(
+			metadataEnums,
+			modelNameSuffix
+		)).resolve(modelName)
 	}
 
 	private fun getFolder(sourcePackage: String?, subModule: String): String {
@@ -372,6 +376,17 @@ open class CodeCodegen : AbstractJavaCodegen() {
 	fun getIntegrationTestFolder(sourcePackage: String, subModule: String): String {
 		val subFolder = if (enableSubModules) artifactId + subModule else ""
 		return (subFolder + File.separator + "src/integration-test/kotlin" + File.separator + sourcePackage).replace(".", File.separator)
+	}
 
+	override fun postProcessAllModels(objs: MutableMap<String, Any>): MutableMap<String, Any> {
+		return AllModelsProcessor().process(super.postProcessAllModels(objs))
+	}
+
+	override fun toModelImport(name: String): String {
+		val processor = CommonModelsProcessor(additionalProperties)
+		if (processor.canResolveImport(name)) {
+			return processor.resolveImport(name)
+		}
+		return super.toModelImport(name)
 	}
 }

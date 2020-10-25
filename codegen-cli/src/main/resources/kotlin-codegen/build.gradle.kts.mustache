@@ -14,6 +14,8 @@ plugins {
 
     id("io.gitlab.arturbosch.detekt") version "1.10.0"
     id("jacoco")
+    id("com.palantir.docker") version "0.22.1"
+    id("com.palantir.docker-compose") version "0.22.1" apply true
 }
 
 allprojects {
@@ -47,8 +49,13 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.plugin.noarg")
     apply(plugin = "org.jetbrains.kotlin.plugin.jpa")
     apply(plugin = "jacoco")
+    apply(plugin = "com.palantir.docker")
 }
 
 detekt {
     ignoreFailures = true
+}
+
+tasks.getByName("docker") {
+    enabled = false
 }

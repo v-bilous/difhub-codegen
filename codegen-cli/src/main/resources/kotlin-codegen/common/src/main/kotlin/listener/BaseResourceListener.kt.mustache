@@ -7,28 +7,43 @@ import javax.persistence.PrePersist
 import javax.persistence.PreUpdate
 
 class BaseResourceListener : AuditorAware<UUID> {
-    // TODO need to get current userId
-    override fun getCurrentAuditor(): Optional<UUID> {
-        return Optional.empty()
-    }
+	// TODO need to get current userId
+	override fun getCurrentAuditor(): Optional<UUID> {
+		return Optional.empty()
+	}
 
-    @PrePersist
-    fun <T : BaseResource> touchForCreate(domain: T) {
-        val now = Date()
-        val auditor = currentAuditor.orElse(null)?.toString()
+	@PrePersist
+	fun <T : BaseResource> touchForCreate(domain: T) {
+		val now = Date()
+		val auditor = currentAuditor.orElse(null)?.toString()
 
-        domain.id = UUID.randomUUID().toString()
-        domain.entity.history.createdBy = auditor
-        domain.entity.history.createdDate = now
-        domain.entity.history.updatedBy = auditor
-        domain.entity.history.updatedDate = now
-    }
+		domain.id = UUID.randomUUID().toString()
+		domain.entity.history.createdBy = auditor
+		{{#suffixHistoryAt}}
+		domain.entity.history.createdAt = now
+		{{/suffixHistoryAt}}
+		{{^suffixHistoryAt}}
+		domain.entity.history.createdDate = now
+		{{/suffixHistoryAt}}
+		domain.entity.history.updatedBy = auditor
+		{{#suffixHistoryAt}}
+		domain.entity.history.updatedAt = now
+		{{/suffixHistoryAt}}
+		{{^suffixHistoryAt}}
+		domain.entity.history.updatedDate = now
+		{{/suffixHistoryAt}}
+}
 
-    @PreUpdate
-    fun <T : BaseResource> touchForUpdate(domain: T) {
-        val now = Date()
+	@PreUpdate
+	fun <T : BaseResource> touchForUpdate(domain: T) {
+		val now = Date()
 
-        domain.entity.history.updatedBy = currentAuditor.orElse(null)?.toString()
-        domain.entity.history.updatedDate = now
-    }
+		domain.entity.history.updatedBy = currentAuditor.orElse(null)?.toString()
+		{{#suffixHistoryAt}}
+		domain.entity.history.updatedAt = now
+		{{/suffixHistoryAt}}
+		{{^suffixHistoryAt}}
+		domain.entity.history.updatedDate = now
+		{{/suffixHistoryAt}}
+	}
 }

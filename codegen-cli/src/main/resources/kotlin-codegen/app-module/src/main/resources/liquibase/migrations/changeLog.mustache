@@ -15,18 +15,25 @@
 			</not>
 		</preConditions>
 		<createTable tableName="{{vendorExtensions.tableName}}">
+			{{#vendorExtensions.addEntityIdVar}}
+			<column name="entity_id" type="${UUID}">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			{{/vendorExtensions.addEntityIdVar}}
+			{{^vendorExtensions.addEntityIdVar}}
 			<column name="id" type="${UUID}">
 				<constraints nullable="false" primaryKey="true"/>
 			</column>
+			{{/vendorExtensions.addEntityIdVar}}
 			{{#vendorExtensions.hasTableEntity}}
 			<column name="name" type="VARCHAR(255)"/>
 			<column name="description" type="VARCHAR(510)"/>
 			{{/vendorExtensions.hasTableEntity}}
 			{{#vars}}
-            {{#vendorExtensions.hasJsonType}}
-            <column name="{{vendorExtensions.columnName}}" type="{{vendorExtensions.columnType}}"/>
-            {{/vendorExtensions.hasJsonType}}
-            {{^isListContainer}}
+			{{#vendorExtensions.hasJsonType}}
+			<column name="{{vendorExtensions.columnName}}" type="{{vendorExtensions.columnType}}"/>
+			{{/vendorExtensions.hasJsonType}}
+			{{^isListContainer}}
 			{{#vendorExtensions.isEmbedded}}
 			{{#vendorExtensions.embeddedComponent}}
 			{{#vars}}
