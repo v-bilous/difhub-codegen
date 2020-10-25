@@ -30,3 +30,18 @@ tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar
 tasks.getByName<Jar>("jar") {
     enabled = true
 }
+
+docker {
+    setName("app-{{appNameLower}}")
+    setDockerfile(file("Dockerfile"))
+    files("$buildDir/libs/")
+}
+
+tasks.register<Copy>("copyDocker") {
+    from("$buildDir/libs/", "/docker/")
+    into("$buildDir/docker/")
+}
+
+tasks.getByName("build") {
+	dependsOn("copyDocker");
+}

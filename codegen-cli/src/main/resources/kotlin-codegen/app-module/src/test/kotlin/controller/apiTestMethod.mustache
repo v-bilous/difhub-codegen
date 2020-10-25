@@ -9,7 +9,7 @@
 		val savedRes2 = repository.save(res2)
 
 		val params = LinkedMultiValueMap<String, String>()
-		params["sort"] = "entity.history.createdDate"
+		params["sort"] = "entity.history.{{#suffixHistoryAt}}createdAt{{/suffixHistoryAt}}{{^suffixHistoryAt}}createdDate{{/suffixHistoryAt}}"
 		val result = super.findAll(url, params)
 
 		resourceListAsserts(savedRes1, result, 0)

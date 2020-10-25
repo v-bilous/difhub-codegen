@@ -7,6 +7,7 @@ configure<SourceSetContainer> {
 
 dependencies {
 	implementation(kotlin("stdlib-jdk8"))
+	implementation(kotlin("reflect"))
 	api("io.swagger.parser.v3:swagger-parser:2.0.19")
 	implementation("org.kohsuke.metainf-services:metainf-services:1.8")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.9")

@@ -5,7 +5,6 @@
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 	<include file="liquibase/settings.xml"/>
 
-	<include file="liquibase/migrations/common_tables.xml"/>
 	<include file="liquibase/migrations/generatedChangeLog.xml"/>
 
 	<!--keep the file at bottom -->

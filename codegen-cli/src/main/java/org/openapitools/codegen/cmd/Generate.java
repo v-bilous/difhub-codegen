@@ -22,7 +22,9 @@ import ch.qos.logback.core.spi.FilterAttachable;
 import io.airlift.airline.Command;
 import io.airlift.airline.Option;
 import org.openapitools.codegen.*;
-import org.openapitools.codegen.InCustomCodegenConfigurator;
+import pro.bilous.codegen.configurator.ConfiguratorWrapper;
+import pro.bilous.codegen.core.GenerateInvoker;
+import pro.bilous.codegen.core.InCustomCodegenConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -404,7 +406,7 @@ public class Generate implements Runnable {
 
 		//configurator.setTemplatingEngineName("handlebars");
 
-		ConfiguratorWrapper wrapper = new ConfiguratorWrapper(configurator);
+		ConfiguratorWrapper wrapper = new ConfiguratorWrapper(configurator, new GenerateInvoker());
 
 		try {
 			wrapper.generate();
