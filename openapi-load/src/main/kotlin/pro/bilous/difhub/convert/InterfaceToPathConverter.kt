@@ -277,7 +277,7 @@ class InterfaceToPathConverter(private val source: Model, private val openApi: O
 	}
 
 	private fun createContent(field: Field): Content {
-		val typeRef = "#/components/schemas/${getDefType(field.reference)}"
+		val typeRef = "#/components/schemas/${getDefType(field.reference).capitalize()}"
 		val typeSchema = Schema<Any>().`$ref`(typeRef)
 		return Content().addMediaType("application/json",
 			MediaType().schema(
