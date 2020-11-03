@@ -6,6 +6,7 @@
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
 	<property name="UUID" value="varchar(36)" dbms="{{database.name}},h2"/>
-	<property name="JSON_OBJECT" value="json" dbms="{{database.name}},h2"/>
+	<property name="JSON_OBJECT" value="json" dbms="{{database.name}}"/>
+	<property name="JSON_OBJECT" value="varchar(2048)" dbms="h2"/>
 	<property name="BOOLEAN_VALUE" value="boolean" dbms="{{database.name}},h2"/>
 </databaseChangeLog>

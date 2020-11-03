@@ -1,11 +1,14 @@
 package {{appPackage}}.controller
 
-import {{basePackage}}.controller.AbstractIntegrationTest
+{{#imports}}import {{import}}
+{{/imports}}
+{{#testImports}}import {{import}}
+{{/testImports}}
+import {{appPackage}}.controller.AbstractIntegrationTest
 {{#hasPathParent}}
 import {{basePackage}}.domain.Identity
 {{/hasPathParent}}
 import {{appPackage}}.{{appRealName}}Application
-import {{appPackage}}.domain.{{returnEntityType}}
 import {{appPackage}}.repository.{{repositoryClassname}}
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -47,15 +50,20 @@ class {{classname}}IT : AbstractIntegrationTest<{{returnEntityType}}>() {
 {{#testModel}}
 	{{#vars}}
 		{{^isListContainer}}
+		{{#vendorExtensions.hasTestModel}}
+		assertObjectEquals(savedResource.{{name}}, getValue(result, "$.{{name}}"))
+		{{/vendorExtensions.hasTestModel}}
+		{{^vendorExtensions.hasTestModel}}
 		{{#isDate}}
 		assertDateEquals(savedResource.{{name}}, getValue(result, "$.{{name}}"))
 		{{/isDate}}
 		{{^isDate}}
 		assertEquals(savedResource.{{name}}, getValue(result, "$.{{name}}"){{#isInteger}} as Int?{{/isInteger}})
 		{{/isDate}}
+		{{/vendorExtensions.hasTestModel}}
 		{{/isListContainer}}
 		{{#isListContainer}}
-		assertListsEqual(savedResource.{{name}}, getValue(result, "$.{{name}}"))
+		assertListsEquals(savedResource.{{name}}, getValue(result, "$.{{name}}"))
 		{{/isListContainer}}
 	{{/vars}}
 {{/testModel}}
@@ -73,15 +81,20 @@ class {{classname}}IT : AbstractIntegrationTest<{{returnEntityType}}>() {
 		{{#testModel}}
 		{{#vars}}
 		{{^isListContainer}}
+		{{#vendorExtensions.hasTestModel}}
+		assertObjectEquals(savedResource.{{name}}, getValue(result, "$.content[$index].{{name}}"))
+		{{/vendorExtensions.hasTestModel}}
+		{{^vendorExtensions.hasTestModel}}
 		{{#isDate}}
 		assertDateEquals(savedResource.{{name}}, getValue(result, "$.content[$index].{{name}}"))
 		{{/isDate}}
 		{{^isDate}}
 		assertEquals(savedResource.{{name}}, getValue(result, "$.content[$index].{{name}}"){{#isInteger}} as Int?{{/isInteger}})
 		{{/isDate}}
+		{{/vendorExtensions.hasTestModel}}
 		{{/isListContainer}}
 		{{#isListContainer}}
-		assertListsEqual(savedResource.{{name}}, getValue(result, "$.content[$index].{{name}}"))
+		assertListsEquals(savedResource.{{name}}, getValue(result, "$.content[$index].{{name}}"))
 		{{/isListContainer}}
 		{{/vars}}
 		{{/testModel}}
@@ -91,7 +104,12 @@ class {{classname}}IT : AbstractIntegrationTest<{{returnEntityType}}>() {
 	return {{returnEntityType}}(
 			{{#testModel}}
 				{{#vars}}
-				{{name}} = {{#required}}{{#isString}}"{{/isString}}{{{defaultValue}}}{{#isString}}"{{/isString}}{{/required}}{{^required}}null{{/required}},
+				{{#required}}
+				{{>app-module/src/test/kotlin/controller/apiTestVar}}{{#hasMore}},{{/hasMore}}
+				{{/required}}
+				{{^required}}
+				{{name}} = null{{#hasMore}},{{/hasMore}}
+				{{/required}}
 				{{/vars}}
 			{{/testModel}}
 		).apply {
@@ -108,7 +126,7 @@ class {{classname}}IT : AbstractIntegrationTest<{{returnEntityType}}>() {
 		return {{returnEntityType}}(
 			{{#testModel}}
 				{{#vars}}
-				{{name}} = {{#isString}}"{{/isString}}{{{defaultValue}}}{{#isString}}"{{/isString}},
+				{{>app-module/src/test/kotlin/controller/apiTestVar}}{{#hasMore}},{{/hasMore}}
 				{{/vars}}
 			{{/testModel}}
 		).apply {

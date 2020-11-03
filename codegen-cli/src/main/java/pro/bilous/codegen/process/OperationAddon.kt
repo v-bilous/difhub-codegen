@@ -194,10 +194,10 @@ class OperationAddon(val codegen: CodeCodegen) {
 		objs["mapperClassname"] = classPrefix + "Mapper"
 		objs["converterClassname"] = classPrefix + "Converter"
 		objs["controllerPath"] = findControllerPath(ops)
-		if (returnType == "Person") {
-			println("")
-		}
-		objs["testModel"] = findTestCodegenModel(returnType)
+
+		val testModel = findTestCodegenModel(returnType)
+		objs["testModel"] = testModel
+		applyImportsForTest(objs, testModel)
 
 		objs["converterLinkMethodname"] = ops.find { operation ->
 			val idPathParam = operation.path.split("/").last().removePrefix("{").removeSuffix("}")
@@ -208,32 +208,87 @@ class OperationAddon(val codegen: CodeCodegen) {
 		objs["returnModelType"] = returnType
 	}
 
-	private fun findTestCodegenModel(returnType: String): CodegenModel {
-		val schema = codegen.getOpenApi().components.schemas[returnType] as Schema<*>
-		val model = codegen.fromModel(returnType, schema)
-		model.vars.forEach {
-			if (returnType == "Account") {
-				println("")
-			}
-			it.defaultValue = when {
-				!it.defaultValue.isNullOrEmpty() && it.defaultValue != "null" -> {
-					it.defaultValue
+	fun applyImportsForTest(objs: MutableMap<String, Any>, testModel: CodegenModel) {
+		val importList = mutableListOf<Map<String, String>>()
+		val mappingSet = mutableSetOf<String>()
+		addImportElements(testModel, mappingSet, importList)
+		objs["testImports"] = importList
+	}
+
+	private fun addImportElements(testModel: CodegenModel,
+								  mappingSet: MutableSet<String>,
+								  importList: MutableList<Map<String, String>>,) {
+		testModel.vars.forEach {
+			if (it.vendorExtensions.containsKey("testModel")) {
+				val inner = it.vendorExtensions["testModel"] as CodegenModel
+				if (!mappingSet.contains(inner.classname)) {
+					mappingSet.add(inner.classname)
+					importList.add(mapOf(
+						"import" to codegen.toModelImport(inner.classname),
+						"classname" to inner.classname
+					))
+					addImportElements(inner, mappingSet, importList)
 				}
-				it.vendorExtensions["x-data-type"] == "Guid" -> UUID.randomUUID().toString()
-				it.isString ->  "test string value"
-				it.isInteger -> "8"
-				it.dataType == "Date" -> {
-					"Date()"
-				}
-				it.isBoolean -> "false"
-				it.isModel && it.datatypeWithEnum == "String" -> {
-					it.isString = true
-					"test_type"
-				}
-				else -> "null"
 			}
 		}
+	}
+
+	private fun findTestCodegenModel(returnType: String): CodegenModel {
+		val model = readModelByType(returnType)
+		applyTestVars(model)
 		return model
+	}
+
+	private fun readModelByType(type: String): CodegenModel {
+		val schema = codegen.getOpenApi().components.schemas[type] as Schema<*>
+		return codegen.fromModel(type, schema)
+	}
+
+	fun applyTestVars(model: CodegenModel) {
+		model.vars.forEach {
+			if (it.vendorExtensions.containsKey("isOneToOne") && it.vendorExtensions["isOneToOne"] as Boolean) {
+				val embeddedModel = readModelByType(it.complexType)
+				applyTestVars(embeddedModel)
+				it.vendorExtensions["testModel"] = embeddedModel
+				it.vendorExtensions["hasTestModel"] = true
+			} else if (it.vendorExtensions.containsKey("embeddedComponent")) {
+				val embeddedModel = it.vendorExtensions["embeddedComponent"] as CodegenModel
+				applyTestVars(embeddedModel)
+				it.vendorExtensions["testModel"] = embeddedModel
+				it.vendorExtensions["hasTestModel"] = true
+			} else if (it.isListContainer && !it.complexType.isNullOrEmpty() && !arrayOf("List<String>", "List<String>?").contains(it.datatypeWithEnum)) {
+				val embeddedInListModel = readModelByType(it.complexType)
+				applyTestVars(embeddedInListModel)
+				it.vendorExtensions["testModel"] = embeddedInListModel
+				it.vendorExtensions["hasTestModel"] = true
+			} else {
+				it.defaultValue = when {
+					!it.defaultValue.isNullOrEmpty() && it.defaultValue != "null" -> {
+						it.defaultValue
+					}
+					it.vendorExtensions["x-data-type"] == "Guid" -> UUID.randomUUID().toString()
+					it.isString -> "test string value"
+					it.isInteger -> "8"
+					it.dataType == "Date" -> {
+						"Date()"
+					}
+					it.isBoolean -> "false"
+					it.isLong -> "9223372036854775807L"
+					it.isModel && arrayOf("String", "String?").contains(it.datatypeWithEnum) -> {
+						it.isString = true
+						"test_enum_value"
+					}
+					it.isListContainer && arrayOf("List<String>", "List<String>?").contains(it.datatypeWithEnum) -> {
+						"\"test_list_string_value\""
+					}
+					it.isFreeFormObject && arrayOf("String", "String?").contains(it.datatypeWithEnum) -> {
+						it.isString = true
+						"test string (was object) value"
+					}
+					else -> "null"
+				}
+			}
+		}
 	}
 
 	private fun findControllerPath(ops: List<CodegenOperation>): String {

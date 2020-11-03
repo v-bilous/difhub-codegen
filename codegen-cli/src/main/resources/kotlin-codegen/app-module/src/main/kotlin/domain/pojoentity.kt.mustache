@@ -15,24 +15,24 @@
 data class {{classname}}(
 {{#vendorExtensions.addIdVar}}
 
-    var id: String,
+	var id: String,
 {{/vendorExtensions.addIdVar}}
 
 {{#vars}}
-    {{#isEnum}}
-    {{^isContainer}}
-    {{>enumClass}}
-    {{/isContainer}}
-    {{#isContainer}}
-    {{#mostInnerItems}}
-    {{>enumClass}}
-    {{/mostInnerItems}}
-    {{/isContainer}}
-    {{/isEnum}}
-    {{#vendorExtensions.extraAnnotation}}
-    {{{vendorExtensions.extraAnnotation}}}
-    {{/vendorExtensions.extraAnnotation}}
-    {{#vendorExtensions.isEmbedded}}
+	{{#isEnum}}
+	{{^isContainer}}
+	{{>enumClass}}
+	{{/isContainer}}
+	{{#isContainer}}
+	{{#mostInnerItems}}
+	{{>enumClass}}
+	{{/mostInnerItems}}
+	{{/isContainer}}
+	{{/isEnum}}
+	{{#vendorExtensions.extraAnnotation}}
+	{{{vendorExtensions.extraAnnotation}}}
+	{{/vendorExtensions.extraAnnotation}}
+	{{#vendorExtensions.isEmbedded}}
 	{{^vendorExtensions.isHistory}}
 	{{#vendorExtensions.embeddedComponent}}
 	@AttributeOverrides(
@@ -52,33 +52,34 @@ data class {{classname}}(
 	{{/vendorExtensions.embeddedComponent}}
 	{{/vendorExtensions.isHistory}}
 	@Embedded
-    {{/vendorExtensions.isEmbedded}}
-    {{^vendorExtensions.isEmbedded}}
-    {{#vendorExtensions.hasJsonType}}
-    @Type(type = "json")
-    @Column(name = "{{vendorExtensions.columnName}}", columnDefinition = "json")
-    {{/vendorExtensions.hasJsonType}}
-    {{^vendorExtensions.hasJsonType}}
-    {{#isListContainer}}
-    {{#vendorExtensions.isReferenceElement}}
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(
-            name = "{{vendorExtensions.joinTableName}}",
-            joinColumns = [JoinColumn(name = "{{vendorExtensions.joinColumnName}}")]
-    )
-    @Column(name = "{{vendorExtensions.inverseJoinColumnName}}")
-    {{/vendorExtensions.isReferenceElement}}
-    {{^vendorExtensions.isReferenceElement}}
+	{{/vendorExtensions.isEmbedded}}
+	{{^vendorExtensions.isEmbedded}}
+	{{#vendorExtensions.hasJsonType}}
+	@Type(type = "json")
+	@Column(name = "{{vendorExtensions.columnName}}", columnDefinition = "json")
+	{{/vendorExtensions.hasJsonType}}
+	{{^vendorExtensions.hasJsonType}}
+	{{#isListContainer}}
+	{{#vendorExtensions.isReferenceElement}}
+	@ElementCollection
+	@LazyCollection(LazyCollectionOption.FALSE)
+	@CollectionTable(
+			name = "{{vendorExtensions.joinTableName}}",
+			joinColumns = [JoinColumn(name = "{{vendorExtensions.joinColumnName}}")]
+	)
+	@Column(name = "{{vendorExtensions.inverseJoinColumnName}}")
+	{{/vendorExtensions.isReferenceElement}}
+	{{^vendorExtensions.isReferenceElement}}
 	@OneToMany(cascade = [CascadeType.ALL])
 	@LazyCollection(LazyCollectionOption.FALSE)
 	@JoinTable(
-            name = "{{vendorExtensions.joinTableName}}",
-            joinColumns = [JoinColumn(name = "{{vendorExtensions.joinColumnName}}", referencedColumnName = "id")],
-            inverseJoinColumns = [JoinColumn(name = "{{vendorExtensions.inverseJoinColumnName}}", referencedColumnName = "id")]
-    )
-    {{/vendorExtensions.isReferenceElement}}
-    {{/isListContainer}}
-    {{^isListContainer}}
+			name = "{{vendorExtensions.joinTableName}}",
+			joinColumns = [JoinColumn(name = "{{vendorExtensions.joinColumnName}}", referencedColumnName = "id")],
+			inverseJoinColumns = [JoinColumn(name = "{{vendorExtensions.inverseJoinColumnName}}", referencedColumnName = "id")]
+	)
+	{{/vendorExtensions.isReferenceElement}}
+	{{/isListContainer}}
+	{{^isListContainer}}
 	{{#vendorExtensions.isOneToOne}}
 	@OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.EAGER{{#required}}, optional = false{{/required}})
 	@JoinColumn(name = "{{{vendorExtensions.escapedColumnName}}}", referencedColumnName = "id")
@@ -86,15 +87,15 @@ data class {{classname}}(
 	{{^vendorExtensions.isOneToOne}}
 	@Column(name = "{{{vendorExtensions.escapedColumnName}}}")
 	{{/vendorExtensions.isOneToOne}}
-    {{/isListContainer}}
-    {{/vendorExtensions.hasJsonType}}
-    {{/vendorExtensions.isEmbedded}}
-    {{#isContainer}}
-    var {{name}}: {{{datatypeWithEnum}}}{{#hasMore}},{{/hasMore}}
-    {{/isContainer}}
-    {{^isContainer}}
-    var {{name}}: {{{datatypeWithEnum}}}{{#hasMore}},{{/hasMore}}
-    {{/isContainer}}
+	{{/isListContainer}}
+	{{/vendorExtensions.hasJsonType}}
+	{{/vendorExtensions.isEmbedded}}
+	{{#isContainer}}
+	var {{name}}: {{{datatypeWithEnum}}}{{#hasMore}},{{/hasMore}}
+	{{/isContainer}}
+	{{^isContainer}}
+	var {{name}}: {{{datatypeWithEnum}}}{{#hasMore}},{{/hasMore}}
+	{{/isContainer}}
 
 {{/vars}}
 ) {{#parent}}: {{{parent}}}{{/parent}}{{^parent}}{{/parent}}
