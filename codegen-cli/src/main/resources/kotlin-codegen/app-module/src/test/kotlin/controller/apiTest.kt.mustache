@@ -4,7 +4,6 @@ package {{appPackage}}.controller
 {{/imports}}
 {{#testImports}}import {{import}}
 {{/testImports}}
-import {{appPackage}}.controller.AbstractIntegrationTest
 {{#hasPathParent}}
 import {{basePackage}}.domain.Identity
 {{/hasPathParent}}
@@ -37,64 +36,33 @@ class {{classname}}IT : AbstractIntegrationTest<{{returnEntityType}}>() {
 {{/operation}}
 {{/operations}}
 
-	private fun resourceAsserts(savedResource: {{returnEntityType}}, result: MvcResult) {
+	private fun resourceAsserts(savedResource: {{returnEntityType}}, result: MvcResult, index: Int = -1) {
+		val prefix = if (index == -1) "$" else "$.content[$index]"
 		if (savedResource.id != null) {
-			assertEquals(savedResource.id, getValue(result, "$.identity.id"))
+			assertEquals(savedResource.id, getValue(result, "$prefix.identity.id"))
 		} else {
-			assertNotNull(getValue(result, "$.identity.id"))
+			assertNotNull(getValue(result, "$prefix.identity.id"))
 		}
-		assertEquals(savedResource.identity.name, getValue(result, "$.identity.name"))
-		assertEquals(savedResource.identity.description, getValue(result, "$.identity.description"))
-		assertEquals(savedResource.entity.state, getValue(result, "$.entity.state"))
-		assertEquals(savedResource.entity.entityId, savedResource.identity.id)
-{{#testModel}}
-	{{#vars}}
-		{{^isListContainer}}
-		{{#vendorExtensions.hasTestModel}}
-		assertObjectEquals(savedResource.{{name}}, getValue(result, "$.{{name}}"))
-		{{/vendorExtensions.hasTestModel}}
-		{{^vendorExtensions.hasTestModel}}
-		{{#isDate}}
-		assertDateEquals(savedResource.{{name}}, getValue(result, "$.{{name}}"))
-		{{/isDate}}
-		{{^isDate}}
-		assertEquals(savedResource.{{name}}, getValue(result, "$.{{name}}"){{#isInteger}} as Int?{{/isInteger}})
-		{{/isDate}}
-		{{/vendorExtensions.hasTestModel}}
-		{{/isListContainer}}
-		{{#isListContainer}}
-		assertListsEquals(savedResource.{{name}}, getValue(result, "$.{{name}}"))
-		{{/isListContainer}}
-	{{/vars}}
-{{/testModel}}
-	}
-
-	private fun resourceListAsserts(savedResource: {{returnEntityType}}, result: MvcResult, index: Int) {
-		if (savedResource.id != null) {
-			assertEquals(savedResource.id, getValue(result, "$.content[$index].identity.id"))
-		} else {
-			assertNotNull(getValue(result, "$.content[$index].identity.id"))
-		}
-		assertEquals(savedResource.identity.name, getValue(result, "$.content[$index].identity.name"))
-		assertEquals(savedResource.identity.description, getValue(result, "$.content[$index].identity.description"))
-		assertEquals(savedResource.entity.state, getValue(result, "$.content[$index].entity.state"))
+		assertEquals(savedResource.identity.name, getValue(result, "$prefix.identity.name"))
+		assertEquals(savedResource.identity.description, getValue(result, "$prefix.identity.description"))
+		assertEquals(savedResource.entity.state, getValue(result, "$prefix.entity.state"))
 		{{#testModel}}
 		{{#vars}}
 		{{^isListContainer}}
 		{{#vendorExtensions.hasTestModel}}
-		assertObjectEquals(savedResource.{{name}}, getValue(result, "$.content[$index].{{name}}"))
+		assertObjectEquals(savedResource.{{name}}, getValue(result, "$prefix.{{name}}"))
 		{{/vendorExtensions.hasTestModel}}
 		{{^vendorExtensions.hasTestModel}}
 		{{#isDate}}
-		assertDateEquals(savedResource.{{name}}, getValue(result, "$.content[$index].{{name}}"))
+		assertDateEquals(savedResource.{{name}}, getValue(result, "$prefix.{{name}}"))
 		{{/isDate}}
 		{{^isDate}}
-		assertEquals(savedResource.{{name}}, getValue(result, "$.content[$index].{{name}}"){{#isInteger}} as Int?{{/isInteger}})
+		assertEquals(savedResource.{{name}}, getValue(result, "$prefix.{{name}}"){{#isInteger}} as Int?{{/isInteger}})
 		{{/isDate}}
 		{{/vendorExtensions.hasTestModel}}
 		{{/isListContainer}}
 		{{#isListContainer}}
-		assertListsEquals(savedResource.{{name}}, getValue(result, "$.content[$index].{{name}}"))
+		assertListsEquals(savedResource.{{name}}, getValue(result, "$prefix.{{name}}"))
 		{{/isListContainer}}
 		{{/vars}}
 		{{/testModel}}

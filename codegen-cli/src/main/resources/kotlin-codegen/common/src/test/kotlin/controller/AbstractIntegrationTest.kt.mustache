@@ -2,7 +2,6 @@ package {{appPackage}}.controller
 
 import {{basePackage}}.domain.BaseResource
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.jayway.jsonpath.JsonPath
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
@@ -18,10 +17,15 @@ import java.util.*
 
 abstract class AbstractIntegrationTest<E : BaseResource> : CommonIntegrationTest<E> {
 
+	companion object {
+		private val expectedDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+	}
+
 	@Autowired
 	lateinit var mockMvc: MockMvc
 
-	var objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule()
+	@Autowired
+	lateinit var objectMapper: ObjectMapper
 
 	override fun getById(urlTemplate: String, id: String): MvcResult {
 
@@ -59,7 +63,6 @@ abstract class AbstractIntegrationTest<E : BaseResource> : CommonIntegrationTest
 
 	override fun deleteAll(urlTemplate: String, ids: List<String?>): MvcResult {
 		return mockMvc.perform(delete("$urlTemplate/bulk")
-			   // .param("bulk", true.toString())
 				.param("ids", ids.joinToString(",") { it.toString() })
 				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk)
@@ -76,7 +79,6 @@ abstract class AbstractIntegrationTest<E : BaseResource> : CommonIntegrationTest
 
 	override fun createAll(urlTemplate: String, entities: List<E>): MvcResult {
 		return mockMvc.perform(post("$urlTemplate/bulk")
-				//.param("bulk", true.toString())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(entities)))
 				.andExpect(status().isOk)
@@ -114,7 +116,6 @@ abstract class AbstractIntegrationTest<E : BaseResource> : CommonIntegrationTest
 		assertTrue(pairList.all { (elt1, elt2) -> elt1 == elt2 }, "Lists content should be equal")
 	}
 
-	private val expectedDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
 	fun assertDateEquals(first: Date?, second: String?) {
 		if (first == null) {
 			return
@@ -131,5 +132,9 @@ abstract class AbstractIntegrationTest<E : BaseResource> : CommonIntegrationTest
 		val firstString = objectMapper.writeValueAsString(first)
 		val secondString = objectMapper.writeValueAsString(second)
 		assertEquals(firstString, secondString, "JSON objects should be equal")
+	}
+
+	fun findIdentityId(result: MvcResult): String {
+		return getValue(result, "$.identity.id")
 	}
 }

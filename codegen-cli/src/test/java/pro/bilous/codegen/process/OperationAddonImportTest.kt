@@ -28,7 +28,7 @@ class OperationAddonImportTest {
 			)
 		}
 		val testModel = CodegenModel().apply {
-			vars = listOf(CodegenProperty().apply { vendorExtensions["embeddedComponent"] = embeddedModel })
+			vars = listOf(CodegenProperty().apply { vendorExtensions["testModel"] = embeddedModel })
 		}
 
 		val importList = mutableListOf(mapOf(
@@ -59,14 +59,14 @@ class OperationAddonImportTest {
 					classname = "Person"
 					isString = true
 					defaultValue = null
-					vendorExtensions["embeddedComponent"] = CodegenModel().apply {
+					vendorExtensions["testModel"] = CodegenModel().apply {
 						classname = "UserInfo"
 					}
 				},
 			)
 		}
 		val testModel = CodegenModel().apply {
-			vars = listOf(CodegenProperty().apply { vendorExtensions["embeddedComponent"] = embeddedModel })
+			vars = listOf(CodegenProperty().apply { vendorExtensions["testModel"] = embeddedModel })
 		}
 
 		val importList = mutableListOf(mapOf(
