@@ -12,8 +12,8 @@
 		params["sort"] = "entity.history.{{#suffixHistoryAt}}createdAt{{/suffixHistoryAt}}{{^suffixHistoryAt}}createdDate{{/suffixHistoryAt}}"
 		val result = super.findAll(url, params)
 
-		resourceListAsserts(savedRes1, result, 0)
-		resourceListAsserts(savedRes2, result, 1)
+		resourceAsserts(savedRes1, result, 0)
+		resourceAsserts(savedRes2, result, 1)
 	}
 {{/vendorExtensions.isGetListMethod}}
 {{#vendorExtensions.isGetMethod}}
@@ -40,14 +40,16 @@
 	fun `{{vendorExtensions.operationMethodName}} with required fields`() {
 		val res = createWithRequiredFields()
 		val result = super.create(url, res)
-		resourceAsserts(res, result)
+		val savedRes = repository.getOne(findIdentityId(result))
+		resourceAsserts(savedRes, result)
 	}
 
 	@Test
 	fun `{{vendorExtensions.operationMethodName}} with all fields`() {
 		val res = createWithAllFields()
 		val result = super.create(url, res)
-		resourceAsserts(res, result)
+		val savedRes = repository.getOne(findIdentityId(result))
+		resourceAsserts(savedRes, result)
 	}
 {{/vendorExtensions.isPostMethod}}
 {{#vendorExtensions.isPutMethod}}

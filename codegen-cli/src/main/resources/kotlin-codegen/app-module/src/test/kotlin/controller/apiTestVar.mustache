@@ -1,0 +1,5 @@
+{{name}} = {{^vendorExtensions.testModel}}{{#isListContainer}}listOf({{/isListContainer}}{{#isString}}"{{/isString}}{{{defaultValue}}}{{#isString}}"{{/isString}}{{#isListContainer}}){{/isListContainer}}{{/vendorExtensions.testModel}}{{#vendorExtensions.testModel}}{{#isListContainer}}listOf({{/isListContainer}}{{classname}}(
+				{{#vars}}
+					{{>app-module/src/test/kotlin/controller/apiTestVar}}{{#hasMore}},{{/hasMore}}
+				{{/vars}}
+				){{#isListContainer}}){{/isListContainer}}{{/vendorExtensions.testModel}}

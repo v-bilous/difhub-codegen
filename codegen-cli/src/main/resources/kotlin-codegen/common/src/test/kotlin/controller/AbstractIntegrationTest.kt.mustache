@@ -1,4 +1,4 @@
-package {{basePackage}}.controller
+package {{appPackage}}.controller
 
 import {{basePackage}}.domain.BaseResource
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -17,104 +17,105 @@ import java.util.*
 
 abstract class AbstractIntegrationTest<E : BaseResource> : CommonIntegrationTest<E> {
 
-    @Autowired
-    lateinit var mockMvc: MockMvc
+	companion object {
+		private val expectedDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+	}
 
-    var objectMapper: ObjectMapper = ObjectMapper()
+	@Autowired
+	lateinit var mockMvc: MockMvc
 
-    override fun getById(urlTemplate: String, id: String): MvcResult {
+	@Autowired
+	lateinit var objectMapper: ObjectMapper
 
-        return mockMvc.perform(get("$urlTemplate/{id}", id)
-                .accept(MediaType.APPLICATION_JSON))
-                .andReturn()
-    }
+	override fun getById(urlTemplate: String, id: String): MvcResult {
 
-    override fun create(urlTemplate: String, entity: E): MvcResult {
+		return mockMvc.perform(get("$urlTemplate/{id}", id)
+				.accept(MediaType.APPLICATION_JSON))
+				.andReturn()
+	}
 
-        return mockMvc.perform(post("$urlTemplate")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(entity)))
+	override fun create(urlTemplate: String, entity: E): MvcResult {
+
+		return mockMvc.perform(post("$urlTemplate")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(entity)))
 				.andExpect(status().isCreated)
-                .andReturn()
-    }
+				.andReturn()
+	}
 
-    override fun update(urlTemplate: String, id: String, entity: E): MvcResult {
+	override fun update(urlTemplate: String, id: String, entity: E): MvcResult {
 
-        return mockMvc.perform(put("$urlTemplate/{id}", id)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(entity))
-                .accept(MediaType.APPLICATION_JSON))
+		return mockMvc.perform(put("$urlTemplate/{id}", id)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(entity))
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk)
 				.andReturn()
-    }
+	}
 
-    override fun delete(urlTemplate: String, id: String): MvcResult {
+	override fun delete(urlTemplate: String, id: String): MvcResult {
 
-        return mockMvc.perform(MockMvcRequestBuilders.delete("$urlTemplate/{id}", id)
-                .accept(MediaType.APPLICATION_JSON))
+		return mockMvc.perform(MockMvcRequestBuilders.delete("$urlTemplate/{id}", id)
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk)
 				.andReturn()
-    }
+	}
 
-    override fun deleteAll(urlTemplate: String, ids: List<String?>): MvcResult {
-        return mockMvc.perform(delete("$urlTemplate/bulk")
-               // .param("bulk", true.toString())
-                .param("ids", ids.joinToString(",") { it.toString() })
-                .accept(MediaType.APPLICATION_JSON))
+	override fun deleteAll(urlTemplate: String, ids: List<String?>): MvcResult {
+		return mockMvc.perform(delete("$urlTemplate/bulk")
+				.param("ids", ids.joinToString(",") { it.toString() })
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk)
 				.andReturn()
-    }
+	}
 
-    override fun findAll(urlTemplate: String, params: MultiValueMap<String, String>): MvcResult {
-        return mockMvc.perform(get("$urlTemplate")
-                .params(params)
-                .accept(MediaType.APPLICATION_JSON))
+	override fun findAll(urlTemplate: String, params: MultiValueMap<String, String>): MvcResult {
+		return mockMvc.perform(get("$urlTemplate")
+				.params(params)
+				.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk)
 				.andReturn()
-    }
+	}
 
-    override fun createAll(urlTemplate: String, entities: List<E>): MvcResult {
-        return mockMvc.perform(post("$urlTemplate/bulk")
-                //.param("bulk", true.toString())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(entities)))
+	override fun createAll(urlTemplate: String, entities: List<E>): MvcResult {
+		return mockMvc.perform(post("$urlTemplate/bulk")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(entities)))
 				.andExpect(status().isOk)
 				.andReturn()
-    }
+	}
 
-    override fun findById(urlTemplate: String, id: String): MvcResult {
-        TODO("Not yet implemented")
-    }
+	override fun findById(urlTemplate: String, id: String): MvcResult {
+		TODO("Not yet implemented")
+	}
 
-    override fun modify(urlTemplate: String, id: String, entity: E): MvcResult {
-        TODO("Not yet implemented")
-    }
+	override fun modify(urlTemplate: String, id: String, entity: E): MvcResult {
+		TODO("Not yet implemented")
+	}
 
-    override fun updateAll(urlTemplate: String, ids: List<String>, entities: List<E>): MvcResult {
-        TODO("Not yet implemented")
-    }
+	override fun updateAll(urlTemplate: String, ids: List<String>, entities: List<E>): MvcResult {
+		TODO("Not yet implemented")
+	}
 
-    fun <T> getValue(mvcResult: MvcResult, jsonPath: String): T =
-            JsonPath.read(mvcResult.response.contentAsString, jsonPath)
+	fun <T> getValue(mvcResult: MvcResult, jsonPath: String): T =
+			JsonPath.read(mvcResult.response.contentAsString, jsonPath)
 
-	fun assertListsEqual(list1: List<Any>?, list2: List<Any>?): Boolean {
+	fun assertListsEquals(list1: List<Any>?, list2: List<Any>?) {
 		if (list1.isNullOrEmpty() && list2.isNullOrEmpty()) {
-			return true
+			return
 		}
 		list1!!
 		list2!!
-		if (list1.size != list2.size) {
-			return false
-		}
+		assertEquals(list1.size, list2.size, "Lists size should be equal")
 
+		// for now we about to check String lists only, complex object are not supported
+		if (!list1.toTypedArray().isArrayOf<String>()) {
+			return
+		}
 		val pairList = list1.zip(list2)
-
-		return pairList.all { (elt1, elt2) ->
-			elt1 == elt2
-		}
+		assertTrue(pairList.all { (elt1, elt2) -> elt1 == elt2 }, "Lists content should be equal")
 	}
 
-	private val expectedDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
 	fun assertDateEquals(first: Date?, second: String?) {
 		if (first == null) {
 			return
@@ -122,5 +123,18 @@ abstract class AbstractIntegrationTest<E : BaseResource> : CommonIntegrationTest
 		assertNotNull(second)
 		val secondDate = expectedDateFormat.parse(second)
 		assertEquals(first.time, secondDate.time)
+	}
+
+	fun assertObjectEquals(first: Any?, second: Any?) {
+		if (first == null && second == null) {
+			return
+		}
+		val firstString = objectMapper.writeValueAsString(first)
+		val secondString = objectMapper.writeValueAsString(second)
+		assertEquals(firstString, secondString, "JSON objects should be equal")
+	}
+
+	fun findIdentityId(result: MvcResult): String {
+		return getValue(result, "$.identity.id")
 	}
 }
