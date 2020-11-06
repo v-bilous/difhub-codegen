@@ -4,7 +4,7 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/v-bilous/difhub-codegen/badge)](https://www.codefactor.io/repository/github/v-bilous/difhub-codegen)
 
 # DifHub Code Generation tools.
-Set of tools for the integration with https://difhub.com. Contains API loader, codegen and IntelliJ Idea plugin. New features and instrumentation coming soon.
+Set of tools for the integration with https://metucat.com (previously https://difhub.com). Contains API loader, codegen and IntelliJ Idea plugin. New features and instrumentation coming soon.
 
 Projects:
 1. openapi-load – API loader, connects to difhub.com, loads metadata of the selected system and converts it to the OpenAPI documents. 
