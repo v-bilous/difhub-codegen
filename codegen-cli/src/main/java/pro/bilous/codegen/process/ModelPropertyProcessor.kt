@@ -204,12 +204,9 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 				}
 			}
 
-			val propertyTableName = if (openApiWrapper.isOpenApiContainsType(complexType)) {
-				CamelCaseConverter.convert(complexType).toLowerCase()
-			} else {
-				CamelCaseConverter.convert(property.name).toLowerCase()
-			}
+			val propertyTableName = readPropertyTableName(complexType, property)
 			val joinTableName = joinTableName(modelTableName, propertyTableName)
+
 			property.getVendorExtensions()["modelTableName"] = modelTableName
 			property.getVendorExtensions()["propertyTableName"] = propertyTableName
 			property.vendorExtensions["hasPropertyTable"] = openApiWrapper.isOpenApiContainsType(complexType)
@@ -223,6 +220,20 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 
 			if (!joinProperties.any { it.vendorExtensions["joinTableName"] == joinTableName}) {
 				joinProperties.add(property)
+			}
+		}
+	}
+
+	fun readPropertyTableName(complexType: String, property: CodegenProperty): String {
+		return when {
+			openApiWrapper.isOpenApiContainsType(complexType) -> {
+				CamelCaseConverter.convert(complexType).toLowerCase()
+			}
+			complexType.isNotEmpty() && property.isListContainer -> {
+				CamelCaseConverter.convert(complexType).toLowerCase()
+			}
+			else -> {
+				CamelCaseConverter.convert(property.name).toLowerCase()
 			}
 		}
 	}
