@@ -29,13 +29,13 @@ internal class FileMergeTest {
 	@Test
 	fun `should return prefix for extension`() {
 		val merge = FileMerge()
-		assertEquals("//codegen:inject", merge.getMergePrefix("/test/path/file/testFileName.kt"))
-		assertEquals("//codegen:inject", merge.getMergePrefix("/test/path/file/build.gradle.kts"))
-		assertEquals("<!--codegen:inject-->", merge.getMergePrefix("/test/path/file/generatedChangelog.xml"))
-		assertEquals("#codegen:inject", merge.getMergePrefix("/test/path/file/application-development.yml"))
-		assertEquals("#codegen:inject", merge.getMergePrefix("/test/path/file/.editorconfig"))
-		assertEquals("#codegen:inject", merge.getMergePrefix("/test/path/file/.gitignore"))
-		assertEquals("#codegen:inject", merge.getMergePrefix("/test/path/file/.properties"))
+		assertEquals("//codegen:merge", merge.getMergePrefix("/test/path/file/testFileName.kt"))
+		assertEquals("//codegen:merge", merge.getMergePrefix("/test/path/file/build.gradle.kts"))
+		assertEquals("<!--codegen:merge-->", merge.getMergePrefix("/test/path/file/generatedChangelog.xml"))
+		assertEquals("#codegen:merge", merge.getMergePrefix("/test/path/file/application-development.yml"))
+		assertEquals("#codegen:merge", merge.getMergePrefix("/test/path/file/.editorconfig"))
+		assertEquals("#codegen:merge", merge.getMergePrefix("/test/path/file/.gitignore"))
+		assertEquals("#codegen:merge", merge.getMergePrefix("/test/path/file/.properties"))
 	}
 
 	@Test
