@@ -35,6 +35,10 @@ open class CodeCodegen : AbstractJavaCodegen() {
 		const val BINDING_KEY = "addBindingEntity"
 	}
 
+	fun isEnableMerge(): Boolean {
+		return additionalProperties.containsKey("enableMerge") && additionalProperties["enableMerge"] as Boolean
+	}
+
 	fun getOpenApi() = openAPI
 
 	open fun findOpenApi() = openAPI
