@@ -3,10 +3,14 @@ package pro.bilous.codegen.core
 import io.swagger.v3.oas.models.Paths
 import org.openapitools.codegen.*
 import org.slf4j.LoggerFactory
+import pro.bilous.codegen.merge.FileMerge
 import pro.bilous.codegen.process.filename.FilePathResolver
 import java.io.File
 import java.io.IOException
-import kotlin.jvm.Throws
+import java.lang.Exception
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+import java.util.*
 
 open class InCodeGenerator : DefaultGenerator() {
 
@@ -15,6 +19,7 @@ open class InCodeGenerator : DefaultGenerator() {
 	}
 
 	var codegen: CodeCodegen? = null
+	val fileMerge = FileMerge()
 
 	/**
 	 * This is the final point to override things right before the processing templates and writing file to filesystem.
@@ -65,5 +70,68 @@ open class InCodeGenerator : DefaultGenerator() {
 			filename.replace("/.openapi-generator/", "/.difhub-codegen/")
 		} else filename
 		return super.writeToFile(newFilename, contents)
+	}
+
+	override fun writeToFile(filename: String, contents: ByteArray): File {
+		if (codegen!!.isEnableMerge()) {
+			return writeFileWithMerge(filename, contents)
+		}
+		return super.writeToFile(filename, contents)
+	}
+
+	private fun writeFileWithMerge(filename: String, contents: ByteArray): File {
+		val tempFilename = "$filename.tmp"
+		// Use Paths.get here to normalize path (for Windows file separator, space escaping on Linux/Mac, etc)
+		val outputFile = java.nio.file.Paths.get(filename).toFile()
+		var tempFile: File? = null
+		try {
+			tempFile = writeToFileRaw(tempFilename, contents)
+			if (!filesEqual(tempFile, outputFile)) {
+				if (fileMerge.supportsMerge(filename)) { // support merge
+					mergeFilesAndWriteToTemp(tempFile, outputFile, filename)
+				}
+				log.info("writing file $filename")
+				Files.move(tempFile.toPath(), outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+				tempFile = null
+			} else {
+				log.info("skipping unchanged file $filename")
+			}
+		} finally {
+			if (tempFile != null && tempFile.exists()) {
+				try {
+					tempFile.delete()
+				} catch (ex: Exception) {
+					log.error("Error removing temporary file $tempFile", ex)
+				}
+			}
+		}
+		return outputFile
+	}
+
+	private fun mergeFilesAndWriteToTemp(tempFile: File, outputFile: File, filename: String) {
+		val tempContent = tempFile.readText()
+		val outputContent = outputFile.readText()
+		val contentResult = fileMerge.mergeFileContent(outputContent, tempContent, filename)
+		writeToFile(tempFile.path, contentResult)
+	}
+
+	@Throws(IOException::class)
+	private fun writeToFileRaw(filename: String, contents: ByteArray): File {
+		// Use Paths.get here to normalize path (for Windows file separator, space escaping on Linux/Mac, etc)
+		val output = java.nio.file.Paths.get(filename).toFile()
+		if (output.parent != null && !File(output.parent).exists()) {
+			val parent = java.nio.file.Paths.get(output.parent).toFile()
+			parent.mkdirs()
+		}
+		Files.write(output.toPath(), contents)
+		return output
+	}
+
+	@Throws(IOException::class)
+	private fun filesEqual(file1: File, file2: File): Boolean {
+		return file1.exists() && file2.exists() && Arrays.equals(
+			Files.readAllBytes(file1.toPath()),
+			Files.readAllBytes(file2.toPath())
+		)
 	}
 }
