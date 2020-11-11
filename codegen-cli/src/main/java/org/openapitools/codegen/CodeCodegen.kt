@@ -33,6 +33,7 @@ open class CodeCodegen : AbstractJavaCodegen() {
 		const val OPENAPI_DOCKET_CONFIG = "swaggerDocketConfig"
 		const val DB_NAME = "dbName"
 		const val BINDING_KEY = "addBindingEntity"
+		const val AUTHORIZATION_ENABLED = "authorizationEnabled"
 	}
 
 	fun getOpenApi() = openAPI
@@ -364,13 +365,13 @@ open class CodeCodegen : AbstractJavaCodegen() {
 
 	private fun getFolder(sourcePackage: String?, subModule: String): String {
 		val subFolder = "app-$artifactId"
-		return (subFolder + File.separator + "src/main/kotlin" + File.separator + sourcePackage).replace(".", File.separator)
+		return (subFolder + File.separator + "src/main/kotlin" + File.separator + sourcePackage).replace(".", File.separator).replace("/", File.separator)
 	}
 
 	fun getTestFolder(sourcePackage: String?, subModule: String): String {
 		val subFolder = "app-$artifactId"
 		val rightSourcePkg = sourcePackage?.replace("repository", "controller")
-		return (subFolder + File.separator + "src/test/kotlin" + File.separator + rightSourcePkg).replace(".", File.separator)
+		return (subFolder + File.separator + "src/test/kotlin" + File.separator + rightSourcePkg).replace(".", File.separator).replace("/", File.separator)
 	}
 
 	fun getIntegrationTestFolder(sourcePackage: String, subModule: String): String {

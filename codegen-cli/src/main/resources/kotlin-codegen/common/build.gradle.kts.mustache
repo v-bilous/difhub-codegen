@@ -22,6 +22,12 @@ dependencies {
     implementation("org.liquibase:liquibase-core")
     implementation("{{database.dependency}}")
     implementation("com.github.ichanzhar:rsql-hibernate-jpa:0.6")
+	{{#authorizationEnabled}}
+    implementation("org.keycloak:keycloak-spring-boot-starter:11.0.2")
+    implementation("org.keycloak:keycloak-admin-client:11.0.2")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.security:spring-security-test")
+    {{/authorizationEnabled}}
 }
 
 tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {

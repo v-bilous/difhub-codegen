@@ -5,6 +5,7 @@ import io.swagger.v3.oas.models.responses.ApiResponse
 import io.swagger.v3.oas.models.responses.ApiResponses
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import java.io.File
 
 internal class CodeCodegenTest {
 
@@ -15,7 +16,7 @@ internal class CodeCodegenTest {
 		}
 		val testSrc = "app/client/user/repository"
 		val result = gen.getTestFolder(testSrc, "")
-		assertEquals("app-user/src/test/kotlin/app/client/user/controller", result)
+		assertEquals("app-user/src/test/kotlin/app/client/user/controller".replace("/", File.separator), result)
 	}
 
 	@Test

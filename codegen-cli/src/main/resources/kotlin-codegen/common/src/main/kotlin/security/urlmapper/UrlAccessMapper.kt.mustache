@@ -1,0 +1,10 @@
+package {{basePackage}}.security.urlmapper
+
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer
+
+interface UrlAccessMapper {
+
+	fun applyUrlMappings(registry: ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry)
+
+}

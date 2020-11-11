@@ -2,6 +2,7 @@ package pro.bilous.codegen.process.filename
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import java.io.File
 
 internal class FilePathResolverTest {
 
@@ -20,6 +21,8 @@ internal class FilePathResolverTest {
 	fun `should change file path to common one`() {
 		val resolver = FilePathResolver()
 		val originalPath = "/Users/bilous/client-system/app-user/src/main/kotlin/app/client/user/domain/Binding.kt"
+			.replace("/", File.separator)
+
 		val data = mapOf(
 			"appNameLower" to "user",
 			"appPackage" to "app.client.user",
@@ -28,7 +31,7 @@ internal class FilePathResolverTest {
 			"commonModels" to setOf("Entity", "History")
 		)
 		val result = resolver.resolve(data, "common/src/main/kotlin/domain/commonEntity.mustache", originalPath)
-		assertEquals("/Users/bilous/client-system/common/src/main/kotlin/app/client/domain/Binding.kt", result.targetPath)
+		assertEquals("/Users/bilous/client-system/common/src/main/kotlin/app/client/domain/Binding.kt".replace("/", File.separator), result.targetPath)
 		assertTrue(result.shouldWriteFile, "Should write common file to common target")
 	}
 

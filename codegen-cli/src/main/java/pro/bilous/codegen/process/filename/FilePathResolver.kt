@@ -1,6 +1,7 @@
 package pro.bilous.codegen.process.filename
 
 import org.slf4j.LoggerFactory
+import java.io.File
 
 class FilePathResolver {
 
@@ -51,15 +52,16 @@ class FilePathResolver {
 	}
 
 	private fun resolveCommon(templateData: Map<String, Any>, templateName: String, filePath: String): String {
-		val appPackagePath = (templateData["appPackage"] as String).replace(".", "/")
+		val separator = File.separator
+		val appPackagePath = (templateData["appPackage"] as String).replace(".", separator)
 		val appName = templateData["appNameLower"] as String
-		val basePackagePath = (templateData["basePackage"] as String).replace(".", "/")
+		val basePackagePath = (templateData["basePackage"] as String).replace(".", separator)
 		log.debug("found appName: $appName, appPackagePath: $appPackagePath, basePackagePath: $basePackagePath")
 		return filePath
 			// 1st replace app folder to common. example: app-user to common
 			.replace("app-$appName", "common")
 			// 2nd replace app package to the common package (base) example: /app/client/user/ to /app/client/
-			.replace("/$appPackagePath/", "/$basePackagePath/")
+			.replace("$separator$appPackagePath$separator", "$separator$basePackagePath$separator")
 	}
 
 	private fun isCommonModel(templateData: Map<String, Any>): Boolean {
