@@ -36,6 +36,10 @@ open class CodeCodegen : AbstractJavaCodegen() {
 		const val AUTHORIZATION_ENABLED = "authorizationEnabled"
 	}
 
+	fun isEnableMerge(): Boolean {
+		return additionalProperties.containsKey("enableMerge") && additionalProperties["enableMerge"] as Boolean
+	}
+
 	fun getOpenApi() = openAPI
 
 	open fun findOpenApi() = openAPI
