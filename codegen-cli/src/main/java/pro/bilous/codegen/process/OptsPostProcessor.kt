@@ -131,6 +131,9 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 		addSupportFile("$inputResRoot/application.yml.mustache", baseResourceResFolder, "application.yml")
 		addSupportFile("$inputResRoot/application-dev.yml.mustache", baseResourceResFolder, "application-dev.yml")
 		addSupportFile("$inputResRoot/application-prod.yml.mustache", baseResourceResFolder, "application-prod.yml")
+		if (isAuthorizationEnabled()) {
+			addSupportFile("$inputResRoot/application-security.yml.mustache", baseResourceResFolder, "application-security.yml")
+		}
 		addSupportFile(source = "$inputResRoot/hibernate-types.properties", folder = baseResourceResFolder, target = "hibernate-types.properties")
 
 //		addSupportFile("resources/integration-test/configurationIT.mustache", "$integrationTestConfigFolder/config", "ConfigurationIT.kt")
@@ -163,6 +166,7 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 		addSupportFile(source = "settings.gradle.kts.mustache", target = "settings.gradle.kts")
 		addSupportFile(source = "gradlew", target = "gradlew")
 		addSupportFile(source = "gradlew.bat", target = "gradlew.bat")
+		addSupportFile(source = "docker-compose.yml.mustache", target = "docker-compose.yml")
 
 		addSupportFile(source = "README.mustache", target = "README.md")
 		addSupportFile(source = "gradle/wrapper/gradle-wrapper.properties", folder = "", target = "gradle/wrapper/gradle-wrapper.properties")
@@ -192,13 +196,18 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 		addSupportFile(source = "$inputSrc/repository/CommonRepository.kt.mustache", folder = "$destSrc/repository", target = "CommonRepository.kt")
 		addSupportFile(source = "$inputSrc/service/AbstractService.kt.mustache", folder = "$destSrc/service", target = "AbstractService.kt")
 		addSupportFile(source = "$inputSrc/service/CommonService.kt.mustache", folder = "$destSrc/service", target = "CommonService.kt")
+		if (isAuthorizationEnabled()) {
+			addSupportFile(source = "$inputSrc/security/urlmapper/CommonUrlAccessMapper.kt.mustache", folder = "$destSrc/security/urlmapper", target = "CommonUrlAccessMapper.kt")
+			addSupportFile(source = "$inputSrc/security/urlmapper/UrlAccessMapper.kt.mustache", folder = "$destSrc/security/urlmapper", target = "UrlAccessMapper.kt")
+			addSupportFile(source = "$inputSrc/config/KeycloakConfig.kt.mustache", folder = "$destSrc/config", target = "KeycloakConfig.kt")
+		}
 	}
 
 	private fun setupModuleFiles() {
 		val inputRoot = "app-module/"
 		val destinationRoot = "app-${artifactId.toLowerCase()}"
 		addSupportFile(source = "$inputRoot/build.gradle.kts.mustache",  target = "$destinationRoot/build.gradle.kts")
-		addSupportFile(source = "$inputRoot/Dockerfile.mustache",  target = "$destinationRoot/Dockerfile")
+		addSupportFile(source = "$inputRoot/Dockerfile.mustache",  target = "$destinationRoot/docker/Dockerfile")
 	}
 
 	private fun setupRawFiles() {
@@ -213,4 +222,9 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 	private fun addSupportFile(source: String, folder: String = "", target: String) {
 		supportingFiles.add(SupportingFile(source, folder.replace(".", File.separator), target))
 	}
+
+	private fun isAuthorizationEnabled(): Boolean {
+		return true == additionalProperties.get(CodeCodegen.AUTHORIZATION_ENABLED) as Boolean?
+	}
+
 }

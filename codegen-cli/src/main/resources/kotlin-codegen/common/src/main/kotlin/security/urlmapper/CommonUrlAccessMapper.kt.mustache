@@ -1,0 +1,25 @@
+package {{basePackage}}.security.urlmapper
+
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer
+
+class CommonUrlAccessMapper: UrlAccessMapper {
+
+	override fun applyUrlMappings(registry: ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry) {
+		registry.antMatchers("/v2/api-docs").permitAll()
+                .antMatchers("/v3/api-docs").permitAll()
+                .antMatchers("/swagger-resources").permitAll()
+                .antMatchers("/swagger-resources/**").permitAll()
+                .antMatchers("/swagger-resources/configuration/ui").permitAll()
+                .antMatchers("/swagger-resources/configuration/security").permitAll()
+                .antMatchers("/swagger-ui.html").permitAll()
+                .antMatchers("/swagger-ui.html/**").permitAll()
+           	    .antMatchers("/webjars/**").permitAll()
+				.antMatchers("/swagger-ui").permitAll()
+				.antMatchers("/swagger-ui/**").permitAll()
+				.antMatchers("/swagger-ui/index.html#/").permitAll()
+				.antMatchers("/configuration/**").permitAll()
+				.antMatchers("/error**").permitAll()
+	}
+
+}

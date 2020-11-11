@@ -23,17 +23,9 @@ dependencies {
     testImplementation("com.h2database:h2:1.4.200")
 }
 
-tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
-    enabled = false
-}
-
-tasks.getByName<Jar>("jar") {
-    enabled = true
-}
-
 docker {
     setName("app-{{appNameLower}}")
-    setDockerfile(file("Dockerfile"))
+    setDockerfile(file("docker/Dockerfile"))
     files("$buildDir/libs/")
 }
 

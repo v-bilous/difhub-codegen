@@ -8,14 +8,16 @@ object DatabaseResolver {
 				"org.postgresql.Driver",
 				"POSTGRESQL",
 				5432,
-				"org.postgresql:postgresql"
+				"org.postgresql:postgresql",
+				"postgres:13.0"
 			)
 			else -> Database(
 				"mysql",
 				"com.mysql.cj.jdbc.Driver",
 				"MYSQL",
 				3306,
-				"mysql:mysql-connector-java"
+				"mysql:mysql-connector-java",
+				"mysql:8.0.21"
 			) //force use mysql
 		}
 	}

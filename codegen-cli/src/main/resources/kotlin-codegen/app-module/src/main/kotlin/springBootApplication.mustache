@@ -1,15 +1,11 @@
 package {{appPackage}}
 
-import {{basePackage}}.config.WebConfig
-import {{basePackage}}.config.SpringFoxConfig
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.runApplication
-import org.springframework.context.annotation.Import
 
 {{>generatedAnnotation}}
-@SpringBootApplication
-@Import(SpringFoxConfig::class, WebConfig::class)
+@SpringBootApplication(scanBasePackages = ["{{appPackage}}", "{{basePackage}}.config"])
 @EntityScan(value = ["{{appPackage}}.domain", "{{basePackage}}.domain"])
 class {{appRealName}}Application
 

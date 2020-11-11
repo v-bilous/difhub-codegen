@@ -1,0 +1,15 @@
+spring:
+  profiles:
+    active: security
+authorization:
+  token-url: http://keycloak:8099/auth/realms/{{systemLower}}/protocol/openid-connect/token
+swagger-ui:
+  keycloak-url: http://keycloak:8099/auth
+keycloak:
+  auth-server-url: http://keycloak:8099/auth
+  resource: {{systemLower}}
+  realm: {{systemLower}}
+  use-resource-role-mappings: true
+  principal-attribute: preferred_username
+  credentials.secret: secret
+  ssl-required: external

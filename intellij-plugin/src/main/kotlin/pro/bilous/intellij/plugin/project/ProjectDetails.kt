@@ -3,6 +3,7 @@ package pro.bilous.intellij.plugin.project
 import com.intellij.ide.util.projectWizard.WizardContext
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogPanel
+import com.intellij.ui.components.CheckBox
 import com.intellij.ui.layout.*
 import java.awt.Dimension
 import javax.swing.DefaultComboBoxModel
@@ -18,6 +19,9 @@ class ProjectDetails(moduleBuilder: ProjectModuleBuilder, wizardContext: WizardC
 //    val appComboBoxModel = DefaultComboBoxModel<String>()
 //    val appComboBox = ComboBox<String>(appComboBoxModel)
     val databaseComboBox = ComboBox(DefaultComboBoxModel(arrayOf("MySQL", "PostgreSQL")))
+	val enableAuthorizationCheckBox = CheckBox("", false,
+		"Keycloak configuration will be added to project")
+
     init {
         systemComboBox.addActionListener {
             request.system = systemComboBox.selectedItem as String
@@ -36,6 +40,9 @@ class ProjectDetails(moduleBuilder: ProjectModuleBuilder, wizardContext: WizardC
         databaseComboBox.addActionListener {
             request.database = databaseComboBox.selectedItem as String
         }
+		enableAuthorizationCheckBox.addActionListener {
+			request.authorizationEnabled = enableAuthorizationCheckBox.isSelected
+		}
     }
 
 
@@ -54,6 +61,8 @@ class ProjectDetails(moduleBuilder: ProjectModuleBuilder, wizardContext: WizardC
                 row("Description") { textField(request::description) }
                 row("Base Package") { textField(request::basePackage) }
                 row("Database") { databaseComboBox() }
+				row("Enable Authorization") { enableAuthorizationCheckBox() }
+
 //                row("DB Name") { textField(request::dbName) }
 //                row("Binding Entity") { checkBox("", request::addBindingEntity) }
             }

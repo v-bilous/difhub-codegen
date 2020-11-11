@@ -59,7 +59,8 @@ class ProjectFilesCreator {
             "database" to request.database,
             "addKotlin" to request.addKotlin,
             "dateLibrary" to request.dateLibrary,
-            "addBindingEntity" to request.addBindingEntity
+            "addBindingEntity" to request.addBindingEntity,
+			"authorizationEnabled" to request.authorizationEnabled
         )
         YamlWriter(request.system).writeFile(configMap, configFolder, "settings")
     }

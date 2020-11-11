@@ -22,6 +22,7 @@ class ProjectCreationRequest {
     var addKotlin = true
     var dateLibrary = "default"
     var addBindingEntity = true
+    var authorizationEnabled = false
 
     fun getMetadata(): Any? {
         return null
