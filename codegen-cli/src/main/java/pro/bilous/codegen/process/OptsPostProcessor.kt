@@ -196,7 +196,6 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 		addSupportFile(source = "$inputSrc/repository/CommonRepository.kt.mustache", folder = "$destSrc/repository", target = "CommonRepository.kt")
 		addSupportFile(source = "$inputSrc/service/AbstractService.kt.mustache", folder = "$destSrc/service", target = "AbstractService.kt")
 		addSupportFile(source = "$inputSrc/service/CommonService.kt.mustache", folder = "$destSrc/service", target = "CommonService.kt")
-		addSupportFile(source = "$inputSrc/config/SpringFoxConfig.kt.mustache", folder = "$destSrc/config", target = "SpringFoxConfig.kt")
 		if (isAuthorizationEnabled()) {
 			addSupportFile(source = "$inputSrc/security/urlmapper/CommonUrlAccessMapper.kt.mustache", folder = "$destSrc/security/urlmapper", target = "CommonUrlAccessMapper.kt")
 			addSupportFile(source = "$inputSrc/security/urlmapper/UrlAccessMapper.kt.mustache", folder = "$destSrc/security/urlmapper", target = "UrlAccessMapper.kt")
