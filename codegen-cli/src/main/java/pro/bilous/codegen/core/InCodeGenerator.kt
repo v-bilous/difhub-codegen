@@ -87,7 +87,7 @@ open class InCodeGenerator : DefaultGenerator() {
 		try {
 			tempFile = writeToFileRaw(tempFilename, contents)
 			if (!filesEqual(tempFile, outputFile)) {
-				if (fileMerge.supportsMerge(filename)) { // support merge
+				if (outputFile.exists() && fileMerge.supportsMerge(filename)) { // support merge
 					mergeFilesAndWriteToTemp(tempFile, outputFile, filename)
 				}
 				log.info("writing file $filename")
