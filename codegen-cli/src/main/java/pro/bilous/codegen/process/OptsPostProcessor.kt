@@ -100,6 +100,12 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 		val appPackage = additionalProperties["appPackage"]
 		val appName = additionalProperties["appRealName"]
 
+		val openApiWrapper = OpenApiWrapper(codegen)
+		val hasEntityBlocks = openApiWrapper.isOpenApiContainsType("Entity")
+		val hasIdentityBlocks = openApiWrapper.isOpenApiContainsType("Identity")
+		additionalProperties["hasEntityBlocks"] = hasEntityBlocks
+		additionalProperties["hasIdentityBlocks"] = hasIdentityBlocks
+
 
 		val inputSrcRoot = "$inputAppRoot/src/main/kotlin"
 		val inputResRoot = "$inputAppRoot/src/main/resources"
@@ -184,14 +190,18 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 		addSupportFile(source = "$inputSrc/controller/AbstractController.kt.mustache", folder = "$destSrc/controller", target = "AbstractController.kt")
 		addSupportFile(source = "$inputSrc/controller/CommonController.kt.mustache", folder = "$destSrc/controller", target = "CommonController.kt")
 		addSupportFile(source = "$inputSrc/controller/CommonParameterizedController.kt.mustache", folder = "$destSrc/controller", target = "CommonParameterizedController.kt")
-		addSupportFile(source = "$inputSrc/domain/BaseResource.kt.mustache", folder = "$destSrc/domain", target = "BaseResource.kt")
-		addSupportFile(source = "$inputSrc/domain/BaseDomain.kt.mustache", folder = "$destSrc/domain", target = "BaseDomain.kt")
+		if (!OpenApiWrapper(codegen).isOpenApiContainsType("BaseResource")) {
+			addSupportFile(source = "$inputSrc/listener/BaseResourceListener.kt.mustache", folder = "$destSrc/listener", target = "BaseResourceListener.kt")
+			addSupportFile(source = "$inputSrc/domain/BaseResource.kt.mustache", folder = "$destSrc/domain", target = "BaseResource.kt")
+		}
+		if (!OpenApiWrapper(codegen).isOpenApiContainsType("BaseDomain")) {
+			addSupportFile(source = "$inputSrc/domain/BaseDomain.kt.mustache", folder = "$destSrc/domain", target = "BaseDomain.kt")
+		}
 //		addSupportFile(source = "$inputSrc/domain/ResourceEntity.kt.mustache", folder = "$destSrc/domain", target = "ResourceEntity.kt")
 //		addSupportFile(source = "$inputSrc/domain/History.kt.mustache", folder = "$destSrc/domain", target = "History.kt")
 //		addSupportFile(source = "$inputSrc/domain/Identity.kt.mustache", folder = "$destSrc/domain", target = "Identity.kt")
 		addSupportFile(source = "$inputSrc/exception/InvalidRequestException.kt.mustache", folder = "$destSrc/exception", target = "InvalidRequestException.kt")
 		addSupportFile(source = "$inputSrc/exception/ResourceNotFoundException.kt.mustache", folder = "$destSrc/exception", target = "ResourceNotFoundException.kt")
-		addSupportFile(source = "$inputSrc/listener/BaseResourceListener.kt.mustache", folder = "$destSrc/listener", target = "BaseResourceListener.kt")
 		addSupportFile(source = "$inputSrc/listener/BaseDomainListener.kt.mustache", folder = "$destSrc/listener", target = "BaseDomainListener.kt")
 		addSupportFile(source = "$inputSrc/repository/CommonRepository.kt.mustache", folder = "$destSrc/repository", target = "CommonRepository.kt")
 		addSupportFile(source = "$inputSrc/service/AbstractService.kt.mustache", folder = "$destSrc/service", target = "AbstractService.kt")

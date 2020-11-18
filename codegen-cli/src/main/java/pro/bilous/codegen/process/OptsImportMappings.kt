@@ -31,7 +31,7 @@ class OptsImportMappings(val codegen: CodeCodegen) {
 			"BigDecimal" to "java.math.BigDecimal",
 			"MetaDataAnnotation" to "MetaDataAnnotation",
 			"Guid" to "?.annotations.Guid",
-			"BaseResource" to "$basePackage.domain.BaseResource",
+//			"BaseResource" to "$basePackage.domain.BaseResource",
 			"BaseDomain" to "$basePackage.domain.BaseDomain",
 			"JsonType" to "org.hibernate.annotations.Type",
 			"JsonIgnore" to "com.fasterxml.jackson.annotation.JsonIgnore"

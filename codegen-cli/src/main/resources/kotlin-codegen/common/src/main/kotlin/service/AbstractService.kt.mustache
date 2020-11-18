@@ -13,31 +13,41 @@ import java.util.*
 
 abstract class AbstractService<E: BaseResource, R: CommonRepository<E>>(protected val repository: R): CommonService<E> {
 
-    private fun BaseResource.setDeleted() {
-        this.entity.state = "deleted"
-    }
-
-    private fun BaseResource?.isDeleted(): Boolean {
-        return this != null && this.entity.state == "deleted"
-    }
-
-    override fun save(domain: E): E {
-        return repository.save(domain)
+	private fun BaseResource.setDeleted() {
+		{{#hasEntityBlocks}}
+		this.entity.state = "deleted"
+		{{/hasEntityBlocks}}
+		{{^hasEntityBlocks}}
+		//TODO: soft delete function add here
+		{{/hasEntityBlocks}}
 	}
 
-    override fun delete(domain: E) {
-        domain.setDeleted()
+	private fun BaseResource?.isDeleted(): Boolean {
+		{{#hasEntityBlocks}}
+		return this != null && this.entity.state == "deleted"
+		{{/hasEntityBlocks}}
+		{{^hasEntityBlocks}}
+			return false //TODO: return delete property here
+		{{/hasEntityBlocks}}
+	}
+
+	override fun save(domain: E): E {
+		return repository.save(domain)
+	}
+
+	override fun delete(domain: E) {
+		domain.setDeleted()
 		save(domain)
 	}
 
-    override fun getById(id: String): E? {
-        val domain: E? = repository.findByIdOrNull(id)
-        return if (!domain.isDeleted()) domain else null
-    }
+	override fun getById(id: String): E? {
+		val domain: E? = repository.findByIdOrNull(id)
+		return if (!domain.isDeleted()) domain else null
+	}
 
-    override fun update(domain: E): E {
-        return repository.save(domain)
-    }
+	override fun update(domain: E): E {
+		return repository.save(domain)
+	}
 
 	override fun getAll(pageable: Pageable, query: String?): Page<E> {
 		return if (query.isNullOrBlank()) {
@@ -47,14 +57,14 @@ abstract class AbstractService<E: BaseResource, R: CommonRepository<E>>(protecte
 		}
 	}
 
-    override fun saveAll(domains: List<E>): List<E> {
-        return repository.saveAll(domains)
-    }
+	override fun saveAll(domains: List<E>): List<E> {
+		return repository.saveAll(domains)
+	}
 
-    override fun deleteAll(domains: List<E>) {
-        domains.forEach { it.setDeleted() }
-        saveAll(domains)
-    }
+	override fun deleteAll(domains: List<E>) {
+		domains.forEach { it.setDeleted() }
+		saveAll(domains)
+	}
 
 	override fun getByIds(ids: List<String>): List<E> {
 		return repository.findAllById(ids).filter{ !it.isDeleted() }
@@ -67,6 +77,6 @@ abstract class AbstractService<E: BaseResource, R: CommonRepository<E>>(protecte
 	private fun doGetAll(pageable: Pageable, query: String): Page<E> {
 		val rootNode: Node = RSQLParser().parse("entity.state!=deleted;$query")
 		val spec: Specification<E> = rootNode.accept(JpaRsqlVisitor())
-		return repository.findAll(spec,pageable)
+		return repository.findAll(spec, pageable)
 	}
 }
