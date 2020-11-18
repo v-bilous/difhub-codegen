@@ -135,6 +135,11 @@ abstract class AbstractIntegrationTest<E : BaseResource> : CommonIntegrationTest
 	}
 
 	fun findIdentityId(result: MvcResult): String {
+	{{#vendorExtensions.hasIdentity}}
 		return getValue(result, "$.identity.id")
+	{{/vendorExtensions.hasIdentity}}
+	{{^vendorExtensions.hasIdentity}}
+		return getValue(result, "$.id")
+	{{/vendorExtensions.hasIdentity}}
 	}
 }

@@ -63,7 +63,12 @@ abstract class AbstractController<E: BaseResource, S: CommonService<E>>(val  ser
 
 	override fun getById(parentId: String, id: String): ResponseEntity<E> {
 		val domain = service.getById(id) ?: throw ResourceNotFoundException()
+		{{#hasEntityBlocks}}
 		Assert.isTrue(parentId == domain.entity.parent?.id, "parent $parentId is not valid")
+		{{/hasEntityBlocks}}
+		{{^hasEntityBlocks}}
+		//TODO: should assert parent id here
+		{{/hasEntityBlocks}}
 		return ResponseEntity(domain, HttpStatus.OK)
 	}
 
@@ -88,7 +93,9 @@ abstract class AbstractController<E: BaseResource, S: CommonService<E>>(val  ser
 	override fun saveAll(parentId: String, domains: List<E>): List<E> {
 		domains.forEach {
 			validateParent(it, parentId)
+			{{#hasIentityBlocks}}
 			it.id = it.identity.id
+			{{/hasIentityBlocks}}
 		}
 		return service.saveAll(domains)
 	}
@@ -109,9 +116,14 @@ abstract class AbstractController<E: BaseResource, S: CommonService<E>>(val  ser
 	}
 
 	private fun validateParent(domain: E, parentId: String) {
+		{{#hasEntityBlocks}}
 		Assert.notNull(domain.entity.parent, "parent can not be empty")
 		Assert.notNull(domain.entity.parent?.id, "parent id is required")
 		Assert.isTrue(parentId == domain.entity.parent?.id, "parent $parentId is not valid")
+		{{/hasEntityBlocks}}
+		{{^hasEntityBlocks}}
+		//TODO: should check parent id here
+		{{/hasEntityBlocks}}
 	}
 
 	private fun getSearchCriteria(query: String?, parentId: String): String {

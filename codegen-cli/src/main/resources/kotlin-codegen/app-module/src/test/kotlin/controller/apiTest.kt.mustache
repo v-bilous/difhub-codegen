@@ -5,7 +5,9 @@ package {{appPackage}}.controller
 {{#testImports}}import {{import}}
 {{/testImports}}
 {{#hasPathParent}}
+	{{#testModel.vendorExtensions.hasIdentity}}
 import {{basePackage}}.domain.Identity
+	{{/testModel.vendorExtensions.hasIdentity}}
 {{/hasPathParent}}
 import {{appPackage}}.{{appRealName}}Application
 import {{appPackage}}.repository.{{repositoryClassname}}
@@ -39,14 +41,26 @@ class {{classname}}IT : AbstractIntegrationTest<{{returnEntityType}}>() {
 	private fun resourceAsserts(savedResource: {{returnEntityType}}, result: MvcResult, index: Int = -1) {
 		val prefix = if (index == -1) "$" else "$.content[$index]"
 		if (savedResource.id != null) {
+		{{#vendorExtensions.hasIdentity}}
 			assertEquals(savedResource.id, getValue(result, "$prefix.identity.id"))
+		{{/vendorExtensions.hasIdentity}}
+		{{^vendorExtensions.hasIdentity}}
+			assertEquals(savedResource.id, getValue(result, "$prefix.id"))
+		{{/vendorExtensions.hasIdentity}}
 		} else {
+		{{#vendorExtensions.hasIdentity}}
 			assertNotNull(getValue(result, "$prefix.identity.id"))
+		{{/vendorExtensions.hasIdentity}}
+		{{^vendorExtensions.hasIdentity}}
+			assertNotNull(getValue(result, "$prefix.id"))
+		{{/vendorExtensions.hasIdentity}}
 		}
+		{{#testModel}}
+		{{#vendorExtensions.hasIdentity}}
 		assertEquals(savedResource.identity.name, getValue(result, "$prefix.identity.name"))
 		assertEquals(savedResource.identity.description, getValue(result, "$prefix.identity.description"))
 		assertEquals(savedResource.entity.state, getValue(result, "$prefix.entity.state"))
-		{{#testModel}}
+		{{/vendorExtensions.hasIdentity}}
 		{{#vars}}
 		{{^isListContainer}}
 		{{#vendorExtensions.hasTestModel}}
@@ -80,14 +94,14 @@ class {{classname}}IT : AbstractIntegrationTest<{{returnEntityType}}>() {
 				{{/required}}
 				{{/vars}}
 			{{/testModel}}
-		).apply {
+		){{#testModel.vendorExtensions.hasIdentity}}.apply {
 			this.identity.name = "test name"
 			this.identity.description = "test description"
 			this.entity.state = "active"
 			{{#hasPathParent}}
 			this.entity.parent = Identity(id = "parent-id")
 			{{/hasPathParent}}
-		}
+		}{{/testModel.vendorExtensions.hasIdentity}}
 	}
 
 	private fun createWithAllFields(): {{returnEntityType}} {
@@ -97,14 +111,14 @@ class {{classname}}IT : AbstractIntegrationTest<{{returnEntityType}}>() {
 				{{>app-module/src/test/kotlin/controller/apiTestVar}}{{#hasMore}},{{/hasMore}}
 				{{/vars}}
 			{{/testModel}}
-		).apply {
+		){{#testModel.vendorExtensions.hasIdentity}}.apply {
 			this.identity.name = "test user name"
 			this.identity.description = "test user description"
 			this.entity.state = "active"
 			{{#hasPathParent}}
 			this.entity.parent = Identity(id = "parent-id")
 			{{/hasPathParent}}
-		}
+		}{{/testModel.vendorExtensions.hasIdentity}}
 	}
 
 }

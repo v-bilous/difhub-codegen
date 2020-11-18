@@ -8,6 +8,7 @@
 {{#models}}
 	{{#model}}
 	{{^vendorExtensions.isEmbeddable}}
+	{{^vendorExtensions.isSuperclass}}
 	<changeSet author="CodeGeneration" id="create_generated_table_{{vendorExtensions.tableName}}">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -29,6 +30,15 @@
 			<column name="name" type="VARCHAR(255)"/>
 			<column name="description" type="VARCHAR(510)"/>
 			{{/vendorExtensions.hasTableEntity}}
+			{{#allVars}}
+				{{#vendorExtensions.isExtends}}
+					{{#vendorExtensions.extendsComponent}}
+						{{#vars}}
+			<column name="{{vendorExtensions.columnName}}" type="{{vendorExtensions.columnType}}"/>
+						{{/vars}}
+					{{/vendorExtensions.extendsComponent}}
+				{{/vendorExtensions.isExtends}}
+			{{/allVars}}
 			{{#vars}}
 			{{#vendorExtensions.hasJsonType}}
 			<column name="{{vendorExtensions.columnName}}" type="{{vendorExtensions.columnType}}"/>
@@ -63,6 +73,7 @@
 			{{/vars}}
 		</createTable>
 	</changeSet>
+	{{/vendorExtensions.isSuperclass}}
 	{{/vendorExtensions.isEmbeddable}}
 	{{/model}}
 {{/models}}
