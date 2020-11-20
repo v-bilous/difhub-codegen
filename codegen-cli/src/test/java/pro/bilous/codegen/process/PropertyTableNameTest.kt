@@ -9,7 +9,7 @@ import kotlin.test.assertEquals
 class PropertyTableNameTest {
 
 	@Test
-	fun `should return name from complex type`() {
+	fun `should return name from complex type many`() {
 		val processor = ModelPropertyProcessor(mock())
 		processor.openApiWrapper = mock()
 
@@ -21,12 +21,33 @@ class PropertyTableNameTest {
 			isListContainer = false
 		}
 
-		val name = processor.readPropertyTableName(complexType, property)
-		assertEquals("user_address", name)
+		val (tableName, columnName, realTableName) = processor.readManyPropertyTableData(complexType, property)
+		assertEquals("user_address", tableName)
+		assertEquals("user_address", columnName)
+		assertEquals("user_address", realTableName)
+
 	}
 
 	@Test
-	fun `should return name from property name`() {
+	fun `should return name from property name many`() {
+		val processor = ModelPropertyProcessor(mock())
+		processor.openApiWrapper = mock()
+
+		whenever(processor.openApiWrapper.isOpenApiContainsType("UserAddress")).thenReturn(true)
+
+		val property = CodegenProperty().apply {
+			name = "address"
+			isListContainer = true
+		}
+
+		val (tableName, columnName, realTableName) = processor.readManyPropertyTableData("UserAddress", property)
+		assertEquals("address", tableName)
+		assertEquals("user_address", columnName)
+		assertEquals("user_address", realTableName)
+	}
+
+	@Test
+	fun `should return name from property name and real name as table many`() {
 		val processor = ModelPropertyProcessor(mock())
 		processor.openApiWrapper = mock()
 
@@ -35,12 +56,14 @@ class PropertyTableNameTest {
 			isListContainer = false
 		}
 
-		val name = processor.readPropertyTableName("UserAddress", property)
-		assertEquals("address", name)
+		val (tableName, columnName, realTableName) = processor.readManyPropertyTableData("UserAddress", property)
+		assertEquals("address", tableName)
+		assertEquals("address", columnName)
+		assertEquals("address", realTableName)
 	}
 
 	@Test
-	fun `should return name from data type reference`() {
+	fun `should return name from data type reference many`() {
 		val processor = ModelPropertyProcessor(mock())
 		processor.openApiWrapper = mock()
 
@@ -49,7 +72,79 @@ class PropertyTableNameTest {
 			isListContainer = true
 		}
 
-		val name = processor.readPropertyTableName("Party", property)
-		assertEquals("party", name)
+		val (tableName, columnName, realTableName) = processor.readManyPropertyTableData("Party", property)
+		assertEquals("parties", tableName)
+		assertEquals("party", columnName)
+		assertEquals("party", realTableName)
+	}
+
+	@Test
+	fun `should return name from complex type single`() {
+		val processor = ModelPropertyProcessor(mock())
+		processor.openApiWrapper = mock()
+
+		val complexType = "UserAddress"
+		whenever(processor.openApiWrapper.isOpenApiContainsType(complexType)).thenReturn(true)
+
+		val property = CodegenProperty().apply {
+			name = "address"
+			isListContainer = false
+		}
+
+		val (tableName, columnName, realTableName) = processor.readSinglePropertyTableData(complexType, property)
+		assertEquals("user_address", tableName)
+		assertEquals("user_address", columnName)
+		assertEquals("user_address", realTableName)
+
+	}
+
+	@Test
+	fun `should return name from property name single`() {
+		val processor = ModelPropertyProcessor(mock())
+		processor.openApiWrapper = mock()
+
+		whenever(processor.openApiWrapper.isOpenApiContainsType("UserAddress")).thenReturn(true)
+
+		val property = CodegenProperty().apply {
+			name = "address"
+			isListContainer = true
+		}
+
+		val (tableName, columnName, realTableName) = processor.readSinglePropertyTableData("UserAddress", property)
+		assertEquals("user_address", tableName)
+		assertEquals("user_address", columnName)
+		assertEquals("user_address", realTableName)
+	}
+
+	@Test
+	fun `should return name from property name and real name as table single`() {
+		val processor = ModelPropertyProcessor(mock())
+		processor.openApiWrapper = mock()
+
+		val property = CodegenProperty().apply {
+			name = "address"
+			isListContainer = false
+		}
+
+		val (tableName, columnName, realTableName) = processor.readSinglePropertyTableData("UserAddress", property)
+		assertEquals("address", tableName)
+		assertEquals("address", columnName)
+		assertEquals("address", realTableName)
+	}
+
+	@Test
+	fun `should return name from data type reference single`() {
+		val processor = ModelPropertyProcessor(mock())
+		processor.openApiWrapper = mock()
+
+		val property = CodegenProperty().apply {
+			name = "parties"
+			isListContainer = true
+		}
+
+		val (tableName, columnName, realTableName) = processor.readSinglePropertyTableData("Party", property)
+		assertEquals("party", tableName)
+		assertEquals("party", columnName)
+		assertEquals("party", realTableName)
 	}
 }

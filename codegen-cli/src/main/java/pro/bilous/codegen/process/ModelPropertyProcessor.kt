@@ -81,7 +81,7 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 			property.defaultValue = if (property.required) "listOf()" else "null"
 			model.imports.remove("List")
 			model.imports.remove("ArrayList")
-		} else if (property.isModel && property.complexType.endsWith("IdentityModel") && property.name.endsWith("Id")) {
+		} else if (property.isModel && !property.complexType.isNullOrEmpty() && property.complexType.endsWith("IdentityModel") && property.name.endsWith("Id")) {
 			// convert Reference Type to the String
 			property.dataType = "String"
 			property.datatypeWithEnum = property.dataType
@@ -176,9 +176,7 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 
 		if (entityMode && property.isListContainer) {
 			val modelTableName = CamelCaseConverter.convert(model.name).toLowerCase()
-			val complexType = if (property.complexType.isNullOrEmpty()) {
-				readTypeFromFormat(property)
-			} else property.complexType
+			val complexType = readComplexTypeFromProperty(property)
 
 			if (complexType == "Identity") {
 				return // we ignore identity as a table for now
@@ -204,15 +202,25 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 				}
 			}
 
-			val propertyTableName = readPropertyTableName(complexType, property)
+			val hasOtherPropertyWithSameType =
+				complexType.isNotEmpty() && model.vars.any {
+					it.name != property.name && readComplexTypeFromProperty(it) == complexType
+				}
+
+			val (propertyTableName, propertyTableColumnName, realPropertyTableName) = if (hasOtherPropertyWithSameType) {
+				readManyPropertyTableData(complexType, property)
+			} else {
+				readSinglePropertyTableData(complexType, property)
+			}
+
 			val joinTableName = joinTableName(modelTableName, propertyTableName)
 
 			property.getVendorExtensions()["modelTableName"] = modelTableName
-			property.getVendorExtensions()["propertyTableName"] = propertyTableName
+			property.getVendorExtensions()["propertyTableName"] = realPropertyTableName
 			property.vendorExtensions["hasPropertyTable"] = openApiWrapper.isOpenApiContainsType(complexType)
 			property.getVendorExtensions()["joinTableName"] = joinTableName
 			property.getVendorExtensions()["joinColumnName"] = "${modelTableName}_id"
-			property.getVendorExtensions()["inverseJoinColumnName"] = "${propertyTableName}_id"
+			property.getVendorExtensions()["inverseJoinColumnName"] = "${propertyTableColumnName}_id"
 			property.vendorExtensions["isReferenceElement"] = property.complexType.isNullOrEmpty()
 			property.vendorExtensions["joinReferencedColumnName"] = if (modelTableName == "entity") {
 				"entity_id"
@@ -224,18 +232,48 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 		}
 	}
 
-	fun readPropertyTableName(complexType: String, property: CodegenProperty): String {
+	private fun readComplexTypeFromProperty(property: CodegenProperty): String? {
+		return if (property.complexType.isNullOrEmpty()) {
+			readTypeFromFormat(property)
+		} else property.complexType
+	}
+
+	fun readSinglePropertyTableData(complexType: String, property: CodegenProperty): Triple<String, String, String> {
 		return when {
+			property.isListContainer && openApiWrapper.isOpenApiContainsType(complexType) -> {
+				createTriple(complexType, complexType, complexType)
+			}
 			openApiWrapper.isOpenApiContainsType(complexType) -> {
-				CamelCaseConverter.convert(complexType).toLowerCase()
+				createTriple(complexType, complexType, complexType)
 			}
 			complexType.isNotEmpty() && property.isListContainer -> {
-				CamelCaseConverter.convert(complexType).toLowerCase()
+				createTriple(complexType, complexType, complexType)
 			}
-			else -> {
-				CamelCaseConverter.convert(property.name).toLowerCase()
-			}
+			else -> createTriple(property.name, property.name, property.name)
 		}
+	}
+
+	fun readManyPropertyTableData(complexType: String, property: CodegenProperty): Triple<String, String, String> {
+		return when {
+			property.isListContainer && openApiWrapper.isOpenApiContainsType(complexType) -> {
+				createTriple(property.name, complexType, complexType)
+			}
+			openApiWrapper.isOpenApiContainsType(complexType) -> {
+				createTriple(complexType, complexType, complexType)
+			}
+			complexType.isNotEmpty() && property.isListContainer -> {
+				createTriple(property.name, complexType, complexType)
+			}
+			else -> createTriple(property.name, property.name, property.name)
+		}
+	}
+
+	private fun createTriple(first: String, second: String, third: String): Triple<String, String, String> {
+		return Triple(
+			CamelCaseConverter.convert(first).toLowerCase(),
+			CamelCaseConverter.convert(second).toLowerCase(),
+			CamelCaseConverter.convert(third).toLowerCase()
+		)
 	}
 
 	private val columnNamesToEscape = arrayOf("use", "open", "drop", "create", "table", "rank", "system")
