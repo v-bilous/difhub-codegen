@@ -1,6 +1,7 @@
 package pro.bilous.codegen.process.models
 
 import org.openapitools.codegen.CodegenModel
+import pro.bilous.codegen.utils.SuperclassRegistry
 
 class CommonModelsProcessor(val properties: MutableMap<String, Any>) {
 
@@ -11,7 +12,7 @@ class CommonModelsProcessor(val properties: MutableMap<String, Any>) {
 	}
 
 	fun process(model: CodegenModel) {
-		if (!commonModelNames.contains(model.name)) {
+		if (!isCommonModel(model.name)) {
 			return
 		}
 		val commonModels = if (properties.containsKey("commonModels")) {
@@ -31,6 +32,10 @@ class CommonModelsProcessor(val properties: MutableMap<String, Any>) {
 		fixProperties(model)
 	}
 
+	private fun isCommonModel(name: String): Boolean {
+		return commonModelNames.contains(name) || SuperclassRegistry.hasName(name)
+	}
+
 	private fun fixProperties(model: CodegenModel) {
 		if (model.classname == "ResourceEntity") {
 			model.vendorExtensions["addEntityIdVar"] = true
@@ -48,7 +53,7 @@ class CommonModelsProcessor(val properties: MutableMap<String, Any>) {
 		}
 		// quick fix for the identity and entity
 		when (model.classname) {
-			"ResourceEntity", "Identity", "History" -> {
+			"ResourceEntity", "Identity", "History", "BaseResource" -> {
 				model.vars.forEach {
 					if (it.required) {
 						it.required = false
@@ -75,7 +80,7 @@ class CommonModelsProcessor(val properties: MutableMap<String, Any>) {
 	}
 
 	fun canResolveImport(modelName: String): Boolean {
-		if (commonModelNames.contains(modelName)) {
+		if (commonModelNames.contains(modelName) || SuperclassRegistry.hasName(modelName)) {
 			return true
 		}
 		if (!properties.containsKey("commonModels")) {

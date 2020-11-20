@@ -296,9 +296,16 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 		val innerModel = codegen.fromModel(realType, innerModelSchema)
 		if (innerModel.vendorExtensions["isEmbeddable"] == true) {
 			assignEmbeddedModel(property, innerModel, true)
+		} else if(property.name == "_extends") {
+			assignExtendsModel(property, innerModel)
 		} else { // assign one-to-one relationship if not isEmbeddable model (has id)
 			property.vendorExtensions["isOneToOne"] = true
 		}
+	}
+
+	private fun assignExtendsModel(property: CodegenProperty, innerModel: CodegenModel) {
+		property.vendorExtensions["extendsComponent"] = innerModel
+		property.vendorExtensions["isExtends"] = true
 	}
 
 	private fun isInnerModel(property: CodegenProperty): Boolean {

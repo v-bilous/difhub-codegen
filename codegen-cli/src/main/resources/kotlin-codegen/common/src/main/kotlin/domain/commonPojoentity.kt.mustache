@@ -6,13 +6,18 @@
 */
 {{>generatedAnnotation}}
 {{^vendorExtensions.isEmbeddable}}
+{{^vendorExtensions.isSuperclass}}
 @Entity
 @Table(name = "{{vendorExtensions.tableName}}")
+{{/vendorExtensions.isSuperclass}}
 {{/vendorExtensions.isEmbeddable}}
 {{#vendorExtensions.isEmbeddable}}
 @Embeddable
 {{/vendorExtensions.isEmbeddable}}
-data class {{classname}}(
+{{#vendorExtensions.isSuperclass}}
+@MappedSuperclass
+{{/vendorExtensions.isSuperclass}}
+{{#vendorExtensions.isSuperclass}}open{{/vendorExtensions.isSuperclass}}{{^vendorExtensions.isSuperclass}}data{{/vendorExtensions.isSuperclass}} class {{classname}}(
 {{#vendorExtensions.addIdVar}}
 
 	var id: String,

@@ -22,7 +22,7 @@
 		val res = createWithRequiredFields()
 		val savedRes = repository.save(res)
 
-		val result = super.getById(url, savedRes.identity.id!!)
+		val result = super.getById(url, savedRes.id!!)
 		resourceAsserts(savedRes, result)
 	}
 
@@ -31,7 +31,7 @@
 		val res = createWithAllFields()
 		val savedRes = repository.save(res)
 
-		val result = super.getById(url, savedRes.identity.id!!)
+		val result = super.getById(url, savedRes.id!!)
 		resourceAsserts(savedRes, result)
 	}
 {{/vendorExtensions.isGetMethod}}
@@ -57,11 +57,12 @@
 	fun `{{vendorExtensions.operationMethodName}} with required fields`() {
 		val res = createWithRequiredFields()
 		val savedRes = repository.save(res)
-
+		{{#testModel.vendorExtensions.hasIdentity}}
 		savedRes.identity.name = "new identity"
 		savedRes.identity.description = "new description"
+		{{/testModel.vendorExtensions.hasIdentity}}
 
-		val result = super.update(url, savedRes.identity.id!!, savedRes)
+		val result = super.update(url, savedRes.id!!, savedRes)
 		resourceAsserts(savedRes, result)
 	}
 
@@ -69,11 +70,12 @@
 	fun `{{vendorExtensions.operationMethodName}} with all fields`() {
 		val res = createWithAllFields()
 		val savedRes = repository.save(res)
-
+		{{#testModel.vendorExtensions.hasIdentity}}
 		savedRes.identity.name = "new identity"
 		savedRes.identity.description = "new description"
+		{{/testModel.vendorExtensions.hasIdentity}}
 
-		val result = super.update(url, savedRes.identity.id!!, savedRes)
+		val result = super.update(url, savedRes.id!!, savedRes)
 		resourceAsserts(savedRes, result)
 	}
 {{/vendorExtensions.isPutMethod}}
@@ -82,11 +84,12 @@
 	fun `{{vendorExtensions.operationMethodName}} with all fields`() {
 		val res = createWithAllFields()
 		val savedRes = repository.save(res)
-
+		{{#testModel.vendorExtensions.hasIdentity}}
 		savedRes.identity.name = "new identity"
 		savedRes.identity.description = "new description"
+		{{/testModel.vendorExtensions.hasIdentity}}
 
-		val result = super.update(url, savedRes.identity.id!!, savedRes)
+		val result = super.update(url, savedRes.id!!, savedRes)
 		resourceAsserts(savedRes, result)
 	}
 {{/vendorExtensions.isPatchMethod}}
@@ -96,9 +99,10 @@
 		val res = createWithRequiredFields()
 		val savedRes = repository.save(res)
 
-		val result = super.delete(url, savedRes.identity.id!!)
-
+		val result = super.delete(url, savedRes.id!!)
+		{{#testModel.vendorExtensions.hasEntity}}
 		savedRes.entity.state = "deleted"
+		{{/testModel.vendorExtensions.hasEntity}}
 		resourceAsserts(savedRes, result)
 	}
 {{/vendorExtensions.isDeleteMethod}}
