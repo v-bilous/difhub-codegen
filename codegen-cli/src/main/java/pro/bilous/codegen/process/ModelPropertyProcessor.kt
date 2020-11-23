@@ -178,9 +178,9 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 			val modelTableName = CamelCaseConverter.convert(model.name).toLowerCase()
 			val complexType = readComplexTypeFromProperty(property)
 
-			if (complexType == "Identity") {
-				return // we ignore identity as a table for now
-			}
+//			if (complexType == "Identity") {
+//				return // we ignore identity as a table for now
+//			}
 			// if we do not have information for the join table. set it to JSON field
 			if (complexType == null) {
 				property.vendorExtensions["hasJsonType"] = true
@@ -203,9 +203,10 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 			}
 
 			val hasOtherPropertyWithSameType =
-				complexType.isNotEmpty() && model.vars.any {
-					it.name != property.name && readComplexTypeFromProperty(it) == complexType
-				}
+				// consider to build reference table with a custom name instead of adding _identity suffix
+				complexType == "Identity" || (complexType.isNotEmpty() && model.vars.any {
+					it.isListContainer && it.name != property.name && readComplexTypeFromProperty(it) == complexType
+				})
 
 			val (propertyTableName, propertyTableColumnName, realPropertyTableName) = if (hasOtherPropertyWithSameType) {
 				readManyPropertyTableData(complexType, property)
