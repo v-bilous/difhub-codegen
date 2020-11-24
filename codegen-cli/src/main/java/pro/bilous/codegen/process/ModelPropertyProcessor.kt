@@ -178,9 +178,10 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 			val modelTableName = CamelCaseConverter.convert(model.name).toLowerCase()
 			val complexType = readComplexTypeFromProperty(property)
 
-//			if (complexType == "Identity") {
-//				return // we ignore identity as a table for now
-//			}
+			// ignoring at the table level
+			if (complexType == "Identity" && property.name == "tags") {
+				return
+			}
 			// if we do not have information for the join table. set it to JSON field
 			if (complexType == null) {
 				property.vendorExtensions["hasJsonType"] = true
@@ -204,7 +205,9 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 
 			val hasOtherPropertyWithSameType =
 				// consider to build reference table with a custom name instead of adding _identity suffix
-				complexType == "Identity" || (complexType.isNotEmpty() && model.vars.any {
+				// hardcode for the CodeableConcept as well, consider to implement a feature for this use case
+				arrayOf("Identity", "CodeableConcept").contains(complexType)
+						|| (complexType.isNotEmpty() && model.vars.any {
 					it.isListContainer && it.name != property.name && readComplexTypeFromProperty(it) == complexType
 				})
 
@@ -214,14 +217,18 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 				readSinglePropertyTableData(complexType, property)
 			}
 
-			val joinTableName = joinTableName(modelTableName, propertyTableName)
+			val joinTableName = joinTableName(modelTableName, propertyTableName, !hasOtherPropertyWithSameType)
+
+			val inverseColName = if (propertyTableColumnName == modelTableName) {
+				"ref_$propertyTableColumnName"
+			} else propertyTableColumnName
 
 			property.getVendorExtensions()["modelTableName"] = modelTableName
 			property.getVendorExtensions()["propertyTableName"] = realPropertyTableName
 			property.vendorExtensions["hasPropertyTable"] = openApiWrapper.isOpenApiContainsType(complexType)
 			property.getVendorExtensions()["joinTableName"] = joinTableName
 			property.getVendorExtensions()["joinColumnName"] = "${modelTableName}_id"
-			property.getVendorExtensions()["inverseJoinColumnName"] = "${propertyTableColumnName}_id"
+			property.getVendorExtensions()["inverseJoinColumnName"] = "${inverseColName}_id"
 			property.vendorExtensions["isReferenceElement"] = property.complexType.isNullOrEmpty()
 			property.vendorExtensions["joinReferencedColumnName"] = if (modelTableName == "entity") {
 				"entity_id"
@@ -277,7 +284,7 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 		)
 	}
 
-	private val columnNamesToEscape = arrayOf("use", "open", "drop", "create", "table", "rank", "system")
+	private val columnNamesToEscape = arrayOf("use", "open", "drop", "create", "table", "rank", "system", "function")
 	fun applyColumnNames(model: CodegenModel, property: CodegenProperty) {
 		val columnName = CamelCaseConverter.convert(property.name).toLowerCase()
 		property.getVendorExtensions()["columnName"] = columnName
@@ -311,7 +318,7 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 
 	private fun isInnerModel(property: CodegenProperty): Boolean {
 		return property.isModel && !property.complexType.isNullOrEmpty()
-				&& !importMappings.containsKey(property.nameInCamelCase)
+//				&& !importMappings.containsKey(property.nameInCamelCase)
 				&& !importMappings.containsKey(property.complexType)
 				&& openApiWrapper.isOpenApiContainsType(property.complexType)
 				&& !isEnum(property)
@@ -364,7 +371,8 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 			.removePrefix(dataKey)
 	}
 
-	fun joinTableName(first: String, second: String): String {
-		return arrayOf(first, second).sortedArray().joinToString(separator = "_to_")
+	fun joinTableName(first: String, second: String, sort: Boolean = true): String {
+		return (if (sort) arrayOf(first, second).sortedArray() else arrayOf(first, second))
+			.joinToString(separator = "_to_")
 	}
 }

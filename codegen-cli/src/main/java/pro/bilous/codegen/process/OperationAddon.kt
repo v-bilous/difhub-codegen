@@ -274,6 +274,7 @@ class OperationAddon(val codegen: CodeCodegen) {
 					}
 					it.isBoolean -> "false"
 					it.isLong -> "9223372036854775807L"
+					it.dataType == "BigDecimal" -> "777.toBigDecimal()"
 					it.isModel && arrayOf("String", "String?").contains(it.datatypeWithEnum) -> {
 						it.isString = true
 						"test_enum_value"
