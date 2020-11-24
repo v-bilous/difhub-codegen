@@ -37,6 +37,12 @@ class ModelPropertyProcessorTest {
 	}
 
 	@Test
+	fun `should not sort table names`() {
+		val result = createModelProcessor().joinTableName(first = "user_group", second = "concept", sort = false)
+		assertEquals("user_group_to_concept", result)
+	}
+
+	@Test
 	fun `should assign boolean type`() {
 		val processor = createModelProcessor()
 

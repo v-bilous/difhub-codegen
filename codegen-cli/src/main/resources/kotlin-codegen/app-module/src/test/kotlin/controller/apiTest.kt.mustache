@@ -41,19 +41,19 @@ class {{classname}}IT : AbstractIntegrationTest<{{returnEntityType}}>() {
 	private fun resourceAsserts(savedResource: {{returnEntityType}}, result: MvcResult, index: Int = -1) {
 		val prefix = if (index == -1) "$" else "$.content[$index]"
 		if (savedResource.id != null) {
-		{{#vendorExtensions.hasIdentity}}
+		{{#hasIdentityBlocks}}
 			assertEquals(savedResource.id, getValue(result, "$prefix.identity.id"))
-		{{/vendorExtensions.hasIdentity}}
-		{{^vendorExtensions.hasIdentity}}
+		{{/hasIdentityBlocks}}
+		{{^hasIdentityBlocks}}
 			assertEquals(savedResource.id, getValue(result, "$prefix.id"))
-		{{/vendorExtensions.hasIdentity}}
+		{{/hasIdentityBlocks}}
 		} else {
-		{{#vendorExtensions.hasIdentity}}
+		{{#hasIdentityBlocks}}
 			assertNotNull(getValue(result, "$prefix.identity.id"))
-		{{/vendorExtensions.hasIdentity}}
-		{{^vendorExtensions.hasIdentity}}
+		{{/hasIdentityBlocks}}
+		{{^hasIdentityBlocks}}
 			assertNotNull(getValue(result, "$prefix.id"))
-		{{/vendorExtensions.hasIdentity}}
+		{{/hasIdentityBlocks}}
 		}
 		{{#testModel}}
 		{{#vendorExtensions.hasIdentity}}
