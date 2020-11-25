@@ -5,6 +5,7 @@ import org.openapitools.codegen.CodeCodegen
 import org.openapitools.codegen.CodegenModel
 import org.openapitools.codegen.CodegenProperty
 import pro.bilous.codegen.utils.CamelCaseConverter
+import pro.bilous.codegen.utils.SqlNamingUtils
 
 open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 
@@ -223,7 +224,7 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 				"ref_$propertyTableColumnName"
 			} else propertyTableColumnName
 
-			property.getVendorExtensions()["modelTableName"] = modelTableName
+			property.getVendorExtensions()["modelTableName"] = SqlNamingUtils.escapeTableNameIfNeeded(modelTableName)
 			property.getVendorExtensions()["propertyTableName"] = realPropertyTableName
 			property.vendorExtensions["hasPropertyTable"] = openApiWrapper.isOpenApiContainsType(complexType)
 			property.getVendorExtensions()["joinTableName"] = joinTableName
@@ -284,13 +285,10 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 		)
 	}
 
-	private val columnNamesToEscape = arrayOf("use", "open", "drop", "create", "table", "rank", "system", "function")
 	fun applyColumnNames(model: CodegenModel, property: CodegenProperty) {
 		val columnName = CamelCaseConverter.convert(property.name).toLowerCase()
 		property.getVendorExtensions()["columnName"] = columnName
-		property.getVendorExtensions()["escapedColumnName"] = if (columnNamesToEscape.contains(columnName)) {
-			"${columnName}_"
-		} else columnName
+		property.getVendorExtensions()["escapedColumnName"] = SqlNamingUtils.escapeColumnNameIfNeeded(columnName)
 		property.getVendorExtensions()["columnName"] = property.getVendorExtensions()["escapedColumnName"]
 
 	}

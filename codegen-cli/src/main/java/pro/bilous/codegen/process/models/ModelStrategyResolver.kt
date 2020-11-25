@@ -2,6 +2,7 @@ package pro.bilous.codegen.process.models
 
 import com.google.common.base.CaseFormat
 import org.openapitools.codegen.CodegenModel
+import pro.bilous.codegen.utils.SqlNamingUtils
 import pro.bilous.codegen.utils.SuperclassRegistry
 
 class ModelStrategyResolver(val model: CodegenModel) : IModelStrategyResolver {
@@ -64,7 +65,7 @@ class ModelStrategyResolver(val model: CodegenModel) : IModelStrategyResolver {
 			extensions["hasTableEntity"] = false
 		}
 		val tableName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, model.name)
-		extensions["tableName"] = tableName
+		extensions["tableName"] = SqlNamingUtils.escapeTableNameIfNeeded(tableName)
 		extensions["isEmbeddable"] = !args.hasEntity && !args.hasIdentity && !args.hasId && !args.hasExtends
 		extensions["addIdVar"] = false // !hasEntity && hasIdentity
 		val isSuperclass = SuperclassRegistry.hasName(model.name)
