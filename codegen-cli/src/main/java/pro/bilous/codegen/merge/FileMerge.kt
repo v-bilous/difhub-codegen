@@ -46,6 +46,7 @@ class FileMerge {
 					val isInjectAnnotated = textBlock.startsWith(injectPrefix)
 					if (!isInjectAnnotated) {
 						it.diff.operation = diff_match_patch.Operation.EQUAL
+						it.removeDiff = true
 					} else {
 						// consider as replacement operation in case if previous to INSERT is DELETE
 						if (index > 0 && codeDiff[index - 1].originalOperation == diff_match_patch.Operation.DELETE) {
@@ -63,7 +64,10 @@ class FileMerge {
 			}
 		}
 
-		val patch = dmp.patch_make(newContent, diff)
+		val diffsToApply = LinkedList(codeDiff.filter { !it.removeDiff }.map { it.diff })
+
+		val patch = dmp.patch_make(newContent, diffsToApply)
+
 		val result = dmp.patch_apply(patch, newContent)
 
 		val contentResult = result[0]
