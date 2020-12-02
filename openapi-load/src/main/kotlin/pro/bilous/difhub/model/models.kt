@@ -93,7 +93,8 @@ data class Object(val parent: Parent? = null,
 				  val tags: List<Identity>? = null,
 				  val documents: List<Object>? = null,
 				  val properties: List<Property>? = null,
-				  val name: String? = null)
+				  val name: String? = null,
+				  val alias: String? = null)
 
 data class Identity(val name: String = "",
 					val id: String? = null,

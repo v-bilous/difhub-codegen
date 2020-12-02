@@ -12,7 +12,7 @@ class CognitoWrapper {
 	fun login(): String {
 		var username = System.getProperty("DIFHUB_USERNAME")
 		if (username.isNullOrEmpty()) {
-			username = System.getenv("DIFHUB_ORG_NAME") ?: throw IllegalArgumentException("Username not found")
+			username = System.getenv("DIFHUB_USERNAME") ?: throw IllegalArgumentException("Username not found")
 		}
 		var password = System.getProperty("DIFHUB_PASSWORD")
 		if (password.isNullOrEmpty()) {

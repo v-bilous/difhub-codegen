@@ -3,8 +3,8 @@ package pro.bilous.difhub.load
 import pro.bilous.difhub.config.ConfigReader
 import pro.bilous.difhub.model.Model
 
-class DatasetsLoader {
-	fun load(system: String, app: String, type: String? = null): List<Model>? {
+class DatasetsLoader : IDatasetsLoader {
+	override fun load(system: String, app: String, type: String?): List<Model>? {
 		val difhub = ConfigReader.loadConfig().difhub
 		val datasetList = ModelLoader(DefLoader()).loadModels(difhub.getDatasetsUrl(system, app))!!
 

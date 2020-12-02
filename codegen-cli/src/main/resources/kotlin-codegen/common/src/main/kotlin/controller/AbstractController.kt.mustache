@@ -41,9 +41,9 @@ abstract class AbstractController<E: BaseResource, S: CommonService<E>>(val  ser
 		return ResponseEntity(result, HttpStatus.OK)
 	}
 
-    override fun modify(id: String, domain: E): ResponseEntity<E> {
-        return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
-    }
+	override fun modify(id: String, domain: E): ResponseEntity<E> {
+		return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
+	}
 
 	override fun saveAll(domains: List<E>): List<E> {
 		return service.saveAll(domains)
@@ -93,9 +93,9 @@ abstract class AbstractController<E: BaseResource, S: CommonService<E>>(val  ser
 	override fun saveAll(parentId: String, domains: List<E>): List<E> {
 		domains.forEach {
 			validateParent(it, parentId)
-			{{#hasIentityBlocks}}
+			{{#hasIdentityBlocks}}
 			it.id = it.identity.id
-			{{/hasIentityBlocks}}
+			{{/hasIdentityBlocks}}
 		}
 		return service.saveAll(domains)
 	}
