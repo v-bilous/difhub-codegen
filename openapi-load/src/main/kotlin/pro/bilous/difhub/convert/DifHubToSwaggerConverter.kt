@@ -6,18 +6,16 @@ import io.swagger.v3.oas.models.parameters.Parameter
 import io.swagger.v3.oas.models.servers.Server
 import io.swagger.v3.oas.models.tags.Tag
 import org.slf4j.LoggerFactory
-import pro.bilous.difhub.load.ApplicationsLoader
-import pro.bilous.difhub.load.DatasetsLoader
-import pro.bilous.difhub.load.DefLoader
-import pro.bilous.difhub.load.InterfacesLoader
-import pro.bilous.difhub.load.ModelLoader
+import pro.bilous.difhub.load.*
 import pro.bilous.difhub.model.Model
 import java.lang.IllegalStateException
 
 class DifHubToSwaggerConverter(val system: String) {
 	private val log = LoggerFactory.getLogger(DifHubToSwaggerConverter::class.java)
 
-	private val appLoader = ApplicationsLoader()
+	var appLoader = ApplicationsLoader()
+	var datasetsLoader: IDatasetsLoader = DatasetsLoader()
+	var interfacesLoader: IInterfacesLoader = InterfacesLoader()
 
 	fun convertAll(): List<OpenApiData> {
 		ModelLoader.globalModelCache.clear()
@@ -56,7 +54,7 @@ class DifHubToSwaggerConverter(val system: String) {
 	}
 
 	private fun convertInterfacesToPaths(application: String, openApi: OpenAPI) {
-		val interfaces = InterfacesLoader().load(system, application)
+		val interfaces = interfacesLoader.load(system, application)
 
 		val modelsToLoad = mutableMapOf<String, String>()
 		val parameters = mutableMapOf<String, Parameter>()
@@ -114,7 +112,7 @@ class DifHubToSwaggerConverter(val system: String) {
 	}
 
 	private fun convertModelsToDefinitions(application: String, openApi: OpenAPI) {
-		val datatests = DatasetsLoader().load(system, application, type = "Resource")
+		val datatests = datasetsLoader.load(system, application, type = "Resource")
 
 		datatests?.forEach {
 			addDefRecursively(it, openApi)
@@ -168,6 +166,10 @@ class DifHubToSwaggerConverter(val system: String) {
 		info.description = "${source.identity.description}"
 			.trimEnd()
 			.removeSuffix("\n").removeSuffix("\n").removeSuffix("\t")
+
+		if (!source.`object`?.alias.isNullOrEmpty()) {
+			info.extensions = mapOf("x-app-alias" to source.`object`?.alias)
+		}
 
 		return info
 	}

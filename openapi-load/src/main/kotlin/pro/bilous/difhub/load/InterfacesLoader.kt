@@ -3,8 +3,8 @@ package pro.bilous.difhub.load
 import pro.bilous.difhub.config.ConfigReader
 import pro.bilous.difhub.model.Model
 
-class InterfacesLoader {
-	fun load(system: String, app: String): List<Model>? {
+class InterfacesLoader : IInterfacesLoader {
+	override fun load(system: String, app: String): List<Model>? {
 		val difhub = ConfigReader.loadConfig().difhub
 
 		val interfaceList =  ModelLoader(DefLoader()).loadModels(difhub.getInterfacesUrl(system, app))

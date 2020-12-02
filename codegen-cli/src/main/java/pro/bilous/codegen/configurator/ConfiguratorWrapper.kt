@@ -13,11 +13,8 @@ class ConfiguratorWrapper(
 	private val log = LoggerFactory.getLogger(ConfiguratorWrapper::class.java)
 
 	fun generate() {
-		val settings = instance.getCustomSettings()
-		if (settings == null) {
- 			generateOne(0)
-			return
-		}
+		val settings = instance.getCustomSettings() ?: throw IllegalArgumentException("Settings file is required")
+
 		val props = settings.dynamicProperties["application"]
 		val apps = mutableListOf<String>()
 		if (props is List<*> && instance.getSpecCopyValue().endsWith("/")) {
@@ -25,7 +22,7 @@ class ConfiguratorWrapper(
 		}
 
 		val specDir = instance.getSpecCopyValue()
-		val basePackage =  settings.dynamicProperties["basePackage"]
+		val basePackage =  settings.dynamicProperties["basePackage"].toString()
 		val database = settings.dynamicProperties["database"]?.toString() ?: "MySQL"
 
 		val system = settings.dynamicProperties["system"]!!.toString()
@@ -34,18 +31,9 @@ class ConfiguratorWrapper(
 		instance.setCustomProperty("database",
 			DatabaseResolver.getByType(database)
 		)
-
 		apps.forEachIndexed { index, appName ->
 			try {
-				val app = appName.toLowerCase()
-				val inputSpecFile = "${specDir}$app-api.yaml"
-				instance.setCustomInputSpec(inputSpecFile)
-				instance.setCustomArtifactId(app)
-				instance.setCustomProperty("appPackage", "$basePackage.$app")
-				instance.setCustomProperty("appRealName", appName.capitalize())
-				instance.setCustomProperty("appNameLower", app)
-
-				generateOne(index)
+				generateOne(GenerateArgs(index, appName, specDir, basePackage))
 				log.info("Code generation for spec $appName completed")
 			} catch (error: Throwable) {
 				log.error("Failed generation for the app $appName", error)
@@ -53,8 +41,23 @@ class ConfiguratorWrapper(
 		}
 	}
 
-	private fun generateOne(index: Int = 0) {
+	private fun generateOne(args: GenerateArgs) {
+		val app = args.appName.toLowerCase()
+		val inputSpecFile = "${args.specDir}$app-api.yaml"
+		instance.setCustomInputSpec(inputSpecFile)
+		instance.setCustomArtifactId(app)
+		instance.setCustomProperty("appPackage", "${args.basePackage}.$app")
+		instance.setCustomProperty("appRealName", args.appName.capitalize())
+		instance.setCustomProperty("appNameLower", app)
+
 		val entityOptInput: ClientOptInput = instance.toCustomClientOptInput()
-		generateInvoker.invoke(index, entityOptInput)
+		generateInvoker.invoke(args.index, entityOptInput)
 	}
+
+	data class GenerateArgs(
+		val index: Int,
+		val appName: String,
+		val specDir: String,
+		val basePackage: String
+	)
 }

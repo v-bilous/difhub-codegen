@@ -6,7 +6,9 @@ import org.openapitools.codegen.ClientOptInput
 import pro.bilous.codegen.core.ICustomConfigurator
 import pro.bilous.codegen.core.IGenerateInvoker
 import org.openapitools.codegen.config.DynamicSettings
+import kotlin.IllegalArgumentException
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 internal class ConfiguratorWrapperTest {
 
@@ -19,8 +21,13 @@ internal class ConfiguratorWrapperTest {
 
 		val wrapper = ConfiguratorWrapper(configurator, invoker)
 
-		wrapper.generate()
-		verify(invoker, times(1)).invoke(0, testInput)
+		val error = try {
+			wrapper.generate()
+		} catch (error: Exception) {
+			error
+		}
+		assertTrue(error is IllegalArgumentException)
+		assertEquals("Settings file is required", error.message)
 	}
 
 	@Test
