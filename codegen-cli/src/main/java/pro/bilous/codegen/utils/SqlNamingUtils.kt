@@ -9,7 +9,7 @@ object SqlNamingUtils {
 
 	private val tableNamesToEscape = arrayOf("use", "open", "drop", "create", "table", "rank", "system", "function", "range")
 	fun escapeTableNameIfNeeded(tableName: String): String {
-		return if (columnNamesToEscape.contains(tableName)) "${tableName}_" else tableName
+		return if (tableNamesToEscape.contains(tableName)) "${tableName}_" else tableName
 	}
 
 }
