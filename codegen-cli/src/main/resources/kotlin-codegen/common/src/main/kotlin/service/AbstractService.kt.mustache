@@ -4,7 +4,7 @@ import {{basePackage}}.domain.BaseResource
 import {{basePackage}}.repository.CommonRepository
 import com.github.ichanzhar.rsql.JpaRsqlVisitor
 import cz.jirutka.rsql.parser.ast.Node
-import cz.jirutka.rsql.parser.RSQLParser
+import com.github.ichanzhar.rsql.utils.RsqlParserFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.domain.Specification
@@ -75,7 +75,7 @@ abstract class AbstractService<E: BaseResource, R: CommonRepository<E>>(protecte
 	}
 
 	private fun doGetAll(pageable: Pageable, query: String): Page<E> {
-		val rootNode: Node = RSQLParser().parse("entity.state!=deleted;$query")
+		val rootNode: Node = RsqlParserFactory.instance().parse("entity.state!=deleted;$query")
 		val spec: Specification<E> = rootNode.accept(JpaRsqlVisitor())
 		return repository.findAll(spec, pageable)
 	}
