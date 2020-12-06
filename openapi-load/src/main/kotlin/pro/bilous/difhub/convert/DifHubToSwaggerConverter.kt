@@ -25,7 +25,9 @@ class DifHubToSwaggerConverter(val system: String) {
 		val result = mutableListOf<OpenApiData>()
 		appModels?.forEach {
 			if (it.`object`!!.usage == "Service") {
-				val appName = it.identity.name
+				val appName = if (!it.`object`.alias.isNullOrEmpty()) {
+					it.`object`.alias
+				} else it.identity.name
 				result.add(OpenApiData(convert(appName), appName, system))
 			} else {
 				log.warn("Ignoring application with name ${it.identity.name}. Usage =`Service` required to enable code generation.")

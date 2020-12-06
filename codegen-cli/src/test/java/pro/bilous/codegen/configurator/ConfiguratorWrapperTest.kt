@@ -1,6 +1,8 @@
 package pro.bilous.codegen.configurator
 
 import com.nhaarman.mockitokotlin2.*
+import io.swagger.v3.oas.models.OpenAPI
+import io.swagger.v3.oas.models.info.Info
 import org.junit.jupiter.api.Test
 import org.openapitools.codegen.ClientOptInput
 import pro.bilous.codegen.core.ICustomConfigurator
@@ -103,6 +105,86 @@ internal class ConfiguratorWrapperTest {
 
 		verify(invoker, times(1)).invoke(0, testInput)
 		verify(invoker, times(1)).invoke(1, testInput)
+
+	}
+
+	@Test
+	fun `should invoke generate for two apps but one with alias`() {
+		val configurator = spy(FakeCustomConfigurator())
+		val invoker: IGenerateInvoker = mock()
+		val settings = DynamicSettings()
+		settings.dynamicProperties["application"] = listOf("User", "Party")
+		settings.dynamicProperties["basePackage"] = "app.client"
+		settings.dynamicProperties["system"] = "Client"
+		configurator.settings = settings
+
+		val testPartyInput = ClientOptInput()
+		testPartyInput.openAPI(OpenAPI().info(Info().apply {
+			title = "Party API"
+			extensions = mapOf("x-app-alias" to "OrgParty")
+		}))
+		val testUserInput = ClientOptInput()
+		configurator.optInputs["party"] = testPartyInput
+		configurator.optInputs["user"] = testUserInput
+
+		val wrapper = ConfiguratorWrapper(configurator, invoker)
+
+		wrapper.generate()
+
+		verify(configurator, times(1)).setCustomProperty("systemLower", "client")
+		verify(configurator, times(1)).setCustomProperty(eq("database"), any())
+
+		argumentCaptor<List<String>>().apply {
+			verify(configurator, times(1)).setCustomProperty(eq("appsLower"), capture())
+
+			assertEquals(1, allValues.size)
+			assertEquals(2, firstValue.size)
+			assertEquals("user", firstValue[0])
+			assertEquals("orgparty", firstValue[1])
+		}
+
+		argumentCaptor<String>().apply {
+			verify(configurator, times(2)).setCustomInputSpec(capture())
+
+			assertEquals(2, allValues.size)
+			assertEquals("/path/to/specs/user-api.yaml", firstValue)
+			assertEquals("/path/to/specs/party-api.yaml", secondValue)
+		}
+
+		argumentCaptor<String>().apply {
+			verify(configurator, times(2)).setCustomArtifactId(capture())
+
+			assertEquals(2, allValues.size)
+			assertEquals("user", firstValue)
+			assertEquals("orgparty", secondValue)
+		}
+
+		argumentCaptor<String>().apply {
+			verify(configurator, times(2)).setCustomProperty(eq("appPackage"), capture())
+
+			assertEquals(2, allValues.size)
+			assertEquals("app.client.user", firstValue)
+			assertEquals("app.client.orgparty", secondValue)
+		}
+
+		argumentCaptor<String>().apply {
+			verify(configurator, times(2)).setCustomProperty(eq("appRealName"), capture())
+
+			assertEquals(2, allValues.size)
+			assertEquals("User", firstValue)
+			assertEquals("Party", secondValue)
+		}
+
+		argumentCaptor<String>().apply {
+			verify(configurator, times(2)).setCustomProperty(eq("appNameLower"), capture())
+
+			assertEquals(2, allValues.size)
+			assertEquals("user", firstValue)
+			assertEquals("orgparty", secondValue)
+		}
+
+		verify(invoker, times(1)).invoke(0, testUserInput)
+		verify(invoker, times(1)).invoke(1, testPartyInput)
 
 	}
 }

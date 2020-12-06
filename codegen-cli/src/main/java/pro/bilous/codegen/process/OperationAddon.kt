@@ -240,6 +240,7 @@ class OperationAddon(val codegen: CodeCodegen) {
 	}
 
 	private fun readModelByType(type: String): CodegenModel {
+		System.err.println("Type to read for test $type")
 		val schema = codegen.getOpenApi().components.schemas[type] as Schema<*>
 		return codegen.fromModel(type, schema)
 	}
