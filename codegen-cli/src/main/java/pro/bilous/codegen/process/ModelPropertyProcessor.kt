@@ -4,10 +4,15 @@ import io.swagger.v3.oas.models.media.Schema
 import org.openapitools.codegen.CodeCodegen
 import org.openapitools.codegen.CodegenModel
 import org.openapitools.codegen.CodegenProperty
+import org.slf4j.LoggerFactory
 import pro.bilous.codegen.utils.CamelCaseConverter
 import pro.bilous.codegen.utils.SqlNamingUtils
 
 open class ModelPropertyProcessor(val codegen: CodeCodegen) {
+
+	companion object {
+		val log = LoggerFactory.getLogger(ModelPropertyProcessor::class.java)
+	}
 
 	private val additionalProperties = codegen.additionalProperties()
 	private val entityMode = codegen.entityMode
@@ -191,6 +196,10 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 				return
 			} else if (property.complexType != null) {
 				val realType = property.complexType.removeSuffix("Model")
+				if (!codegen.getOpenApi().components.schemas.containsKey(realType)) {
+					log.error("Illegal state, can not obtain type $realType from the OpenApi spec.")
+					return
+				}
 				val innerModelSchema = codegen.getOpenApi().components.schemas[realType] as Schema<*>
 				val innerModel = codegen.fromModel(realType, innerModelSchema)
 

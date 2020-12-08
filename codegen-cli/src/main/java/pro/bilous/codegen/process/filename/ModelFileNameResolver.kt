@@ -18,13 +18,12 @@ class ModelFileNameResolver(val args: ModelFileNameArgs) {
 
 	/**
 	 * We gonna use this function to change the target name of the model name.
-	 * The use case for the Common module is to put some of the common files using the custom names.
+	 * Use case for the Common module is to put some of the common files using the custom names.
 	 * @param fileName – original filename from the codegen
 	 * @return original file name or modified
 	 */
 	fun resolve(fileName: String): String {
-		log.debug("File Name received to resolve $fileName")
-
+		//log.debug("File Name received to resolve $fileName")
 		return when {
 			metadataEnums.containsKey(fileName) -> {
 				fileName.removeSuffix(modelNameSuffix)
