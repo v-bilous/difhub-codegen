@@ -9,12 +9,15 @@ import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.util.Assert
+import org.springframework.validation.Errors
+import org.springframework.validation.FieldError
+import org.springframework.validation.ObjectError
 import org.springframework.web.bind.annotation.*
 
 abstract class AbstractController<E: BaseResource, S: CommonService<E>>(val  service: S):
 		CommonController<E>, CommonParameterizedController<E> {
 
-	override fun create(domain: E): ResponseEntity<E> {
+	override fun create(domain: E, errors: Errors): ResponseEntity<E> {
 		val result = service.save(domain)?: throw InvalidRequestException()
 		return ResponseEntity(result, HttpStatus.CREATED)
 	}
@@ -34,7 +37,7 @@ abstract class AbstractController<E: BaseResource, S: CommonService<E>>(val  ser
 		return ResponseEntity(service.getAll(pageable, search), HttpStatus.OK)
 	}
 
-	override fun update(id: String, domain: E): ResponseEntity<E> {
+	override fun update(id: String, domain: E, errors: Errors): ResponseEntity<E> {
 		service.getById(id)?: throw ResourceNotFoundException()
 		domain.id = id
 		val result = service.update(domain)?: throw InvalidRequestException()
@@ -45,7 +48,8 @@ abstract class AbstractController<E: BaseResource, S: CommonService<E>>(val  ser
 		return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
 	}
 
-	override fun saveAll(domains: List<E>): List<E> {
+	override fun saveAll(domains: List<E>, errors: Errors): List<E> {
+		checkErrors(errors)
 		return service.saveAll(domains)
 	}
 
@@ -55,7 +59,7 @@ abstract class AbstractController<E: BaseResource, S: CommonService<E>>(val  ser
 		return domains
 	}
 
-	override fun create(parentId: String, domain: E): ResponseEntity<E> {
+	override fun create(parentId: String, domain: E, errors: Errors): ResponseEntity<E> {
 		validateParent(domain, parentId)
 		val result = service.save(domain) ?: throw InvalidRequestException()
 		return ResponseEntity(result, HttpStatus.CREATED)
@@ -79,7 +83,7 @@ abstract class AbstractController<E: BaseResource, S: CommonService<E>>(val  ser
 		return ResponseEntity(domain, HttpStatus.OK)
 	}
 
-	override fun update(parentId: String, id: String, domain: E): ResponseEntity<E> {
+	override fun update(parentId: String, id: String, domain: E, errors: Errors): ResponseEntity<E> {
 		validateParent(domain, parentId)
 		domain.id = id
 		val updatedEntity = service.update(domain)
@@ -90,7 +94,8 @@ abstract class AbstractController<E: BaseResource, S: CommonService<E>>(val  ser
 		return ResponseEntity(HttpStatus.NOT_IMPLEMENTED)
 	}
 
-	override fun saveAll(parentId: String, domains: List<E>): List<E> {
+	override fun saveAll(parentId: String, domains: List<E>, errors: Errors): List<E> {
+		checkErrors(errors)
 		domains.forEach {
 			validateParent(it, parentId)
 			{{#hasIdentityBlocks}}
@@ -132,6 +137,21 @@ abstract class AbstractController<E: BaseResource, S: CommonService<E>>(val  ser
 			underParentSearchCriteria
 		} else {
 			"$underParentSearchCriteria;$query"
+		}
+	}
+
+	private fun checkErrors(errors: Errors) {
+		if(errors.hasErrors()) {
+			throw InvalidRequestException(errors.allErrors.map { mapToErrorMessage(it) }.joinToString(separator = "\n"))
+		}
+	}
+
+	private fun mapToErrorMessage(it: ObjectError): String? {
+		return when (it) {
+			is FieldError -> {
+				"Property ${it.field}: ${it.defaultMessage}"
+			}
+			else -> it.defaultMessage
 		}
 	}
 }

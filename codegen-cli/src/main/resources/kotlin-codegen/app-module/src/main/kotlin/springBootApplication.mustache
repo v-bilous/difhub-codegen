@@ -3,10 +3,12 @@ package {{appPackage}}
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.runApplication
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 {{>generatedAnnotation}}
 @SpringBootApplication(scanBasePackages = ["{{appPackage}}", "{{basePackage}}.config"])
 @EntityScan(value = ["{{appPackage}}.domain", "{{basePackage}}.domain"])
+@EnableJpaRepositories("{{appPackage}}.repository")
 class {{appRealName}}Application
 
 @Suppress("SpreadOperator")

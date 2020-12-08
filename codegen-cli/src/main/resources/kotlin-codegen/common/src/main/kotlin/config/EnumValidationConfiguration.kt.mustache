@@ -1,0 +1,19 @@
+package {{basePackage}}.config
+
+import {{basePackage}}.enumdefinition.EnumConstraintValidator
+import {{basePackage}}.enumdefinition.EnumDefinitionRepository
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.Configuration
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+
+@Configuration
+@ComponentScan("{{basePackage}}.enumdefinition")
+@EnableJpaRepositories("{{basePackage}}.enumdefinition")
+class EnumValidationConfiguration {
+
+	@Autowired
+	fun init(enumDefinitionRepository: EnumDefinitionRepository) {
+		EnumConstraintValidator.enumDefinitionRepository = enumDefinitionRepository
+	}
+}

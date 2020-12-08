@@ -29,12 +29,13 @@ class OptsImportMappings(val codegen: CodeCodegen) {
 			"EntityType" to "EntityType",
 			"Severity" to "Severity",
 			"BigDecimal" to "java.math.BigDecimal",
-			"MetaDataAnnotation" to "MetaDataAnnotation",
-			"Guid" to "?.annotations.Guid",
+			//"MetaDataAnnotation" to "MetaDataAnnotation",
+			//"Guid" to "?.annotations.Guid",
 //			"BaseResource" to "$basePackage.domain.BaseResource",
 			"BaseDomain" to "$basePackage.domain.BaseDomain",
 			"JsonType" to "org.hibernate.annotations.Type",
-			"JsonIgnore" to "com.fasterxml.jackson.annotation.JsonIgnore"
+			"JsonIgnore" to "com.fasterxml.jackson.annotation.JsonIgnore",
+			"EnumValue" to "$basePackage.enumdefinition.EnumValue"
 	)
 
 	fun addDefaultMappings() {

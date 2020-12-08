@@ -155,12 +155,12 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 			val inputRoot = "app-module/src/main/resources/liquibase"
 			val destinationRoot = "app-${artifactId.toLowerCase()}/src/main/resources/liquibase"
 
-			addSupportFile(source = "$inputRoot/liquibase-changeLog.xml", target = "$destinationRoot/liquibase-changeLog.xml")
+			addSupportFile(source = "$inputRoot/liquibase-changeLog.xml.mustache", target = "$destinationRoot/liquibase-changeLog.xml")
 			addSupportFile(source = "$inputRoot/settings.xml.mustache", target = "$destinationRoot/settings.xml")
 			addSupportFile(source = "$inputRoot/migrations/changeLog.mustache", target = "$destinationRoot/migrations/generatedChangeLog.xml")
 //			addSupportFile(source = "$inputRoot/migrations/common_tables.xml.mustache", target = "$destinationRoot/migrations/common_tables.xml")
-			addSupportFile(source ="$inputRoot/migrations/metadata_data.xml", target = "$destinationRoot/migrations/metadata_data.xml")
-			addSupportFile(source ="$inputRoot/migrations/metadata_csv.mustache", target = "$destinationRoot/migrations/metadata.csv")
+			addSupportFile(source ="$inputRoot/migrations/enum_definition_data.xml", target = "$destinationRoot/migrations/enum_definition_data.xml")
+			addSupportFile(source ="$inputRoot/migrations/enum_definition.csv.mustache", target = "$destinationRoot/migrations/enum_definition.csv")
 		}
 		// add lambda for mustache templates
 		additionalProperties["lambdaEscapeDoubleQuote"] = Mustache.Lambda { fragment, writer -> writer.write(fragment.execute().replace("\"".toRegex(), Matcher.quoteReplacement("\\\""))) }
@@ -211,6 +211,15 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 			addSupportFile(source = "$inputSrc/security/urlmapper/UrlAccessMapper.kt.mustache", folder = "$destSrc/security/urlmapper", target = "UrlAccessMapper.kt")
 			addSupportFile(source = "$inputSrc/config/KeycloakConfig.kt.mustache", folder = "$destSrc/config", target = "KeycloakConfig.kt")
 		}
+
+		//enum definitions
+		addSupportFile(source = "$inputSrc/config/EnumValidationConfiguration.kt.mustache", folder = "$destSrc/config", target = "EnumValidationConfiguration.kt")
+		addSupportFile(source = "$inputSrc/domain/EnumDefinition.kt.mustache", folder = "$destSrc/domain", target = "EnumDefinition.kt")
+		addSupportFile(source = "$inputSrc/enumdefinition/EnumConstraintValidator.kt.mustache", folder = "$destSrc/enumdefinition", target = "EnumConstraintValidator.kt")
+		addSupportFile(source = "$inputSrc/enumdefinition/EnumDefinitionController.kt.mustache", folder = "$destSrc/enumdefinition", target = "EnumDefinitionController.kt")
+		addSupportFile(source = "$inputSrc/enumdefinition/EnumDefinitionRepository.kt.mustache", folder = "$destSrc/enumdefinition", target = "EnumDefinitionRepository.kt")
+		addSupportFile(source = "$inputSrc/enumdefinition/EnumDefinitionService.kt.mustache", folder = "$destSrc/enumdefinition", target = "EnumDefinitionService.kt")
+		addSupportFile(source = "$inputSrc/enumdefinition/EnumValue.kt.mustache", folder = "$destSrc/enumdefinition", target = "EnumValue.kt")
 	}
 
 	private fun setupModuleFiles() {

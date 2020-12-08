@@ -1,0 +1,18 @@
+package {{basePackage}}.domain
+
+import javax.persistence.*
+
+@Entity
+@Table(name = "enum_definition")
+data class EnumDefinition(
+		@Id
+		@GeneratedValue(strategy = GenerationType.IDENTITY)
+		var id: Int?,
+		@Column(name = "enum_group")
+		var enumGroup: String,
+		@Column(name = "code")
+		var code: String,
+		@Column(name = "name")
+		var name: String,
+		@Column(name = "description")
+		var description: String?)

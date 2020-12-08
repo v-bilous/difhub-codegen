@@ -144,18 +144,17 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 	}
 
 	fun convertToMetadataProperty(property: CodegenProperty, model: CodegenModel) {
-		property.vendorExtensions["isMetadataAnnotation"] = true
-		property.vendorExtensions["metaGroupName"] = CamelCaseConverter.convert(property.complexType.removeSuffix("Model"))
+		property.vendorExtensions["isEnumValue"] = true
+		property.vendorExtensions["enumGroupName"] = CamelCaseConverter.convert(property.complexType.removeSuffix("Model"))
 		if (property.isListContainer) {
 			property.datatypeWithEnum = if (property.required) "List<String>" else "List<String>?"
 		} else {
 			property.datatypeWithEnum = if (property.required) "String" else "String?"
 		}
+		property.isString = true
+		property.defaultValue = (property.allowableValues["values"] as List<String>)[0]
 		model.imports.removeIf { it == property.complexType }
-
-		if (!codegen.entityMode) {
-			model.imports.add("MetaDataAnnotation")
-		}
+		model.imports.add("EnumValue")
 	}
 
 	fun isEnum(property: CodegenProperty): Boolean {

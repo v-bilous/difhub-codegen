@@ -3,9 +3,8 @@
 				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
-
-	<changeSet author="BhnCodegen" id="metadata_definition_with_delete" runOnChange="true" runOrder="last">
-		<loadUpdateData primaryKey="group_name, code" file="liquibase/changesets/data/metadata.csv" tableName="metadata_definition"/>
+	<changeSet author="BhnCodegen" id="load_update_enum_definitions_data" runOnChange="true" runOrder="last">
+		<loadUpdateData primaryKey="enum_group,code" file="liquibase/migrations/enum_definition.csv" tableName="enum_definition"/>
 	</changeSet>
 
 </databaseChangeLog>

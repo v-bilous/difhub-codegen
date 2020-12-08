@@ -1,0 +1,26 @@
+package {{basePackage}}.enumdefinition
+
+import javax.validation.ConstraintValidator
+import javax.validation.ConstraintValidatorContext
+
+class EnumConstraintValidator : ConstraintValidator<EnumValue, String> {
+
+	companion object {
+		lateinit var enumDefinitionRepository: EnumDefinitionRepository
+	}
+
+	private lateinit var allowedValues: List<String>
+	private var optional: Boolean = false
+
+	override fun initialize(constraintAnnotation: EnumValue) {
+		this.allowedValues = enumDefinitionRepository.getAllCodesByEnumGroup(constraintAnnotation.enumGroup)
+		this.optional = constraintAnnotation.optional
+	}
+
+	override fun isValid(value: String?, context: ConstraintValidatorContext): Boolean {
+		context.disableDefaultConstraintViolation()
+		context.buildConstraintViolationWithTemplate("Invalid enum value '$value', allowed values $allowedValues")
+				.addConstraintViolation()
+		return (optional && value == null) || allowedValues.contains(value)
+	}
+}

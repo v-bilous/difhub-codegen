@@ -4,7 +4,31 @@
 				   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
 				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 				   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+	<changeSet id="common_create_enum_definition_table" author="CodeGeneration">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="enum_definition"/>
+			</not>
+		</preConditions>
+		<createTable tableName="enum_definition">
+			<column name="id" type="INT" autoIncrement="true">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="enum_group" type="VARCHAR(50)"/>
+			<column name="code" type="VARCHAR(100)"/>
+			<column name="name" type="VARCHAR(100)"/>
+			<column name="description" type="VARCHAR(255)"/>
+		</createTable>
+	</changeSet>
 
+	<changeSet id="common_enum_definitions_unique_constraint" author="CodeGeneration">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists indexName="ENUM_DEFINITION_UNQ" tableName="enum_definition"/>
+			</not>
+		</preConditions>
+		<addUniqueConstraint constraintName="ENUM_DEFINITION_UNQ" tableName="enum_definition" columnNames="enum_group, code"/>
+	</changeSet>
 {{#models}}
 	{{#model}}
 	{{^vendorExtensions.isEmbeddable}}

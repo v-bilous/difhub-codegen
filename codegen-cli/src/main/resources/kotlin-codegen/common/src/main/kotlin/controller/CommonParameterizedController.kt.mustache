@@ -4,14 +4,15 @@ import {{basePackage}}.domain.BaseResource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.Errors
 
 interface CommonParameterizedController<E : BaseResource> {
-    fun create(parentId: String, domain: E): ResponseEntity<E>
+    fun create(parentId: String, domain: E, errors: Errors): ResponseEntity<E>
     fun getById(parentId: String, id: String): ResponseEntity<E>
     fun delete(parentId: String, id: String): ResponseEntity<E>
-    fun update(parentId: String, id: String, domain: E): ResponseEntity<E>
+    fun update(parentId: String, id: String, domain: E, errors: Errors): ResponseEntity<E>
     fun modify(parentId: String, id: String, domain: E): ResponseEntity<E>
-    fun saveAll(parentId: String, domains: List<E>): List<E>
+    fun saveAll(parentId: String, domains: List<E>, errors: Errors): List<E>
     fun deleteAll(parentId: String, ids: List<String>): List<E>
     fun getAll(parentId: String, search: String?, pageable : Pageable): ResponseEntity<Page<E>>
 }

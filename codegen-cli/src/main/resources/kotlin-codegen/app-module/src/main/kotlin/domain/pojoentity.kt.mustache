@@ -90,6 +90,9 @@ data class {{classname}}(
 	{{/isListContainer}}
 	{{/vendorExtensions.hasJsonType}}
 	{{/vendorExtensions.isEmbedded}}
+	{{#vendorExtensions.isEnumValue}}
+	@EnumValue(enumGroup = "{{vendorExtensions.enumGroupName}}"{{^required}}, optional = true{{/required}})
+	{{/vendorExtensions.isEnumValue}}
 	{{#isContainer}}
 	var {{name}}: {{{datatypeWithEnum}}}{{#hasMore}},{{/hasMore}}
 	{{/isContainer}}

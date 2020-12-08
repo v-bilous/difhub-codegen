@@ -1,0 +1,16 @@
+package {{basePackage}}.enumdefinition
+
+import javax.validation.Constraint
+import javax.validation.Payload
+import kotlin.reflect.KClass
+
+
+@Target(AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+@Constraint(validatedBy = [EnumConstraintValidator::class])
+annotation class EnumValue(val enumGroup: String,
+						   val optional: Boolean = false,
+						   val message: String = "Invalid enum value",
+						   val groups: Array<KClass<*>> = [],
+						   val payload: Array<KClass<out Payload>> = [])
+

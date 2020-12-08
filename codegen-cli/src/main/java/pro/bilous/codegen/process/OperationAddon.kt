@@ -17,6 +17,17 @@ class OperationAddon(val codegen: CodeCodegen) {
 		populateClassnames(objs, operations, ops)
 
 		for (operation in ops) {
+			if (listOf("post", "put").contains(operation.httpMethod.toLowerCase())) {
+				val errorsParameter = CodegenParameter()
+				errorsParameter.paramName = "errors"
+				errorsParameter.dataType = "Errors"
+				errorsParameter.datatypeWithEnum = "Errors"
+				errorsParameter.secondaryParam = true
+				operation.allParams.add(errorsParameter)
+
+				operation.allParams.forEach { it.hasMore = true }
+				operation.allParams.last().hasMore = false
+			}
 			// fix operation responses
 			fixOperationResponses(operation)
 			fixOperationParams(operation)
@@ -215,17 +226,19 @@ class OperationAddon(val codegen: CodeCodegen) {
 		objs["testImports"] = importList
 	}
 
-	private fun addImportElements(testModel: CodegenModel,
-								  mappingSet: MutableSet<String>,
-								  importList: MutableList<Map<String, String>>,) {
+	private fun addImportElements(
+			testModel: CodegenModel,
+			mappingSet: MutableSet<String>,
+			importList: MutableList<Map<String, String>>,
+	) {
 		testModel.vars.forEach {
 			if (it.vendorExtensions.containsKey("testModel")) {
 				val inner = it.vendorExtensions["testModel"] as CodegenModel
 				if (!mappingSet.contains(inner.classname)) {
 					mappingSet.add(inner.classname)
 					importList.add(mapOf(
-						"import" to codegen.toModelImport(inner.classname),
-						"classname" to inner.classname
+							"import" to codegen.toModelImport(inner.classname),
+							"classname" to inner.classname
 					))
 					addImportElements(inner, mappingSet, importList)
 				}

@@ -1,0 +1,42 @@
+package {{basePackage}}.enumdefinition
+
+import com.github.ichanzhar.rsql.JpaRsqlVisitor
+import cz.jirutka.rsql.parser.RSQLParser
+import cz.jirutka.rsql.parser.ast.Node
+import {{basePackage}}.domain.EnumDefinition
+import org.apache.commons.lang3.StringUtils
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.domain.Specification
+import org.springframework.stereotype.Component
+
+@Component
+class EnumDefinitionService(val repository: EnumDefinitionRepository) {
+
+	fun getById(id: Int): EnumDefinition {
+		return repository.findById(id).orElseThrow(::Exception)
+	}
+
+	fun getAll(group: String, search: String?, pageable: Pageable): Page<EnumDefinition> {
+		var query = "enumGroup==$group"
+		if (StringUtils.isNotBlank(search)) {
+			query += ";($search)"
+		}
+		val rootNode: Node = RSQLParser().parse(query)
+		val spec: Specification<EnumDefinition> = rootNode.accept(JpaRsqlVisitor())
+		return repository.findAll(spec, pageable)
+	}
+
+	fun create(domain: EnumDefinition): EnumDefinition {
+		return repository.save(domain)
+	}
+
+	fun update(id: Int, domain: EnumDefinition): EnumDefinition {
+		domain.id = id
+		return repository.save(domain)
+	}
+
+	fun delete(id: Int) {
+		repository.deleteById(id)
+	}
+}

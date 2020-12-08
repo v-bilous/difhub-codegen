@@ -1,0 +1,42 @@
+package {{basePackage}}.enumdefinition
+
+import {{basePackage}}.domain.EnumDefinition
+import io.swagger.annotations.Api
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
+
+@Api(value = "EnumDefinitions", tags = ["EnumDefinitions"], description = "EnumDefinitions API")
+@RestController
+@RequestMapping("/enum-definitions")
+class EnumDefinitionController(val service: EnumDefinitionService) {
+
+	@GetMapping("{id}")
+	fun getById(@PathVariable("id") id: Int) : ResponseEntity<EnumDefinition> {
+		return ResponseEntity.ok(service.getById(id))
+	}
+
+	@GetMapping
+	fun getAll(@RequestParam("group") group: String,
+			   @RequestParam("search", required = false) search: String?,
+			   pageable: Pageable): ResponseEntity<Page<EnumDefinition>> {
+		return ResponseEntity.ok(service.getAll(group, search, pageable))
+	}
+
+	@PostMapping
+	fun create(@RequestBody domain: EnumDefinition) : ResponseEntity<EnumDefinition> {
+		return ResponseEntity.ok(service.create(domain))
+	}
+
+	@PutMapping("{id}")
+	fun update(@PathVariable("id") id: Int,
+			   @RequestBody domain: EnumDefinition) : ResponseEntity<EnumDefinition> {
+		return ResponseEntity.ok(service.update(id, domain))
+	}
+	@DeleteMapping("{id}")
+	fun delete(@PathVariable("id") id: Int) {
+		service.delete(id)
+	}
+
+}
