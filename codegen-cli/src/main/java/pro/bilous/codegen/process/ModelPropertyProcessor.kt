@@ -151,8 +151,6 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 		} else {
 			property.datatypeWithEnum = if (property.required) "String" else "String?"
 		}
-		property.isString = true
-		property.defaultValue = (property.allowableValues["values"] as List<String>)[0]
 		model.imports.removeIf { it == property.complexType }
 		model.imports.add("EnumValue")
 	}

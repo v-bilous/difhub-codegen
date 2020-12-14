@@ -290,7 +290,7 @@ class OperationAddon(val codegen: CodeCodegen) {
 					it.dataType == "BigDecimal" -> "777.toBigDecimal()"
 					it.isModel && arrayOf("String", "String?").contains(it.datatypeWithEnum) -> {
 						it.isString = true
-						"test_enum_value"
+						(it.allowableValues["values"] as List<String>)[0]
 					}
 					it.isListContainer && arrayOf("List<String>", "List<String>?").contains(it.datatypeWithEnum) -> {
 						"\"test_list_string_value\""
