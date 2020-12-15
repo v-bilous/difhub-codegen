@@ -50,6 +50,31 @@ internal class OperationAddonTest {
 	}
 
 	@Test
+	fun `should add default string enum value to model vars`() {
+		val addon = OperationAddon(mock())
+		val model = CodegenModel().apply {
+			vars = listOf(
+					CodegenProperty().apply {
+						name = "name1"
+						isString = true
+						defaultValue = null
+					},
+					CodegenProperty().apply {
+						name = "name2"
+						isModel = true
+						isString = false
+						datatypeWithEnum = "String?"
+						allowableValues = mapOf("values" to listOf("VALUE"))
+					}
+			)
+		}
+		addon.applyTestVars(model)
+		assertEquals("test string value", model.vars[0].defaultValue)
+		assertEquals("VALUE", model.vars[1].defaultValue)
+		assertEquals(true, model.vars[1].isString)
+	}
+
+	@Test
 	fun `should keep default value in var`() {
 		val addon = OperationAddon(mock())
 		val model = CodegenModel().apply {
