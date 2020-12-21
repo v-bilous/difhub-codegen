@@ -5,8 +5,8 @@ import java.lang.IllegalArgumentException
 
 class CognitoWrapper {
 	companion object {
-		const val USER_POOL = "us-east-1_lp8EgjLHh"
-		const val CLIENT_ID = "7g9viev199moq7s41el8909sd9"
+		const val USER_POOL = "us-east-2_DVwWFfSPl"
+		const val CLIENT_ID = "5tot1acvq11qksavvhlh0qr3fi"
 	}
 
 	fun login(): String {
