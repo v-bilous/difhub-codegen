@@ -94,7 +94,7 @@ public class AuthenticationHelper {
 
         this.userPoolID = userPoolID;
         this.clientId = clientid;
-        this.region = "us-east-1";
+        this.region = "us-east-2";
         this.secretKey = secretKey;
 
     }
