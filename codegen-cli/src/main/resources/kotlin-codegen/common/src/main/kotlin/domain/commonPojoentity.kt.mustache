@@ -52,7 +52,7 @@
 			{{#vendorExtensions.isEmbedded}}
 				{{#vendorExtensions.embeddedComponent}}
 					{{#vars}}
-		AttributeOverride(name = "{{vendorExtensions.embeddedVarName}}", column = Column(name = "{{vendorExtensions.embeddedColumnName}}")),
+		AttributeOverride(name = "{{vendorExtensions.embeddedVarName}}", column = Column(name = "{{vendorExtensions.embeddedColumnName}}"{{#vendorExtensions.hasJsonType}}, columnDefinition = "json"{{/vendorExtensions.hasJsonType}})),
 					{{/vars}}
 				{{/vendorExtensions.embeddedComponent}}
 			{{/vendorExtensions.isEmbedded}}
