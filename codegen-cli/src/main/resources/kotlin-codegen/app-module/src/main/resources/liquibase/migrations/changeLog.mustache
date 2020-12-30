@@ -9,7 +9,7 @@
 	{{#model}}
 	{{^vendorExtensions.isEmbeddable}}
 	{{^vendorExtensions.isSuperclass}}
-	<changeSet author="CodeGeneration" id="create_generated_table_{{vendorExtensions.tableName}}">
+	<changeSet author="CodeGeneration" id="create_generated_table_{{vendorExtensions.tableName}}" labels="version:{{vendorExtensions.x-version}}">
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<tableExists tableName="{{vendorExtensions.tableName}}" />

@@ -267,7 +267,12 @@ class OperationAddon(val codegen: CodeCodegen) {
 						it.defaultValue
 					}
 					it.vendorExtensions["x-data-type"] == "Guid" -> UUID.randomUUID().toString()
-					it.isString -> "test string value"
+					it.isString -> {
+						val maxLength = it.maxLength
+						if (it.maxLength != null && it.maxLength > 0 && it.maxLength <= 16) {
+							"test string value".substring(0, maxLength)
+						} else "test string value"
+					}
 					it.isInteger -> "8"
 					it.dataType == "Date" -> {
 						"Date()"

@@ -124,7 +124,8 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 				property.isNumber = true
 			}
 			else -> {
-				property.vendorExtensions["columnType"] = "VARCHAR(255)"
+				val maxLength = if (property.maxLength != null && property.maxLength > 0) property.maxLength else 255
+				property.vendorExtensions["columnType"] = "VARCHAR($maxLength)"
 				property.vendorExtensions["hibernateType"] = "java.lang.String"
 			}
 		}

@@ -131,6 +131,9 @@ class DefinitionConverter(private val source: Model) {
 
 		val schema = primitiveType.createProperty()
 		schema.format = format
+		if (item.size > 0) {
+			schema.maxLength = item.size
+		}
 		if (!description.isNullOrEmpty()) {
 			schema.description = description
 		}
