@@ -2,8 +2,6 @@ server:
   port: ${SERVER_PORT:8080}
 
 spring:
-  profiles:
-    active: production
   datasource:
     url: jdbc:{{database.name}}://${DB_HOST:localhost}:${DB_PORT:{{database.port}}}/{{systemLower}}_{{appNameLower}}?autoReconnect=true&useSSL=false&rewriteBatchedStatements=true&serverTimezone=UTC&createDatabaseIfNotExist=true
     username: ${DB_USER:root}
