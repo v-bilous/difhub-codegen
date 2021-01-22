@@ -1,0 +1,63 @@
+image: gradle:latest
+
+stages:
+  - build
+  - push
+  - deploy
+
+variables:
+  IMAGE_VERSION: 0.0.1-master
+
+build-system:
+  stage: build
+  script:
+    - ./gradlew build
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+      - build
+    {{#appsLower}}
+      - app-{{.}}/build
+    {{/appsLower}}
+      - .gradle
+
+docker-push:
+  stage: push
+  script:
+{{#appsLower}}
+    - ./gradlew app-{{.}}:jib -Djib.to.image=$CI_REGISTRY_IMAGE/{{.}}:$IMAGE_VERSION -Djib.to.auth.username=$CI_REGISTRY_USER -Djib.to.auth.password=$CI_REGISTRY_PASSWORD
+{{/appsLower}}
+  only:
+    - master
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - build
+{{#appsLower}}
+      - app-{{.}}/build
+{{/appsLower}}
+      - .gradle
+
+deploy:
+  image:
+    name: lachlanevenson/k8s-kubectl:latest
+    entrypoint: [ "/bin/sh", "-c" ]
+  stage: deploy
+  variables:
+    APISERVER: "https://kubernetes.default.svc"
+    SERVICEACCOUNT: "/var/run/secrets/kubernetes.io/serviceaccount"
+  script:
+    - kubectl config set-cluster local --server=$APISERVER --certificate-authority=$SERVICEACCOUNT/ca.crt
+    - kubectl config set-credentials gitlab-ci --token=$KUBE_TOKEN
+    - kubectl config set-context local-ctx --cluster=local --namespace=default --user=gitlab-ci
+    - kubectl config use-context local-ctx
+    - kubectl config view
+    - kubectl apply -f ./kube
+    - kubectl get pods --namespace=default
+  environment:
+    name: integration
+    url: $AUTO_DEVOPS_DOMAIN
+  only:
+    - master
