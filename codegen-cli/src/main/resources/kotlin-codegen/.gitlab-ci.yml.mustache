@@ -1,20 +1,19 @@
 image: gradle:latest
 
 stages:
+  - test
   - build
-  - push
   - deploy
 
 variables:
-  IMAGE_VERSION: 0.0.1-master
+  IMAGE_VERSION: {{imageVersion}}
 
-build-system:
-  stage: build
+test-system:
+  stage: test
   script:
-    - ./gradlew build
+    - ./gradlew test
   cache:
     key: "$CI_COMMIT_REF_NAME"
-    policy: push
     paths:
       - build
     {{#appsLower}}
@@ -22,8 +21,8 @@ build-system:
     {{/appsLower}}
       - .gradle
 
-docker-push:
-  stage: push
+build-docker:
+  stage: build
   script:
 {{#appsLower}}
     - ./gradlew app-{{.}}:jib -Djib.to.image=$CI_REGISTRY_IMAGE/{{.}}:$IMAGE_VERSION -Djib.to.auth.username=$CI_REGISTRY_USER -Djib.to.auth.password=$CI_REGISTRY_PASSWORD
@@ -40,7 +39,7 @@ docker-push:
 {{/appsLower}}
       - .gradle
 
-deploy:
+deploy-kube:
   image:
     name: lachlanevenson/k8s-kubectl:latest
     entrypoint: [ "/bin/sh", "-c" ]

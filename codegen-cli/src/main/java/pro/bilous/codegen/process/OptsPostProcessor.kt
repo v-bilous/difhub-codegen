@@ -216,6 +216,13 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 			addSupportFile(source = "$inputSrc/security/urlmapper/UrlAccessMapper.kt.mustache", folder = "$destSrc/security/urlmapper", target = "UrlAccessMapper.kt")
 			addSupportFile(source = "$inputSrc/config/KeycloakConfig.kt.mustache", folder = "$destSrc/config", target = "KeycloakConfig.kt")
 		}
+
+		// add kubernetes ConfigMap manifest to the application
+		addSupportFile(
+			source = "kube/configmap.yml.mustache",
+			target = "kube/configmap.yml",
+			condition = cicdEnabled()
+		)
 	}
 
 	private fun setupModuleFiles() {

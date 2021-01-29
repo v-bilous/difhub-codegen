@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-{{appNameLower}}
+  name: {{systemLower}}-{{appNameLower}}
   namespace: default
 spec:
   minReadySeconds: 5
   replicas: 1
   selector:
     matchLabels:
-      app: app-{{appNameLower}}
+      app: {{systemLower}}-{{appNameLower}}
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -16,15 +16,28 @@ spec:
   template:
     metadata:
       labels:
-        app: app-{{appNameLower}}
+        app: {{systemLower}}-{{appNameLower}}
     spec:
       containers:
         - env:
             - name: DB_HOST
-              value: db
-          image: {{containerRegistry}}/{{systemLower}}/{{appNameLower}}:0.0.1-master
+              valueFrom:
+                configMapKeyRef:
+                  name: {{systemLower}}-configmap
+                  key: db_host
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{systemLower}}-secret
+                  key: db_username
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{systemLower}}-secret
+                  key: db_password
+          image: {{containerRegistry}}/{{systemLower}}/{{appNameLower}}:{{imageVersion}}
           imagePullPolicy: Always
-          name: app-{{appNameLower}}
+          name: {{systemLower}}-{{appNameLower}}
           ports:
             - containerPort: 8080
           resources:
@@ -40,13 +53,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: app-{{appNameLower}}
+  name: {{systemLower}}-{{appNameLower}}
   namespace: default
 spec:
   ports:
     - port: 8080
   selector:
-    app: app-{{appNameLower}}
+    app: {{systemLower}}-{{appNameLower}}
   type: LoadBalancer
 ---
 apiVersion: networking.k8s.io/v1beta1
@@ -56,13 +69,13 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/rewrite-target: "/$2"
     nginx.ingress.kubernetes.io/x-forwarded-prefix: "/{{appNameLower}}/v1"
-  name: ingress-{{appNameLower}}
+  name: ingress-{{systemLower}}-{{appNameLower}}
   namespace: default
 spec:
   rules:
     - http:
         paths:
           - backend:
-              serviceName: app-{{appNameLower}}
+              serviceName: {{systemLower}}-{{appNameLower}}
               servicePort: 8080
             path: "/{{appNameLower}}/v1(/|$)(.*)"
