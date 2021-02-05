@@ -64,12 +64,6 @@ class OpenApiProcessor(val codegen: CodeCodegen) {
 	}
 
 	private fun setupServerPort(openAPI: OpenAPI) {
-		val servers = openAPI.servers
-		if (servers.isNullOrEmpty()) {
-			return
-		}
-		val serverUrl = servers.first().url
-		val serverPort = serverUrl.removeSuffix("/").split(":").last()
-		additionalProperties["serverPort"] = serverPort
+		additionalProperties["serverPort"] = ServerPortReader.findPort(openAPI)
 	}
 }

@@ -10,23 +10,24 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: Qw123456
     ports:
-      - {{database.port}}0:{{database.port}}
+      - 3307:{{database.port}}
     volumes:
       - db_data:/var/lib/mysql
-{{#appsLower}}
-  app-{{.}}:
-    image: app-{{.}}:latest
+{{#appsMap}}
+  app-{{name}}:
+    image: app-{{name}}:latest
     restart: on-failure
     build:
-      context: ./app-{{.}}/build/docker
+      context: ./app-{{name}}/build/docker
       dockerfile: ./../../docker/Dockerfile
     environment:
       DB_HOST: db
+      DB_PORT: 3306
     ports:
-      - 8080:8080
+      - {{port}}:8080
     depends_on:
       - db
-{{/appsLower}}
+{{/appsMap}}
 {{#authorizationEnabled}}
   keycloak:
     image: jboss/keycloak:11.0.2

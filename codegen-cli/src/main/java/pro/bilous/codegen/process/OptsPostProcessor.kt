@@ -176,6 +176,10 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 
 		addSupportFile(source = "README.mustache", target = "README.md")
 		addSupportFile(source = "gradle/wrapper/gradle-wrapper.properties", folder = "", target = "gradle/wrapper/gradle-wrapper.properties")
+		addSupportFile(
+			source = "gradle/wrapper/gradle-wrapper.jar",
+			target = "gradle/wrapper/gradle-wrapper.jar"
+		)
 
 		addSupportFile(
 			source = ".gitlab-ci.yml.mustache",

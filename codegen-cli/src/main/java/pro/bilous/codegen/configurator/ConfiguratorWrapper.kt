@@ -28,6 +28,16 @@ class ConfiguratorWrapper(
 		val system = settings.dynamicProperties["system"]!!.toString()
 		instance.setCustomProperty("systemLower", system.toLowerCase())
 		instance.setCustomProperty("appsLower", apps)
+
+		val appList = mutableListOf<Map<String, Any>>()
+		apps.forEachIndexed { index, name ->
+			appList.add(mapOf(
+				"name" to name,
+				"port" to (8040 + index).toString()
+			))
+		}
+		instance.setCustomProperty("appsMap", appList)
+
 		instance.setCustomProperty("database",
 			DatabaseResolver.getByType(database)
 		)
