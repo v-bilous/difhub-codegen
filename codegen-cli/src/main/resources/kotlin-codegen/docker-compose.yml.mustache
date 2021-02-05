@@ -15,14 +15,11 @@ services:
       - db_data:/var/lib/mysql
 {{#appsMap}}
   app-{{name}}:
-    image: app-{{name}}:latest
+    image: app-{{name}}:0.0.1
     restart: on-failure
-    build:
-      context: ./app-{{name}}/build/docker
-      dockerfile: ./../../docker/Dockerfile
     environment:
       DB_HOST: db
-      DB_PORT: 3306
+      DB_PORT: {{database.port}}
     ports:
       - {{port}}:8080
     depends_on:
