@@ -19,25 +19,14 @@ spec:
         app: {{systemLower}}-{{appNameLower}}
     spec:
       containers:
-        - env:
-            - name: DB_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: {{systemLower}}-configmap
-                  key: db_host
-            - name: DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: {{systemLower}}-secret
-                  key: db_username
-            - name: DB_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: {{systemLower}}-secret
-                  key: db_password
+        - name: {{systemLower}}-{{appNameLower}}
+          envFrom:
+            - configMapRef:
+                name: {{systemLower}}-configmap
+            - secretRef:
+                name: {{systemLower}}-secret
           image: {{containerRegistry}}/{{systemLower}}/{{appNameLower}}:{{imageVersion}}
           imagePullPolicy: Always
-          name: {{systemLower}}-{{appNameLower}}
           ports:
             - containerPort: 8080
           resources:

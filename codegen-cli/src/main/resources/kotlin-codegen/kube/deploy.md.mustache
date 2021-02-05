@@ -1,0 +1,15 @@
+The example of the secret file for the system below.
+Should be managed manually in order to keep privacy of credentials.
+
+Create file secret.yml using example below, don't push the file to git repo, keep it secret.
+Use `kubectl apply -f secret.yml` to push the secret to the kubernetes
+```
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{systemLower}}-secret
+type: Opaque
+data:
+  DB_USER: #put base64 encoded username here, for mac use: echo -n 'username' | base64
+  DB_PASS: #put base64 encoded password here, for mac use: echo -n 'password' | base64
+```

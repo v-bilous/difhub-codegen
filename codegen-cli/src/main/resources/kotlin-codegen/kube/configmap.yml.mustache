@@ -3,4 +3,5 @@ kind: ConfigMap
 metadata:
   name: {{systemLower}}-configmap
 data:
-  db_host: {{databaseHost}}
+  DB_HOST: {{databaseHost}}
+  DB_PORT: {{database.port}}

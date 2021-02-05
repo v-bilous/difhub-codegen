@@ -223,6 +223,11 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 			target = "kube/configmap.yml",
 			condition = cicdEnabled()
 		)
+		addSupportFile(
+			source = "kube/deploy.md.mustache",
+			target = "kube/deploy.md",
+			condition = cicdEnabled()
+		)
 	}
 
 	private fun setupModuleFiles() {
