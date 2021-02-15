@@ -22,12 +22,12 @@ class DefinitionConverter(private val source: Model) {
 	}
 
 	private fun createModelImpl(model: Model) : Schema<*> {
-		val schema = if (model.`object`?.usage == "Enum") {
-			createEnumSchema(model)
-		} else {
-			createObjectSchema(model)
+		val schemaName = normalizeTypeName(model.identity.name)
+		val schema = when (model.`object`?.usage) {
+			"Enum" -> createEnumSchema(model)
+			else -> createObjectSchema(model)
 		}
-		schema.name = normalizeTypeName(model.identity.name)
+		schema.name = schemaName
 		schema.description = model.identity.description
 
 		if (model.`object` != null) {
@@ -149,6 +149,7 @@ class DefinitionConverter(private val source: Model) {
 		return schema
 	}
 
+	private val modelLoadingInProgress = mutableSetOf<String>()
 	private fun createStructureProperty(item: FieldsItem): ComposedSchema {
 		val property = ComposedSchema()
 
@@ -157,13 +158,14 @@ class DefinitionConverter(private val source: Model) {
 		property.allOf = listOf(ObjectSchema().apply { `$ref` = refDataset })
 
 		property.description = item.identity.description
-		if (!definitions.containsKey(refDataset)) {
-
+		if (!definitions.containsKey(refDataset) && !modelLoadingInProgress.contains(refDataset)) {
 			val source = ModelLoader(DefLoader()).loadModel(item.reference)
+			modelLoadingInProgress.add(refDataset)
 			if (source != null) {
 				val schema = createModelImpl(source)
-				definitions[schema.name] = schema
+				definitions[refDataset] = schema
 			}
+			modelLoadingInProgress.remove(refDataset)
 		}
 		addExtensions(property, item)
 		return property
