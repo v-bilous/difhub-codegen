@@ -57,7 +57,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/rewrite-target: "/$2"
-    nginx.ingress.kubernetes.io/x-forwarded-prefix: "/{{appNameLower}}/v1"
+    nginx.ingress.kubernetes.io/x-forwarded-prefix: "/{{#routePrefix}}{{{routePrefix}}}-{{/routePrefix}}{{appNameLower}}/v1"
   name: ingress-{{systemLower}}-{{appNameLower}}
   namespace: default
 spec:
@@ -67,4 +67,4 @@ spec:
           - backend:
               serviceName: {{systemLower}}-{{appNameLower}}
               servicePort: 8080
-            path: "/{{appNameLower}}/v1(/|$)(.*)"
+            path: "/{{#routePrefix}}{{{routePrefix}}}-{{/routePrefix}}{{appNameLower}}/v1(/|$)(.*)"

@@ -7,11 +7,18 @@ stages:
 
 variables:
   IMAGE_VERSION: {{imageVersion}}
+{{#codecov}}
+  CODECOV_TOKEN: "{{{codecov}}}"
+{{/codecov}}
 
 test-system:
   stage: test
   script:
     - ./gradlew test
+{{#codecov}}
+  after_script:
+    - bash <(curl -s https://codecov.io/bash)
+{{/codecov}}
   cache:
     key: "$CI_COMMIT_REF_NAME"
     paths:
