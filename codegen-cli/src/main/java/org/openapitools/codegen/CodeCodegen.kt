@@ -33,7 +33,6 @@ open class CodeCodegen : AbstractJavaCodegen() {
 		const val OPENAPI_DOCKET_CONFIG = "swaggerDocketConfig"
 		const val DB_NAME = "dbName"
 		const val BINDING_KEY = "addBindingEntity"
-		const val AUTHORIZATION_ENABLED = "authorizationEnabled"
 	}
 
 	fun isEnableMerge(): Boolean {

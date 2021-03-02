@@ -1,12 +1,13 @@
 authorization:
-  token-url: http://keycloak:8099/auth/realms/{{systemLower}}/protocol/openid-connect/token
+  token-url: http://{{systemLower}}-keycloak:8080/auth/realms/{{keycloak.client}}/protocol/openid-connect/token
 swagger-ui:
-  keycloak-url: http://keycloak:8099/auth
+  keycloak-url: {{keycloak.auth-url}}
 keycloak:
-  auth-server-url: http://keycloak:8099/auth
-  resource: {{systemLower}}
-  realm: {{systemLower}}
+  auth-server-url: {{keycloak.auth-url}}
+  resource: {{keycloak.client}}
+  realm: {{keycloak.client}}
   use-resource-role-mappings: true
   principal-attribute: preferred_username
-  credentials.secret: secret
+  credentials.secret: ${KEYCLOAK_SECRET:secret}
   ssl-required: external
+  disable-trust-manager: true

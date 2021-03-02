@@ -3,4 +3,14 @@ kind: ConfigMap
 metadata:
   name: {{systemLower}}-configmap
 data:
-  DB_HOST: {{databaseHost}}
+  DB_HOST: "{{databaseHost}}"
+{{#keycloak}}
+  DB_VENDOR: "MYSQL"
+  DB_ADDR: "{{databaseHost}}"
+  DB_PORT: "3306"
+  DB_DATABASE: "keycloakdb"
+  KEYCLOAK_FRONTEND_URL: "{{keycloak.auth-url}}"
+  PROXY_ADDRESS_FORWARDING: "true"
+  KEYCLOAK_HOSTNAME: "{{keycloak.host-name}}"
+  KEYCLOAK_ALWAYS_HTTPS: "true"
+{{/keycloak}}
