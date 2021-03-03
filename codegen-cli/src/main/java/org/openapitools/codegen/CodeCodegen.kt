@@ -281,10 +281,11 @@ open class CodeCodegen : AbstractJavaCodegen() {
 		return codegenOperation
 	}
 
-	override fun postProcessModelProperty(model: CodegenModel, property: CodegenProperty?) {
+	override fun postProcessModelProperty(model: CodegenModel, property: CodegenProperty) {
 		super.postProcessModelProperty(model, property)
+
 		ModelPropertyProcessor(this)
-			.postProcessModelProperty(model, property!!)
+			.postProcessModelProperty(model, property)
 	}
 
 	fun getImportMappings() = importMapping

@@ -22,12 +22,12 @@ class DefinitionConverter(private val source: Model) {
 	}
 
 	private fun createModelImpl(model: Model) : Schema<*> {
-		val schema = if (model.`object`?.usage == "Enum") {
-			createEnumSchema(model)
-		} else {
-			createObjectSchema(model)
+		val schemaName = normalizeTypeName(model.identity.name)
+		val schema = when (model.`object`?.usage) {
+			"Enum" -> createEnumSchema(model)
+			else -> createObjectSchema(model)
 		}
-		schema.name = normalizeTypeName(model.identity.name)
+		schema.name = schemaName
 		schema.description = model.identity.description
 
 		if (model.`object` != null) {
@@ -97,26 +97,77 @@ class DefinitionConverter(private val source: Model) {
 	}
 
 	private fun createReferenceProperty(item: FieldsItem): Schema<Any> {
+		if (hasIdentityFormat(item)) {
+			return createReferenceIdentity(item)
+		}
 		return createProperty(item)
 	}
 
+	private fun hasIdentityFormat(item: FieldsItem): Boolean {
+		return item.format.startsWith(prefix = "identity", ignoreCase = true)
+				|| readRefDataset(item.reference) == "Identity"
+	}
+
+	private fun createReferenceIdentity(item: FieldsItem): ComposedSchema {
+		val property = ComposedSchema()
+		property.description = item.identity.description
+
+		val refDataset = "Reference${readRefDataset(item.reference)}"
+		property.allOf = listOf(ObjectSchema().apply { `$ref` = refDataset })
+		if (!definitions.containsKey(refDataset)) {
+			definitions[refDataset] = createIdentitySchema(item, refDataset)
+		}
+		addExtensions(property, item)
+		return property
+	}
+
+	private fun createIdentitySchema(item: FieldsItem, refDataset: String): Schema<*> {
+		val schema = ObjectSchema()
+
+		val stringProperty = PrimitiveType.fromName("string").createProperty()
+		schema.description = "Complex structure to describe referenced resource"
+
+		schema.addProperties("id", stringProperty.apply {
+			description = "Guid of the relationship structure $refDataset"
+		})
+		schema.addProperties("resourceId", stringProperty.apply {
+			description = "Guid of the target Resource"
+		})
+		schema.addProperties("name", stringProperty.apply {
+			description = "Name of the Reference, can be target Resource name or custom one"
+		})
+		schema.addProperties("description", stringProperty.apply {
+			description = "Description of the Reference, can be target Resource description or custom one"
+		})
+		schema.addProperties("type", stringProperty.apply {
+			description = "Name of the target Resource, required if resourceId designed to hold vary Resources types"
+		})
+		schema.addProperties("uri", stringProperty.apply {
+			description = "Optional URI of the target Resource"
+		})
+
+		return schema
+	}
+
+	private val modelLoadingInProgress = mutableSetOf<String>()
 	private fun createStructureProperty(item: FieldsItem): ComposedSchema {
 		val property = ComposedSchema()
 
-		val array = item.reference.split("/")
 		property.description = item.identity.description
-		property.allOf = listOf(ObjectSchema().apply { `$ref` = normalizeTypeName(array[array.lastIndexOf("datasets") + 1]) })
-		//property.`$ref` = normalizeTypeName(array[array.lastIndexOf("datasets") + 1])
+		val refDataset = readRefDataset(item.reference)
+		property.allOf = listOf(ObjectSchema().apply { `$ref` = refDataset })
 
 		property.description = item.identity.description
-		if (!definitions.containsKey(property.`$ref`)) {
-
+		if (!definitions.containsKey(refDataset) && !modelLoadingInProgress.contains(refDataset)) {
 			val source = ModelLoader(DefLoader()).loadModel(item.reference)
+			modelLoadingInProgress.add(refDataset)
 			if (source != null) {
 				val schema = createModelImpl(source)
-				definitions[schema.name] = schema
+				definitions[refDataset] = schema
 			}
+			modelLoadingInProgress.remove(refDataset)
 		}
+		addExtensions(property, item)
 		return property
 	}
 
@@ -150,13 +201,17 @@ class DefinitionConverter(private val source: Model) {
 				schema.enum = enumModel.values.mapNotNull { it.value }
 			}
 		}
+		addExtensions(schema, item)
+		return schema
+	}
+
+	private fun addExtensions(schema: Schema<*>, item: FieldsItem) {
 		schema.addExtension("x-data-type", item.type)
 		item.properties?.forEach {
 			if (it.identity != null) {
 				schema.addExtension("x-${it.identity.name}", it.value)
 			}
 		}
-		return schema
 	}
 
 	private fun readRefFormat(item: FieldsItem): String {
@@ -165,6 +220,11 @@ class DefinitionConverter(private val source: Model) {
 		val application = readReference("applications", refParts)
 		val system =  readReference("systems", refParts)
 		return "system: $system | application: $application | dataType: $dataType"
+	}
+
+	private fun readRefDataset(reference: String): String {
+		val array = reference.split("/")
+		return normalizeTypeName(array[array.lastIndexOf("datasets") + 1])
 	}
 
 	private fun readReference(name: String, parts: List<String>): String {

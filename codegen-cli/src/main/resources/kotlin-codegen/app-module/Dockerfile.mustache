@@ -1,3 +1,0 @@
-FROM openjdk:8-alpine
-COPY *.jar app-{{appNameLower}}.jar
-ENTRYPOINT ["java","-jar","/app-{{appNameLower}}.jar", "--spring.profiles.active=prod"]

@@ -180,6 +180,12 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 			source = "gradle/wrapper/gradle-wrapper.jar",
 			target = "gradle/wrapper/gradle-wrapper.jar"
 		)
+
+		addSupportFile(
+			source = ".gitlab-ci.yml.mustache",
+			target = ".gitlab-ci.yml",
+			condition = cicdEnabled()
+		)
 	}
 
 	private fun addCommonModuleFiles() {
@@ -214,13 +220,30 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 			addSupportFile(source = "$inputSrc/security/urlmapper/UrlAccessMapper.kt.mustache", folder = "$destSrc/security/urlmapper", target = "UrlAccessMapper.kt")
 			addSupportFile(source = "$inputSrc/config/KeycloakConfig.kt.mustache", folder = "$destSrc/config", target = "KeycloakConfig.kt")
 		}
+
+		// add kubernetes ConfigMap manifest to the application
+		addSupportFile(
+			source = "kube/configmap.yml.mustache",
+			target = "kube/configmap.yml",
+			condition = cicdEnabled()
+		)
+		addSupportFile(
+			source = "kube/deploy.md.mustache",
+			target = "kube/deploy.md",
+			condition = cicdEnabled()
+		)
 	}
 
 	private fun setupModuleFiles() {
 		val inputRoot = "app-module/"
 		val destinationRoot = "app-${artifactId.toLowerCase()}"
 		addSupportFile(source = "$inputRoot/build.gradle.kts.mustache",  target = "$destinationRoot/build.gradle.kts")
-		addSupportFile(source = "$inputRoot/Dockerfile.mustache",  target = "$destinationRoot/docker/Dockerfile")
+		// add kubernetes manifests for the application
+		addSupportFile(
+			source = "kube/kube-app.yml.mustache",
+			target = "kube/kube-${artifactId.toLowerCase()}.yml",
+			condition = cicdEnabled()
+		)
 	}
 
 	private fun setupRawFiles() {
@@ -232,9 +255,13 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 		addSupportFile(source = "idea/runConfiguration.mustache", target = ".idea/runConfigurations/Application.xml")
 	}
 
-	private fun addSupportFile(source: String, folder: String = "", target: String) {
-		supportingFiles.add(SupportingFile(source, folder.replace(".", File.separator), target))
+	private fun addSupportFile(source: String, folder: String = "", target: String, condition: Boolean = true) {
+		if (condition) {
+			supportingFiles.add(SupportingFile(source, folder.replace(".", File.separator), target))
+		}
 	}
+
+	private fun cicdEnabled() = additionalProperties.containsKey("cicd") && additionalProperties["cicd"] as Boolean
 
 	private fun isAuthorizationEnabled(): Boolean {
 		return true == additionalProperties.get(CodeCodegen.AUTHORIZATION_ENABLED) as Boolean?
