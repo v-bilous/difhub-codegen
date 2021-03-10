@@ -42,6 +42,17 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 	private fun getServicesFolder(): String = codegen.servicesFolder
 	private fun getDatabaseFolder(): String = codegen.databaseFolder
 
+	private val cicdEnabled: Boolean
+		get() = additionalProperties.containsKey("cicd") && additionalProperties["cicd"] as Boolean
+
+	private val isKeycloakEnabled: Boolean
+		get() = additionalProperties.containsKey("keycloak")
+
+	private val isKeycloakCicdEnabled: Boolean
+		get() = additionalProperties.containsKey("keycloak")
+				&& (additionalProperties["keycloak"] as LinkedHashMap<*, *>).containsKey("cicd")
+				&& (additionalProperties["keycloak"] as LinkedHashMap<*, *>)["cicd"] as Boolean
+
 	fun processOpts() {
 		// clear model and api doc template as this codegen
 		// does not support auto-generated markdown doc at the moment
@@ -137,7 +148,7 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 		addSupportFile("$inputResRoot/application.yml.mustache", baseResourceResFolder, "application.yml")
 		addSupportFile("$inputResRoot/application-dev.yml.mustache", baseResourceResFolder, "application-dev.yml")
 		addSupportFile("$inputResRoot/application-prod.yml.mustache", baseResourceResFolder, "application-prod.yml")
-		if (isKeycloakEnabled()) {
+		if (isKeycloakEnabled) {
 			addSupportFile("$inputResRoot/application-security.yml.mustache", baseResourceResFolder, "application-security.yml")
 		}
 		addSupportFile(source = "$inputResRoot/hibernate-types.properties", folder = baseResourceResFolder, target = "hibernate-types.properties")
@@ -184,7 +195,7 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 		addSupportFile(
 			source = ".gitlab-ci.yml.mustache",
 			target = ".gitlab-ci.yml",
-			condition = cicdEnabled()
+			condition = cicdEnabled
 		)
 	}
 
@@ -215,15 +226,15 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 		addSupportFile(source = "$inputSrc/repository/CommonRepository.kt.mustache", folder = "$destSrc/repository", target = "CommonRepository.kt")
 		addSupportFile(source = "$inputSrc/service/AbstractService.kt.mustache", folder = "$destSrc/service", target = "AbstractService.kt")
 		addSupportFile(source = "$inputSrc/service/CommonService.kt.mustache", folder = "$destSrc/service", target = "CommonService.kt")
-		if (isKeycloakEnabled()) {
+		if (isKeycloakEnabled) {
 			addSupportFile(source = "$inputSrc/security/urlmapper/CommonUrlAccessMapper.kt.mustache", folder = "$destSrc/security/urlmapper", target = "CommonUrlAccessMapper.kt")
 			addSupportFile(source = "$inputSrc/security/urlmapper/UrlAccessMapper.kt.mustache", folder = "$destSrc/security/urlmapper", target = "UrlAccessMapper.kt")
 			addSupportFile(source = "$inputSrc/config/KeycloakConfig.kt.mustache", folder = "$destSrc/config", target = "KeycloakConfig.kt")
-			if (isKeycloakCicdEnabled()) {
+			if (isKeycloakCicdEnabled) {
 				addSupportFile(
 					source = "kube/kube-keycloak.yml.mustache",
 					target = "kube/kube-keycloak.yml",
-					condition = cicdEnabled())
+					condition = cicdEnabled)
 			}
 		}
 
@@ -231,12 +242,12 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 		addSupportFile(
 			source = "kube/configmap.yml.mustache",
 			target = "kube/configmap.yml",
-			condition = cicdEnabled()
+			condition = cicdEnabled
 		)
 		addSupportFile(
 			source = "kube/deploy.md.mustache",
 			target = "kube/deploy.md",
-			condition = cicdEnabled()
+			condition = cicdEnabled
 		)
 	}
 
@@ -248,7 +259,7 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 		addSupportFile(
 			source = "kube/kube-app.yml.mustache",
 			target = "kube/kube-${artifactId.toLowerCase()}.yml",
-			condition = cicdEnabled()
+			condition = cicdEnabled
 		)
 	}
 
@@ -265,18 +276,6 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 		if (condition) {
 			supportingFiles.add(SupportingFile(source, folder.replace(".", File.separator), target))
 		}
-	}
-
-	private fun cicdEnabled() = additionalProperties.containsKey("cicd") && additionalProperties["cicd"] as Boolean
-
-	private fun isKeycloakEnabled(): Boolean {
-		return true == additionalProperties.containsKey("keycloak")
-	}
-
-	private fun isKeycloakCicdEnabled(): Boolean {
-		return true == additionalProperties.containsKey("keycloak")
-				&& (additionalProperties["keycloak"] as LinkedHashMap<*, *>).containsKey("cicd")
-				&& (additionalProperties["keycloak"] as LinkedHashMap<*, *>)["cicd"] as Boolean
 	}
 
 }
