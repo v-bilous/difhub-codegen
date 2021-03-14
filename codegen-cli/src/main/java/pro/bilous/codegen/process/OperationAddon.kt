@@ -263,7 +263,7 @@ class OperationAddon(val codegen: CodeCodegen) {
 				it.vendorExtensions["hasTestModel"] = true
 			} else {
 				it.defaultValue = when {
-					!it.defaultValue.isNullOrEmpty() && it.defaultValue != "null" -> {
+					!it.defaultValue.isNullOrEmpty() && it.defaultValue != "null" && it.defaultValue != "listOf()" -> {
 						it.defaultValue
 					}
 					it.vendorExtensions["x-data-type"] == "Guid" -> UUID.randomUUID().toString()
