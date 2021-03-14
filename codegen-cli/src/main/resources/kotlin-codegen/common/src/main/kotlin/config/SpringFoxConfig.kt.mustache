@@ -9,7 +9,7 @@ import springfox.documentation.builders.PathSelectors
 import springfox.documentation.builders.RequestHandlerSelectors
 import springfox.documentation.spi.DocumentationType
 import springfox.documentation.spring.web.plugins.Docket
-{{#authorizationEnabled}}
+{{#keycloak}}
 import springfox.documentation.service.GrantType
 import springfox.documentation.service.ResourceOwnerPasswordCredentialsGrant
 import springfox.documentation.service.SecurityReference
@@ -18,11 +18,11 @@ import springfox.documentation.builders.OAuthBuilder
 import springfox.documentation.spi.service.contexts.SecurityContext
 import springfox.documentation.swagger.web.SecurityConfiguration
 import springfox.documentation.swagger.web.SecurityConfigurationBuilder
-{{/authorizationEnabled}}
+{{/keycloak}}
 
 @Configuration
 class SpringFoxConfig {
-	{{#authorizationEnabled}}
+	{{#keycloak}}
 	@Value("\${swagger-ui.keycloak-url}")
 	private val authServer: String? = null
 	@Value("\${keycloak.credentials.secret}")
@@ -33,7 +33,7 @@ class SpringFoxConfig {
 	private val realm: String? = null
 
 	private val OAUTH_NAME = "spring_oauth"
-	{{/authorizationEnabled}}
+	{{/keycloak}}
 
 	@Bean
 	fun api(): Docket = Docket(DocumentationType.SWAGGER_2)
@@ -42,12 +42,12 @@ class SpringFoxConfig {
 			.paths(PathSelectors.any())
 			.build()
 			.directModelSubstitute(Pageable::class.java, SwaggerPageable::class.java)
-	{{#authorizationEnabled}}
+	{{#keycloak}}
 			.securitySchemes(listOf(securityScheme()))
 			.securityContexts(listOf(securityContext()))
-	{{/authorizationEnabled}}
+	{{/keycloak}}
 
-	{{#authorizationEnabled}}
+	{{#keycloak}}
 	@Bean
 	fun security(): SecurityConfiguration? {
 		return SecurityConfigurationBuilder.builder()
@@ -71,7 +71,7 @@ class SpringFoxConfig {
 				.securityReferences(listOf(SecurityReference(OAUTH_NAME, arrayOf())))
 				.build()
 	}
-	{{/authorizationEnabled}}
+	{{/keycloak}}
 }
 
 data class SwaggerPageable(
