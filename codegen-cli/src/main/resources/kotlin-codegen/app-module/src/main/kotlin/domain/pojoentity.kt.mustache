@@ -5,6 +5,8 @@
 {{/vars}}
 */
 {{>generatedDatasetAnnotation}}
+@JsonPropertyOrder({{#allVars}}"{{name}}"{{#hasMore}}, {{/hasMore}}{{/allVars}})
+
 {{^vendorExtensions.isEmbeddable}}
 @Entity
 @Table(name = "{{vendorExtensions.tableName}}")
