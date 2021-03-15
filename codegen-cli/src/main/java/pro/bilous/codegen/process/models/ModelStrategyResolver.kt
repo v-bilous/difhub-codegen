@@ -65,7 +65,7 @@ class ModelStrategyResolver(val model: CodegenModel) : IModelStrategyResolver {
 			extensions["hasTableEntity"] = false
 		}
 		val tableName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, model.name)
-		extensions["tableName"] = SqlNamingUtils.escapeTableNameIfNeeded(tableName)
+		extensions["tableName"] = SqlNamingUtils.escapeSqlNameIfNeeded(tableName)
 		extensions["isEmbeddable"] = !args.hasEntity && !args.hasIdentity && !args.hasId && !args.hasExtends
 		extensions["addIdVar"] = false // !hasEntity && hasIdentity
 		val isSuperclass = SuperclassRegistry.hasName(model.name)

@@ -225,7 +225,7 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 				"ref_$propertyTableColumnName"
 			} else propertyTableColumnName
 
-			property.getVendorExtensions()["modelTableName"] = SqlNamingUtils.escapeTableNameIfNeeded(modelTableName)
+			property.getVendorExtensions()["modelTableName"] = SqlNamingUtils.escapeSqlNameIfNeeded(modelTableName)
 			property.getVendorExtensions()["propertyTableName"] = realPropertyTableName
 			property.vendorExtensions["hasPropertyTable"] = openApiWrapper.isOpenApiContainsType(complexType)
 			property.getVendorExtensions()["joinTableName"] = joinTableName
@@ -289,7 +289,7 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 	fun applyColumnNames(model: CodegenModel, property: CodegenProperty) {
 		val columnName = CamelCaseConverter.convert(property.name).toLowerCase()
 		property.getVendorExtensions()["columnName"] = columnName
-		property.getVendorExtensions()["escapedColumnName"] = SqlNamingUtils.escapeColumnNameIfNeeded(columnName)
+		property.getVendorExtensions()["escapedColumnName"] = SqlNamingUtils.escapeSqlNameIfNeeded(columnName)
 		property.getVendorExtensions()["columnName"] = property.getVendorExtensions()["escapedColumnName"]
 
 	}
