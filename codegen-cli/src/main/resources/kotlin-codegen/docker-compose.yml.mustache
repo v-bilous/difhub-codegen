@@ -25,7 +25,7 @@ services:
     depends_on:
       - db
 {{/appsMap}}
-{{#authorizationEnabled}}
+{{#keycloak}}
   keycloak:
     image: jboss/keycloak:11.0.2
     restart: on-failure
@@ -52,6 +52,6 @@ services:
       - "8099:8099"
     depends_on:
       - db
-{{/authorizationEnabled}}
+{{/keycloak}}
 volumes:
   db_data:

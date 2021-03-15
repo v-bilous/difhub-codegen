@@ -28,6 +28,8 @@ class ConfiguratorWrapper(
 		val system = settings.dynamicProperties["system"]!!.toString()
 		instance.setCustomProperty("systemLower", system.toLowerCase())
 		instance.setCustomProperty("appsLower", apps)
+		// may change namespace depending on the settings in the file, make it as a hardcoded for now.
+		instance.setCustomProperty("namespace", "default")
 
 		val appList = mutableListOf<Map<String, Any>>()
 		apps.forEachIndexed { index, name ->
