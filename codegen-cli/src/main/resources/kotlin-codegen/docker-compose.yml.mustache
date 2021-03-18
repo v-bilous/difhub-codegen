@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  db:
+  {{systemLower}}-db:
     image: {{database.image}}
     restart: always
     command: --default-authentication-plugin=mysql_native_password
@@ -14,20 +14,20 @@ services:
     volumes:
       - db_data:/var/lib/mysql
 {{#appsMap}}
-  app-{{name}}:
+  {{systemLower}}-{{name}}:
     image: app-{{name}}:0.0.1
     restart: on-failure
     environment:
-      DB_HOST: db
+      DB_HOST: {{systemLower}}-db
       DB_PORT: {{database.port}}
     ports:
       - {{port}}:8080
     depends_on:
-      - db
+      - {{systemLower}}-db
 {{/appsMap}}
 {{#keycloak}}
-  keycloak:
-    image: jboss/keycloak:11.0.2
+  {{systemLower}}-keycloak:
+    image: jboss/keycloak:12.0.4
     restart: on-failure
     command:
       - "-b"
@@ -41,17 +41,18 @@ services:
       - ./config:/config/
     environment:
       - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=password
+      - KEYCLOAK_PASSWORD=admin
+      - KEYCLOAK_IMPORT=realm-client.json
       - DB_VENDOR=MYSQL
       - DB_USER=root
       - DB_PASSWORD=Qw123456
-      - DB_ADDR=db
+      - DB_ADDR={{systemLower}}-db
       - DB_PORT=3306
       - DB_DATABASE=keycloakdb
     ports:
       - "8099:8099"
     depends_on:
-      - db
+      - {{systemLower}}-db
 {{/keycloak}}
 volumes:
   db_data:
