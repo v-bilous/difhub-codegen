@@ -2,6 +2,7 @@ version: '3.8'
 services:
   {{systemLower}}-db:
     image: {{database.image}}
+    container_name: {{systemLower}}-db
     restart: always
     command: --default-authentication-plugin=mysql_native_password
     environment:
@@ -16,6 +17,7 @@ services:
 {{#appsMap}}
   {{systemLower}}-{{name}}:
     image: app-{{name}}:0.0.1
+    container_name: {{systemLower}}-{{name}}
     restart: on-failure
     environment:
       DB_HOST: {{systemLower}}-db
@@ -28,29 +30,25 @@ services:
 {{#keycloak}}
   {{systemLower}}-keycloak:
     image: jboss/keycloak:12.0.4
+    container_name: {{systemLower}}-keycloak
     restart: on-failure
     command:
       - "-b"
       - "0.0.0.0"
-      - "-Dkeycloak.migration.action=import"
-      - "-Dkeycloak.migration.provider=dir"
-      - "-Dkeycloak.migration.dir=/config/"
-      - "-Dkeycloak.migration.strategy=IGNORE_EXISTING"
+      - "-Dkeycloak.profile.feature.account2=enabled"
       - "-Djboss.http.port=8099"
     volumes:
       - ./config:/config/
     environment:
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=admin
-      - KEYCLOAK_IMPORT=realm-client.json
-      - DB_VENDOR=MYSQL
-      - DB_USER=root
-      - DB_PASSWORD=Qw123456
-      - DB_ADDR={{systemLower}}-db
-      - DB_PORT=3306
-      - DB_DATABASE=keycloakdb
+      KEYCLOAK_IMPORT: /config/realm.json
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      DB_VENDOR: mysql
+      DB_ADDR: {{systemLower}}-db
+      DB_USER: root
+      DB_PASSWORD: Qw1234561
     ports:
-      - "8099:8099"
+      - 8099:8099
     depends_on:
       - {{systemLower}}-db
 {{/keycloak}}

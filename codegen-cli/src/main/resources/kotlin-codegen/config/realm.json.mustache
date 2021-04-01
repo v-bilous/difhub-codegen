@@ -1,0 +1,52 @@
+{
+  "id": "{{keycloak.realm}}",
+  "realm": "{{keycloak.realm}}",
+  "enabled": "true",
+  "revokeRefreshToken" : true,
+  "accessTokenLifespan" : 900,
+  "passwordPolicy": "length(8) and digits(1) and specialChars(1)",
+  "roles" : {
+    "realm" : [ {
+      "id": "c9253f52-1960-4c9d-af99-5facca0c0846",
+      "name": "admin",
+      "description" : "admin role",
+      "scopeParamRequired": false,
+      "composite": false,
+      "clientRole": false,
+      "containerId": "infort-tech"
+    }, {
+      "id" : "1e7ed0c8-9585-44b0-92f8-59e472573461",
+      "name" : "user",
+      "description" : "user role",
+      "scopeParamRequired" : false,
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "{{keycloak.realm}}"
+    }
+    ]
+  },
+  "clients": [ {
+      "id": "7ec4ccce-d6ed-461f-8e95-ea98e4912b8c",
+      "clientId": "{{keycloak.client}}",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "0b360a88-df24-48fa-8e96-bf6577bbee95",
+      "directAccessGrantsEnabled": true
+    }, {
+      "id": "7408233-cdbf-4dc8-a198-717204e37700",
+      "clientId": "{{keycloak.client}}-ui",
+      "enabled": "true",
+      "clientAuthenticatorType": "client-secret",
+      "secret": "0b360a88-df24-48fa-8e96-bf6577bbee95",
+      "directAccessGrantsEnabled": true,
+      "redirectUris": [
+      {{#keycloak.redirectUris}}
+        "{{.}}",
+      {{/keycloak.redirectUris}}
+      ]
+    }
+  ],
+  "attributes": {
+    "hostname": "{{host-name}}"
+  }
+}
