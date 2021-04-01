@@ -1,5 +1,5 @@
 authorization:
-  token-url: {{keycloak.auth-url}}/realms/{{keycloak.realm}}/protocol/openid-connect/token
+  token-url: http://{{systemLower}}-keycloak:8080/auth/realms/{{keycloak.realm}}/protocol/openid-connect/token
   internalUrl: http://{{systemLower}}-keycloak:8080/auth
 swagger-ui:
   keycloak-url: {{keycloak.auth-url}}
