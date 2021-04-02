@@ -47,7 +47,7 @@ data class {{classname}}(
 				{{/vendorExtensions.embeddedComponent}}
 			{{/vendorExtensions.isEmbedded}}
 			{{^vendorExtensions.isEmbedded}}
-		AttributeOverride(name = "{{name}}", column = Column(name = "{{vendorExtensions.embeddedColumnName}}")),
+		AttributeOverride(name = "{{name}}", column = Column(name = "{{vendorExtensions.embeddedColumnName}}"{{#vendorExtensions.hasJsonType}}, columnDefinition = "json"{{/vendorExtensions.hasJsonType}})),
 			{{/vendorExtensions.isEmbedded}}
 		{{/vars}}
 	)
