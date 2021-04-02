@@ -236,6 +236,10 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 					target = "kube/kube-keycloak.yml",
 					condition = cicdEnabled)
 			}
+			addSupportFile(
+				source = "config/realm.json.mustache",
+				target = "config/realm.json"
+			)
 		}
 
 		// add kubernetes ConfigMap manifest to the application
