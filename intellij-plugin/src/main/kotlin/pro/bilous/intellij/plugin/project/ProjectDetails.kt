@@ -19,6 +19,7 @@ class ProjectDetails(moduleBuilder: ProjectModuleBuilder, wizardContext: WizardC
 //    val appComboBoxModel = DefaultComboBoxModel<String>()
 //    val appComboBox = ComboBox<String>(appComboBoxModel)
     val databaseComboBox = ComboBox(DefaultComboBoxModel(arrayOf("MySQL", "PostgreSQL")))
+    val enumMenuComboBox = ComboBox(DefaultComboBoxModel(arrayOf("SimpleEnums", "MetadataEnums")))
 	val enableAuthorizationCheckBox = CheckBox("", false,
 		"Keycloak configuration will be added to project")
 
@@ -40,6 +41,9 @@ class ProjectDetails(moduleBuilder: ProjectModuleBuilder, wizardContext: WizardC
         databaseComboBox.addActionListener {
             request.database = databaseComboBox.selectedItem as String
         }
+		enumMenuComboBox.addActionListener {
+			request.enumsType = enumMenuComboBox.selectedItem as String
+		}
 		enableAuthorizationCheckBox.addActionListener {
 			request.authorizationEnabled = enableAuthorizationCheckBox.isSelected
 		}
@@ -61,6 +65,7 @@ class ProjectDetails(moduleBuilder: ProjectModuleBuilder, wizardContext: WizardC
                 row("Description") { textField(request::description) }
                 row("Base Package") { textField(request::basePackage) }
                 row("Database") { databaseComboBox() }
+                row("EnumsType") { enumMenuComboBox() }
 				row("Enable Authorization") { enableAuthorizationCheckBox() }
 
 //                row("DB Name") { textField(request::dbName) }

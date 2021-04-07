@@ -90,8 +90,12 @@ open class ModelPropertyProcessor(val codegen: CodeCodegen) {
 			property.isString = true
 		}
 
-		if (isEnum(property)) {
+		val enumsType = codegen.additionalProperties()["enumsType"] as String?
+		val isMetadataDefinitionEnum = enumsType != null && enumsType.equals("MetadataEnums", true)
+		if (isEnum(property) && isMetadataDefinitionEnum) {
 			convertToMetadataProperty(property, model)
+		} else if (isEnum(property) && !isMetadataDefinitionEnum) {
+			property.datatypeWithEnum = property.complexType
 		}
 		addGuidAnnotation(property, model)
 	}

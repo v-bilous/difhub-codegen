@@ -19,6 +19,7 @@ class ProjectCreationRequest {
     var basePackage = ""
     var dbName = ""
     var database = "MySQL"
+	var enumsType = "SimpleEnums"
     var addKotlin = true
     var dateLibrary = "default"
     var addBindingEntity = true

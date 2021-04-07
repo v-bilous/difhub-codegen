@@ -90,6 +90,7 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 			addCommonModuleFiles()
 			setupRawFiles()
 			setupIdeaFiles()
+			setupDatabaseMigrations()
 		}
 
 		val baseResourceSrcFolder = "$appRoot/src/main/kotlin"
@@ -149,22 +150,26 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 		additionalProperties["lower"] = LowercaseLambda()
 		additionalProperties["upperCamelToUpperUnderscore"] = CaseFormatLambda(CaseFormat.UPPER_CAMEL, CaseFormat.UPPER_UNDERSCORE)
 
-		if (entityMode) {
-			//supportingFiles.clear()
 
-			val inputRoot = "app-module/src/main/resources/liquibase"
-			val destinationRoot = "app-${artifactId.toLowerCase()}/src/main/resources/liquibase"
-
-			addSupportFile(source = "$inputRoot/liquibase-changeLog.xml.mustache", target = "$destinationRoot/liquibase-changeLog.xml")
-			addSupportFile(source = "$inputRoot/settings.xml.mustache", target = "$destinationRoot/settings.xml")
-			addSupportFile(source = "$inputRoot/migrations/changeLog.mustache", target = "$destinationRoot/migrations/generatedChangeLog.xml")
-//			addSupportFile(source = "$inputRoot/migrations/common_tables.xml.mustache", target = "$destinationRoot/migrations/common_tables.xml")
-			addSupportFile(source ="$inputRoot/migrations/enum_definition_data.xml", target = "$destinationRoot/migrations/enum_definition_data.xml")
-			addSupportFile(source ="$inputRoot/migrations/enum_definition.csv.mustache", target = "$destinationRoot/migrations/enum_definition.csv")
-		}
 		// add lambda for mustache templates
 		additionalProperties["lambdaEscapeDoubleQuote"] = Mustache.Lambda { fragment, writer -> writer.write(fragment.execute().replace("\"".toRegex(), Matcher.quoteReplacement("\\\""))) }
 		additionalProperties["lambdaRemoveLineBreak"] = Mustache.Lambda { fragment, writer -> writer.write(fragment.execute().replace("\\r|\\n".toRegex(), "")) }
+	}
+
+	private fun setupDatabaseMigrations() {
+		val inputRoot = "app-module/src/main/resources/liquibase"
+		val destinationRoot = "app-${artifactId.toLowerCase()}/src/main/resources/liquibase"
+
+		addSupportFile(source = "$inputRoot/liquibase-changeLog.xml.mustache", target = "$destinationRoot/liquibase-changeLog.xml")
+		addSupportFile(source = "$inputRoot/settings.xml.mustache", target = "$destinationRoot/settings.xml")
+		addSupportFile(source = "$inputRoot/migrations/changeLog.mustache", target = "$destinationRoot/migrations/generatedChangeLog.xml")
+//			addSupportFile(source = "$inputRoot/migrations/common_tables.xml.mustache", target = "$destinationRoot/migrations/common_tables.xml")
+
+		val enumsType = additionalProperties["enumsType"] as String
+		if (enumsType.equals("MetadataEnums", true)) {
+			addSupportFile(source ="$inputRoot/migrations/enum_definition_data.xml", target = "$destinationRoot/migrations/enum_definition_data.xml")
+			addSupportFile(source ="$inputRoot/migrations/enum_definition.csv.mustache", target = "$destinationRoot/migrations/enum_definition.csv")
+		}
 	}
 
 	private fun setupRootFiles() {
@@ -213,13 +218,16 @@ class OptsPostProcessor(val codegen: CodeCodegen) {
 		}
 
 		//enum definitions
-		addSupportFile(source = "$inputSrc/config/EnumValidationConfiguration.kt.mustache", folder = "$destSrc/config", target = "EnumValidationConfiguration.kt")
-		addSupportFile(source = "$inputSrc/domain/EnumDefinition.kt.mustache", folder = "$destSrc/domain", target = "EnumDefinition.kt")
-		addSupportFile(source = "$inputSrc/enumdefinition/EnumConstraintValidator.kt.mustache", folder = "$destSrc/enumdefinition", target = "EnumConstraintValidator.kt")
-		addSupportFile(source = "$inputSrc/enumdefinition/EnumDefinitionController.kt.mustache", folder = "$destSrc/enumdefinition", target = "EnumDefinitionController.kt")
-		addSupportFile(source = "$inputSrc/enumdefinition/EnumDefinitionRepository.kt.mustache", folder = "$destSrc/enumdefinition", target = "EnumDefinitionRepository.kt")
-		addSupportFile(source = "$inputSrc/enumdefinition/EnumDefinitionService.kt.mustache", folder = "$destSrc/enumdefinition", target = "EnumDefinitionService.kt")
-		addSupportFile(source = "$inputSrc/enumdefinition/EnumValue.kt.mustache", folder = "$destSrc/enumdefinition", target = "EnumValue.kt")
+		val enumsType = additionalProperties["enumsType"] as String
+		if (enumsType.equals("MetadataEnums", true)) {
+			addSupportFile(source = "$inputSrc/config/EnumValidationConfiguration.kt.mustache", folder = "$destSrc/config", target = "EnumValidationConfiguration.kt")
+			addSupportFile(source = "$inputSrc/domain/EnumDefinition.kt.mustache", folder = "$destSrc/domain", target = "EnumDefinition.kt")
+			addSupportFile(source = "$inputSrc/enumdefinition/EnumConstraintValidator.kt.mustache", folder = "$destSrc/enumdefinition", target = "EnumConstraintValidator.kt")
+			addSupportFile(source = "$inputSrc/enumdefinition/EnumDefinitionController.kt.mustache", folder = "$destSrc/enumdefinition", target = "EnumDefinitionController.kt")
+			addSupportFile(source = "$inputSrc/enumdefinition/EnumDefinitionRepository.kt.mustache", folder = "$destSrc/enumdefinition", target = "EnumDefinitionRepository.kt")
+			addSupportFile(source = "$inputSrc/enumdefinition/EnumDefinitionService.kt.mustache", folder = "$destSrc/enumdefinition", target = "EnumDefinitionService.kt")
+			addSupportFile(source = "$inputSrc/enumdefinition/EnumValue.kt.mustache", folder = "$destSrc/enumdefinition", target = "EnumValue.kt")
+		}
 	}
 
 	private fun setupModuleFiles() {

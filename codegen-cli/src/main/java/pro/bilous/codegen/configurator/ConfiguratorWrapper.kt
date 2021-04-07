@@ -24,6 +24,7 @@ class ConfiguratorWrapper(
 		val specDir = instance.getSpecCopyValue()
 		val basePackage =  settings.dynamicProperties["basePackage"].toString()
 		val database = settings.dynamicProperties["database"]?.toString() ?: "MySQL"
+		val enumsType = settings.dynamicProperties["enumsType"]?.toString() ?: "SimpleEnums"
 
 		val system = settings.dynamicProperties["system"]!!.toString()
 		instance.setCustomProperty("systemLower", system.toLowerCase())
@@ -31,6 +32,7 @@ class ConfiguratorWrapper(
 		instance.setCustomProperty("database",
 			DatabaseResolver.getByType(database)
 		)
+		instance.setCustomProperty("enumsType", enumsType)
 		apps.forEachIndexed { index, appName ->
 			try {
 				generateOne(GenerateArgs(index, appName, specDir, basePackage))

@@ -9,7 +9,7 @@ import org.hibernate.annotations.LazyCollectionOption
 {{#models}}
 {{#model}}
 {{#isEnum}}
-{{>enumOuterClass}}
+{{>app-module/src/main/kotlin/domain/enum}}
 {{/isEnum}}
 {{^isEnum}}
 {{>app-module/src/main/kotlin/domain/pojoentity.kt}}

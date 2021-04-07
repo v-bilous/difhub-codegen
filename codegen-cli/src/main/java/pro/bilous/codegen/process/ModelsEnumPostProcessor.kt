@@ -23,7 +23,11 @@ class ModelsEnumPostProcessor(val codegen: CodeCodegen) {
 				cm.vendorExtensions["isMetadataEnum"] = true
 				val className = cm.classname.replace("_", "").replace(" ", "").removeSuffix("Model")
 				cm.vendorExtensions["enumGroupName"] = CamelCaseConverter.convert(className)
-				cm.isAlias = true
+
+				val enumsType = codegen.additionalProperties()["enumsType"] as String
+				if (enumsType.equals("MetadataEnums", true)) {
+					cm.isAlias = true
+				}
 			}
 		}
 		return objs
