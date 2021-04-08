@@ -31,4 +31,25 @@ internal class ProjectFilesCreatorTest {
 		assertEquals(request.password, password)
 		assertEquals(request.organization, organization)
 	}
+
+	@Test
+	fun `test settings file creation`() {
+		val request = ProjectCreationRequest().apply {
+			enumsType = "SimpleEnum"
+			database = "Mysql"
+		}
+
+		val configFolder = Paths.get("build/tmp").toAbsolutePath().toString()
+
+		ProjectFilesCreator().createConfigFile(request, configFolder)
+
+		val configFile = File("$configFolder/settings.yaml")
+
+		val configTree = Yaml.mapper().readTree(configFile.inputStream())
+		val enumsType = configTree.get("enumsType").asText()
+		val database = configTree.get("database").asText()
+
+		assertEquals(request.enumsType, enumsType)
+		assertEquals(request.database, database)
+	}
 }
