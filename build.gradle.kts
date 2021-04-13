@@ -1,7 +1,7 @@
 plugins {
-    kotlin("jvm") version "1.4.0"
-    id("org.jetbrains.intellij") version "0.4.12" apply false
-    id("org.jetbrains.gradle.plugin.idea-ext") version "0.7" apply false
+    kotlin("jvm") version "1.5.0-M2"
+    id("org.jetbrains.intellij") version "0.7.2" apply false
+    id("org.jetbrains.gradle.plugin.idea-ext") version "1.0" apply false
 	jacoco
 }
 
